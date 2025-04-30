@@ -1,0 +1,127 @@
+
+{% extends 'base.html' %}
+{% load static %}
+{% block head_content %}
+
+  
+
+<!DOCTYPE html>
+
+{% endblock head_content %}
+{% block container %}
+<div class="content">
+    <div class="row">
+      <div class="col-md-12">
+        
+        <div class="card-body">
+            
+            <div class="typography-line">
+                <h3 class="color-typography"><span>Supermercado -</span> precio corriente </h3>
+            </div>
+            <div class="typography-line">
+              
+                <blockquote>
+                  <p class="blockquote blockquote-primary">
+                    Las ventas totales en supermercados de Formosa, superaron los $8208.42 millones en el mes de julio (en junio fueron $7785.56 millones). Estas se incrementaron 5,4%, con respecto al mes de junio, además se incrementaron un 153,3% con respecto al mes de julio del año 2024.
+                   
+                  </p>
+                </blockquote>
+                  <form method= "GET" action="{% url 'precio-corriente' %} ">
+                    {% csrf_token %}
+                    <div class ="content-error">
+    
+                      {% if error_message %}
+    
+                        {{error_message}}
+                      
+                      {%endif%}
+                    </div>
+                
+                    <div class="filtros-contenedor">
+                      <!-- Filtro de años (rango) -->
+                      <div class="filtro-anios">
+                        <label>Años:</label>
+                        <div class="anio_inicio">
+                          <select name="anio_inicio">
+                            <option value="">Desde</option>
+                            <option value="2">2020</option>
+                            <option value="3">2021</option>
+                            <option value="4">2022</option>
+                            <option value="5">2023</option>
+                            <option value="6">2024</option>
+                            
+                          </select>
+                          <span>—</span>
+                          <select name="anio_fin">
+                            <option value="">Hasta</option>
+                            <option value="2">2020</option>
+                            <option value="3">2021</option>
+                            <option value="4">2022</option>
+                            <option value="5">2023</option>
+                            <option value="6">2024</option>
+                            
+                          </select>
+                        </div>
+                      </div>
+                    
+                      <!-- Segundo filtro (select normal) -->
+                      <div class="filtro-categoria">
+                        <label for="categoria">Valor:</label>
+                        <select id="valor" name="valor">
+                          <option value="">Todas</option>
+                          <option value="1">Formosa</option>
+                          <option value="2">NEA</option>
+                        
+                        </select>
+                      </div>
+                    
+                      <!-- Botón de aplicar -->
+                      <button type="submit">Aplicar filtros</button>
+                    </div>  
+                  </form>
+                <div class="chart-style" id="chart-corriente"></div>
+              </div>
+        </div>
+    </div>
+</div>
+<script>
+
+
+
+      function data_variacion_corriente(){
+        data_intermensual = []
+        data_interanual = []
+        meses = []
+        anio = ' '
+        valor = ' '
+
+        {% for data in data_variacion %}
+            data_intermensual.push({{ data.variacion_intermensual }});
+            data_interanual.push({{ data.variacion_interanual }});
+            meses.push('{{data.mes__mes}}');
+            anio = {{data.anio__anio}};
+            valor = '{{data.valor__valor}}'
+        {% endfor %}
+        
+        return [data_intermensual,
+                data_interanual,
+                meses,
+                anio,
+                valor]
+
+      }
+
+      data_graficos_supermercado()
+      import OpenAI from "openai";
+      const client = new OpenAI();
+      
+      const response = await client.responses.create({
+          model: "gpt-4.1",
+          input: "Write a one-sentence bedtime story about a unicorn.",
+      });
+      
+      console.log(response.output_text);
+      
+</script>
+{% endblock container %}
+
