@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
   <script src="{% static 'js/apexchart/type-chart.js' %} " ></script>
   <script src="{% static 'js/apexchart/draw_chart.js' %} " ></script>
@@ -21,6 +21,13 @@
  <link href="{% static 'css/glightbox.min.css' %} " rel="stylesheet">
  <link href="{% static 'css/swiper-bundle.min.css' %} " rel="stylesheet">
  <link href="{% static 'css/style.css' %} " rel="stylesheet">
+ <link rel="stylesheet" href="{% static 'css/dataTables.min.css' %}">
+ <script src="https://cdn.datatables.net/2.1.5/js/dataTables.js"></script>
+ <script src="https://cdn.datatables.net/fixedcolumns/5.0.1/js/dataTables.fixedColumns.js"></script>
+ <script src="https://cdn.datatables.net/fixedcolumns/5.0.1/js/fixedColumns.dataTables.js"></script>
+ <script src="https://cdn.datatables.net/buttons/3.1.2/js/dataTables.buttons.js"></script>
+ <script src="https://cdn.datatables.net/buttons/3.1.2/js/buttons.dataTables.js"></script>
+ <script src="https://cdn.datatables.net/buttons/3.1.2/js/buttons.colVis.min.js"></script>
  <!-- Main CSS File -->
  <link href="{% static 'css/main.css' %} " rel="stylesheet">
 
@@ -74,6 +81,7 @@
   <!-- Control Center for Black Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="{% static 'js/black-dashboard.min.js?v=1.0.0' %}"></script><!-- Black Dashboard DEMO methods, don't include it in your project! -->
   <script src="{% static 'demo/demo.js' %}"></script>
+  <script src="{% static 'js/table.js' %}"></script>
   <script>
     $(document).ready(function() {
       $().ready(function() {

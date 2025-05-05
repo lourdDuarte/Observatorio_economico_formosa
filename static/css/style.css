@@ -69,4 +69,48 @@
     cursor: pointer;
   }
 
-  
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1rem;
+}
+
+.toolbar button {
+    padding: 8px 12px;
+    background: #333;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.toolbar button.active {
+    background-color: #007bff;
+    opacity: 1;
+}
+
+.view {
+    display: none;
+}
+
+.view.active {
+    display: block;
+}
+
+/* Estilos básicos para la tabla (puedes personalizarlos) */
+#tableView table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+#tableView th, #tableView td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+}
+
+#tableView th {
+    background-color: #f2f2f2;
+}

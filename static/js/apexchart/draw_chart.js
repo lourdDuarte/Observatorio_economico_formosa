@@ -12,29 +12,35 @@ function max_min_chart(intermensual,interanual){
 }
 
 
-function generar_grafico(funcion, titulo, id_grafico){
+function generar_grafico(funcion, titulo, id_grafico)
+{
 
-    let [data_intermensual, data_interanual, meses,anio, valor] = funcion();
+    let [data_intermensual, data_interanual, meses,anio, valor, type, data_chart, data_total] = funcion();
    
-
+    console.log(data_total)
     let[maximo,minimo] = max_min_chart(data_intermensual, data_interanual)
 
-    // if (tipo === '$'){
-    //     return draw_line_chart(intermensual ,interanual, titulo + ' ' + anio +' ' + valor, meses,maximo,minimo,'$', id_grafico)
-    // }else{
+    if (type === 1){
+        column_chart_comparative('chart-comparative',data_chart)
+    }
+    if (type === 0){
+        column_chart_basic('chart-basic',data_total,meses)
+       
+
+    }
+
     return area_chart(
         id_grafico,
         data_intermensual,
         data_interanual, 
         meses,
         titulo + 
-        ' ' + 
-        anio +' ' 
+        ' ' 
         + valor, 
         maximo,
         minimo,
         
-        )
+    )
 
 }
     

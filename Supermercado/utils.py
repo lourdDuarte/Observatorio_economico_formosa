@@ -1,14 +1,29 @@
 
 from Supermercado.models import *
 from django.shortcuts import render
+from collections import defaultdict
+from django.db.models import OuterRef, Subquery, QuerySet
+
 def get_data_variaciones():
     
-    return Variacion.objects.select_related('mes','anio','valor' ).values(
+    venta_total_subquery = Total.objects.filter(
+    anio=OuterRef('anio'),
+    mes=OuterRef('mes'),
+    valor=OuterRef('valor'),
+    tipoPrecio=OuterRef('tipoPrecio')
+    ).values('venta_total')[:1]  # Solo el primero si hay varios
+
+    
+    return Variacion.objects.select_related('mes', 'anio', 'valor', 'tipoPrecio').annotate(
+        venta_total=Subquery(venta_total_subquery)
+    ).values(
         'mes__mes',
         'anio__anio',
         'valor__valor',
         'variacion_interanual',
-        'variacion_intermensual')
+        'variacion_intermensual',
+        'venta_total'
+    )
 
 
 
@@ -18,10 +33,12 @@ def data_model_supermercado(request, tipo_precio, context_keys, template):
     valor = request.GET.get('valor') 
 
     meses = Mes.objects.all()
-    variacion = get_data_variaciones()
-
+   
     data_variacion = []
+    type_graphic = 0
     error_message = None
+    context_chart = {}
+   
 
     anio_default = 6
     valor_default = 1
@@ -32,28 +49,48 @@ def data_model_supermercado(request, tipo_precio, context_keys, template):
             anio_fin = int(anio_fin)
             valor = int(valor)
 
-            data_variacion = variacion.filter(
+            data_variacion = get_data_variaciones().filter(
                 anio_id__gte=anio_inicio,
                 anio_id__lte=anio_fin,
                 tipoPrecio_id=tipo_precio,
                 valor_id=valor
             )
-            print(data_variacion)
+          
+            # Agrupar por año
+            context_chart = defaultdict(list)
+
+            for item in data_variacion:
+                anio = item['anio__anio']
+                valor = item['venta_total']
+                context_chart[anio].append(valor)
+
+            # Convertir a dict normal (opcional)
+            context_chart = dict(context_chart)
+           
+            type_graphic = 1
+
+           
+
+            
         except ValueError:
             error_message = "Los filtros ingresados no son válidos."
-            data_variacion = variacion.none()
+            data_variacion = get_data_variaciones().none()
     else:
-        data_variacion = variacion.filter(
+        data_variacion = context_chart = get_data_variaciones().filter(
             anio_id=anio_default,
             tipoPrecio_id=tipo_precio,
             valor_id=valor_default
         )
 
-       
+
+      
 
     context = {
         'error_message': error_message,
         context_keys['data_variacion']: data_variacion,
+        context_keys['context_chart']: context_chart,
+        context_keys['type_graphic']: type_graphic,
+       
         'meses': meses,
     }
 
