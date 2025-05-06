@@ -86,7 +86,7 @@
 }
 
 .toolbar button.active {
-    background-color: #007bff;
+    background-color: #003763;
     opacity: 1;
 }
 
@@ -114,3 +114,38 @@
 #tableView th {
     background-color: #f2f2f2;
 }
+.cards-api-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Mantenemos 4 columnas */
+    gap: 5px; /* Reducimos drásticamente el espacio entre las tarjetas */
+    row-gap: 2em; /* Opcional: reduce también el espacio entre filas si lo deseas */
+    justify-items: center; /* Mantenemos el centrado de las tarjetas */
+  }
+  
+  .card-api {
+    background-color: #042744;
+    color: #f9f9f9;
+    border-radius: 10px;
+    padding: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    max-width: 450px; /* Mantenemos el ancho máximo */
+  }
+  .titulo-general {
+    width: 100%; /* Asegura que el título ocupe todo el ancho */
+    display: flex; /* Habilitamos Flexbox para centrar el contenido */
+    justify-content: center;
+    background: #003763; /* Centra horizontalmente el contenido */
+    align-items: center; /* Centra verticalmente el contenido */
+    padding: 0.5em 0; /* Opcional: agrega un poco de espacio arriba y abajo */
+    margin-bottom: 20px; /* Opcional: espacio entre el título y las tarjetas */
+    /* Otros estilos que desees aplicar al título (color, fuente, etc.) */
+  }
+  
+  .titulo-general h2 {
+    margin: 0; /* Elimina los márgenes predeterminados del h2 para un centrado más preciso */
+    font-size: 25px;
+  }
+
+  .card-color{
+    background-color: #042744;
+  }

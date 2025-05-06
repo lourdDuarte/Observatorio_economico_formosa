@@ -40,7 +40,7 @@ def data_model_supermercado(request, tipo_precio, context_keys, template):
     context_chart = {}
    
 
-    anio_default = 6
+    anio_default = 7
     valor_default = 1
 
     if anio_inicio and anio_fin and valor:
