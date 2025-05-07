@@ -41,6 +41,7 @@ def data_model_supermercado(request, tipo_precio, context_keys, template):
    
 
     anio_default = 7
+    
     valor_default = 1
 
     if anio_inicio and anio_fin and valor:
@@ -48,14 +49,14 @@ def data_model_supermercado(request, tipo_precio, context_keys, template):
             anio_inicio = int(anio_inicio)
             anio_fin = int(anio_fin)
             valor = int(valor)
-
+           
             data_variacion = get_data_variaciones().filter(
                 anio_id__gte=anio_inicio,
                 anio_id__lte=anio_fin,
                 tipoPrecio_id=tipo_precio,
                 valor_id=valor
-            )
-          
+            ).order_by('anio__anio', 'mes__id')
+           
             # Agrupar por año
             context_chart = defaultdict(list)
 
@@ -82,7 +83,7 @@ def data_model_supermercado(request, tipo_precio, context_keys, template):
             valor_id=valor_default
         )
 
-
+        print(data_variacion.query)
       
 
     context = {

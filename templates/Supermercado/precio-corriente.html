@@ -22,8 +22,8 @@
                     
                     <blockquote>
                         <p class="blockquote blockquote-primary">
-                            Las ventas totales en supermercados de Formosa, superaron los $8208.42 millones en el mes de julio (en junio fueron $7785.56 millones). Estas se incrementaron 5,4%, con respecto al mes de junio, además se incrementaron un 153,3% con respecto al mes de julio del año 2024.
-                            
+                            Las ventas totales en supermercados de Formosa, superaron los $8.442 millones en el mes de febrero de 2025(en enero fueron $9.316 millones). Estas disminuyeron 9,4%, con respecto al mes de enero, por otro lado se incrementaron un 36% con respecto al mes de febrero del año 2024.
+
                         </p>
                     </blockquote>
                         <div class="toolbar">
@@ -180,6 +180,7 @@
             data_intermensual.push({{ data.variacion_intermensual }});
             data_interanual.push({{ data.variacion_interanual }});
             meses.push('{{data.mes__mes}}');
+            console.log('{{data.mes__mes}}')
             anio = {{data.anio__anio}};
             valor = '{{data.valor__valor}}'
             {% if type_graphic == 0 %}
