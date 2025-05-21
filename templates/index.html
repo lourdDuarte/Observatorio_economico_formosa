@@ -11,341 +11,66 @@
 {% block container %}
 
 
+<body>
   
+  <main>
+     <h1 class="title-bcra">Datos actualizados de BCRA</h1>
+     <section class="seccion-bcra">
+        <div class=" py-3 cards-api-container">
   
-
-<div class="titulo-general">
-  <h2 style="color: #ffff;">Datos BCRA</h2>
-</div>
-<div class=" py-3 cards-api-container">
-  
-  {% for descripcion, pares in data_combinada.items %}
-    <div class="card-api">
-      <h5>{{ descripcion }}</h5>
-      
-        {% for fecha, valor in pares %}
-          <h5>Ultima actualizacion: {{ fecha }}</h5> 
-          <h5>Valor: {{ valor }}</h5> 
-        {% endfor %}
-    
-    </div>
-  {% endfor %}
-</div>
-
-<div class="container-var py-3 d-flex justify-content-center gap-5 ">
-  
-
-  
-  <!-- Sección 1 -->
-  <div class="seccion seccion-card" >
-    <div class="text-left mb-4">
-      <h4 class=" title-card">Supermercado - precio corriente</h4>
-      <hr class="mx-auto" >
-    </div>
-
-    <div class="context d-flex justify-content-center gap-3">
-      <div class="card card-body-style" >
-        <div class="card-body card-color ">
-          <h5 class="card-title">Var interanual</h5>
-          <p class="card-text">********</p>
+          {% for descripcion, pares in data_combinada.items %}
+            <div class="card-api">
+              <h1>{{ descripcion }}</h1>
+              
+                {% for fecha, valor in pares %}
+                  
+                  <h1 class="title-value-api">{{ valor }}</h1> 
+                  <h1 class="date-value-api">act: {{ fecha }}</h1> 
+                {% endfor %}
+            
+            </div>
+          {% endfor %}
         </div>
-      </div>
+      </section>
 
-      <div class="card card-body-style " >
-        <div class="card-body card-color">
-          <h5 class="card-title">Var intermensual</h5>
-          <p class="card-text">********</p>
+
+    </section>
+
+
+    <section class="secciones">
+      {% for categoria_nombre, categoria_datos in data_json.items %}
+    <div class="caja">
+        <h4>{{ categoria_nombre }}</h4> {# Título principal de la tarjeta, ej. "Supermercado" #}
+        <div class="container-data">
+            {% for tipo_nombre, tipo_datos in categoria_datos.items %}
+            <div class="data">
+                <button class="title-data">{{ tipo_nombre }}</button> {# Botón (Precio Corriente / Constante / Patentamiento / Transferencia) #}
+
+                <div class="tarjeta">
+                    <p>Valor intermensual</p>
+                    <p class="valor">{{ tipo_datos.valor_intermensual }}</p> {# Aquí se inserta el valor intermensual #}
+                    <small>Act. {{ tipo_datos.fecha_actualizacion |date:"M d, Y"}}</small> {# Aquí se inserta la fecha de actualización #}
+                </div>
+
+                <div class="tarjeta">
+                    <p>Valor interanual</p>
+                    <p class="valor">{{ tipo_datos.valor_interanual }}</p> {# Aquí se inserta el valor interanual #}
+                    <small>Act. {{ tipo_datos.fecha_actualizacion |date:"M d, Y"}}</small> {# Aquí se inserta la fecha de actualización #}
+                </div>
+            </div>
+            {% endfor %} {# Fin del bucle interno (para tipos) #}
         </div>
-      </div>
     </div>
-  </div>
-
-  <!-- Sección 2 -->
-  <div class="seccion seccion-card" >
-    <div class="text-left mb-4">
-      <h4 class=" title-card">Supermercado - precio constante</h4>
-      <hr class="mx-auto" >
-    </div>
-
-    <div class="context d-flex justify-content-center gap-3">
-      <div class="card card-body-style" >
-        <div class="card-body card-color ">
-          <h5 class="card-title">Var interanual</h5>
-          <p class="card-text">********</p>
-        </div>
-      </div>
-
-      <div class="card card-body-style " >
-        <div class="card-body card-color">
-          <h5 class="card-title">Var intermensual</h5>
-          <p class="card-text">********</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</div>
-
-
-
-<div class="container-var py-3 d-flex justify-content-center gap-5 ">
-
-  <!-- Sección 1 -->
-  <div class="seccion seccion-card" >
-    <div class="text-left mb-4">
-      <h4 class=" title-card">Patentamiento - auto</h4>
-      <hr class="mx-auto" >
-    </div>
-
-    <div class="context d-flex justify-content-center gap-3">
-      <div class="card card-body-style" >
-        <div class="card-body card-color">
-          <h5 class="card-title">Var interanual</h5>
-          <p class="card-text">********</p>
-        </div>
-      </div>
-
-      <div class="card card-body-style " >
-        <div class="card-body card-color">
-          <h5 class="card-title">Var intermensual</h5>
-          <p class="card-text">********</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Sección 2 -->
-  <div class="seccion seccion-card" >
-    <div class="text-left mb-4">
-      <h4 class=" title-card">Transferencias - auto</h4>
-      <hr class="mx-auto" >
-    </div>
-
-    <div class="context d-flex justify-content-center gap-3">
-      <div class="card card-body-style" >
-        <div class="card-body card-color ">
-          <h5 class="card-title">Var interanual</h5>
-          <p class="card-text">********</p>
-        </div>
-      </div>
-
-      <div class="card card-body-style " >
-        <div class="card-body card-color">
-          <h5 class="card-title">Var intermensual</h5>
-          <p class="card-text">********</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</div>
-
-
-<div class="container-var py-3 d-flex justify-content-center gap-5 ">
-
-  <!-- Sección 1 -->
-  <div class="seccion seccion-card" >
-    <div class="text-left mb-4">
-      <h4 class=" title-card">Patentamiento - moto</h4>
-      <hr class="mx-auto" >
-    </div>
-
-    <div class="context d-flex justify-content-center gap-3">
-      <div class="card card-body-style" >
-        <div class="card-body  card-color">
-          <h5 class="card-title">Var interanual</h5>
-          <p class="card-text">********</p>
-        </div>
-      </div>
-
-      <div class="card card-body-style " >
-        <div class="card-body card-color">
-          <h5 class="card-title">Var intermensual</h5>
-          <p class="card-text">********</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Sección 2 -->
-  <div class="seccion seccion-card" >
-    <div class="text-left mb-4">
-      <h4 class=" title-card">Transferencias - moto</h4>
-      <hr class="mx-auto" >
-    </div>
-
-    <div class="context d-flex justify-content-center gap-3">
-      <div class="card card-body-style" >
-        <div class="card-body card-color">
-          <h5 class="card-title">Var interanual</h5>
-          <p class="card-text">********</p>
-        </div>
-      </div>
-
-      <div class="card card-body-style " >
-        <div class="card-body card-color">
-          <h5 class="card-title">Var intermensual</h5>
-          <p class="card-text">********</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</div>
-
-
-<div class="container-var py-3 d-flex justify-content-center gap-5 ">
-
-  <!-- Sección 1 -->
-  <div class="seccion seccion-card" >
-    <div class="text-left mb-4">
-      <h4 class=" title-card">Sector construccion - salario</h4>
-      <hr class="mx-auto" >
-    </div>
-
-    <div class="context d-flex justify-content-center gap-3">
-      <div class="card card-body-style" >
-        <div class="card-body card-color ">
-          <h5 class="card-title">Var interanual</h5>
-          <p class="card-text">********</p>
-        </div>
-      </div>
-
-      <div class="card card-body-style " >
-        <div class="card-body card-color">
-          <h5 class="card-title">Var intermensual</h5>
-          <p class="card-text">********</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Sección 2 -->
-  <div class="seccion seccion-card" >
-    <div class="text-left mb-4">
-      <h4 class=" title-card">Sector construccion - puestos de trabajo</h4>
-      <hr class="mx-auto" >
-    </div>
-
-    <div class="context d-flex justify-content-center gap-3">
-      <div class="card card-body-style" >
-        <div class="card-body card-color ">
-          <h5 class="card-title">Var interanual</h5>
-          <p class="card-text">********</p>
-        </div>
-      </div>
-
-      <div class="card card-body-style " >
-        <div class="card-body card-color">
-          <h5 class="card-title">Var intermensual</h5>
-          <p class="card-text">********</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</div>
-
-
-<div class="container-var py-3 d-flex justify-content-center gap-5 ">
-
-  <!-- Sección 1 -->
-  <div class="seccion seccion-card" >
-    <div class="text-left mb-4">
-      <h4 class=" title-card">Indice precio al consumidor</h4>
-      <hr class="mx-auto" >
-    </div>
-
-    <div class="context d-flex justify-content-center gap-3">
-      <div class="card card-body-style" >
-        <div class="card-body card-color ">
-          <h5 class="card-title">Var interanual</h5>
-          <p class="card-text">********</p>
-        </div>
-      </div>
-
-      <div class="card card-body-style " >
-        <div class="card-body card-color">
-          <h5 class="card-title">Var intermensual</h5>
-          <p class="card-text">********</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Sección 2 -->
-  <div class="seccion seccion-card" >
-    <div class="text-left mb-4">
-      <h4 class=" title-card">Sector privado - evolucion empleo</h4>
-      <hr class="mx-auto" >
-    </div>
-
-    <div class="context d-flex justify-content-center gap-3">
-      <div class="card card-body-style" >
-        <div class="card-body card-color">
-          <h5 class="card-title">Var interanual</h5>
-          <p class="card-text">********</p>
-        </div>
-      </div>
-
-      <div class="card card-body-style " >
-        <div class="card-body card-color">
-          <h5 class="card-title">Var intermensual</h5>
-          <p class="card-text">********</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</div>
-
-
-<div class="container-var py-3 d-flex justify-content-center gap-5 ">
-
-  <!-- Sección 1 -->
-  <div class="seccion seccion-card" >
-    <div class="text-left mb-4">
-      <h4 class=" title-card">Recaudacion tributaria total - ATP</h4>
-      <hr class="mx-auto" >
-    </div>
-
-    <div class="context d-flex justify-content-center gap-3">
-      <div class="card card-body-style" >
-        <div class="card-body card-color ">
-          <h5 class="card-title">Var interanual</h5>
-          <p class="card-text">********</p>
-        </div>
-      </div>
+    {% endfor %} {# Fin del bucle externo (para categorías) #}
 
       
-    </div>
-  </div>
-
-  <!-- Sección 2 -->
-  <div class="seccion seccion-card" >
-    <div class="text-left mb-4">
-      <h4 class=" title-card">Transferencias por coparticipacion, leyes complementarias y compensaciones</h4>
-      <hr class="mx-auto" >
-    </div>
-
-    <div class="context d-flex justify-content-center gap-3">
-      <div class="card card-body-style" >
-        <div class="card-body  card-color">
-          <h5 class="card-title">Var interanual</h5>
-          <p class="card-text">********</p>
-        </div>
-      </div>
-
-      <div class="card card-body-style " >
-        <div class="card-body card-color">
-          <h5 class="card-title">Var intermensual</h5>
-          <p class="card-text">********</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</div>
+      
+    </section>
+  
+  </main>
+ 
+</body>
+</html>
 
   
 {% endblock container %}

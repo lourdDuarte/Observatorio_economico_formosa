@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head_content %}
+
+    
+    <!DOCTYPE html>
+    
+      
+
+{% endblock head_content %}
+{% block container %}
+<div class="content">
+    <div id="chart-container"></div>
+</div>
+<script>
+        var chartDom = document.getElementById('line-chart');
+        var myChart = echarts.init(chartDom);
+        var option;
+
+        option = {
+            title: {
+                text: 'Gráfico de Línea Suave'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            xAxis: {
+                type: 'category',
+                data: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [
+                {
+                    name: 'Visitas',
+                    type: 'line',
+                    smooth: true,
+                    data: [120, 132, 101, 134, 90, 230, 210]
+                }
+            ]
+        };
+
+        option && myChart.setOption(option);
+    </script>
+{% endblock container %}

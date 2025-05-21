@@ -24,6 +24,8 @@ from Supermercado import views as supermercado
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('index/', observatorio.index, name='index'),
-    path('precio-corriente/', supermercado.view_precio_corriente, name='precio-corriente')
+    path('variables/', observatorio.cruce_variables, name='variables'),
+    path('precio-corriente/', supermercado.view_precio_corriente, name='precio-corriente'),
+    path('precio-constante/', supermercado.view_precio_constante, name='precio-constante')
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head_content %}
+
+    
+    <!DOCTYPE html>
+    
+      
+
+{% endblock head_content %}
+{% block container %}
+<div class="content">
+    <div class="row">
+        <div class="col-md-12">
+            
+            <div class="card-body">
+                
+                <div class="typography-line">
+                    <h3 class="color-typography"><span>Comparador de Indicadores Economicos</h3>
+                </div>
+                <div class="typography-line">
+                    
+                    
+                        <div class="toolbar">
+                            <button onclick="showView('chart')" class="active">📈</button>
+                            
+                           
+                        </div>
+                        <form method= "GET" action="{% url 'variables' %} ">
+                            {% csrf_token %}
+                            <div class ="content-error">
+                                
+                                {% if error_message %}
+                                    {{error_message}}
+                                {%endif%}
+                            </div>
+                        
+                            <div class="filtros-contenedor">
+                                <div class="filtro-anios">
+                                    <label>Años:</label>
+                                    <div class="anio_inicio">
+                                        <select name="anio_inicio">
+                                            <option value="">Desde</option>
+                                            <option value="2">2020</option>
+                                            <option value="3">2021</option>
+                                            <option value="4">2022</option>
+                                            <option value="5">2023</option>
+                                            <option value="6">2024</option>
+                                            <option value="7">2025</option>
+                                            
+                                        </select>
+                                        <span>—</span>
+                                        <select name="anio_fin">
+                                            <option value="">Hasta</option>
+                                            <option value="2">2020</option>
+                                            <option value="3">2021</option>
+                                            <option value="4">2022</option>
+                                            <option value="5">2023</option>
+                                            <option value="6">2024</option>
+                                            <option value="7">2025</option>
+                                            
+                                        </select>
+                                    </div>
+                                </div>
+                               
+                                  <div class="filtro-anios">
+                                    <label>Indicador economico:</label>
+                                      <div class="anio_inicio">
+                                        <select name="model_context1">
+                                            <option value='0' selected>Dato</option>
+                                            <option value="Patentamiento - auto">Patentamiento - auto</option>
+                                            <option value="Transferencia - auto">Transferencia - auto</option>
+                                            <option value="Patentamiento - moto">Patentamiento - moto</option>
+                                            <option value="Transferencia - moto">Transferencia - moto</option>
+                                            <option value="Supermercado - corriente">Supermercado - corriente</option>
+                                            <option value="Supermercado - constante">Supermercado - constante</option>
+                                            <option value="Indice precio al consumidor">Indice precio al consumidor</option>
+                                            <option value="Puestos trabajo - sector construccion">Puestos trabajo - sector construccion</option>
+                                            <option value="Privado - evolucion de empleo">Privado - evolucion de empleo</option>
+                                            
+                                        </select>
+                                        <span>—</span>
+                                        <select name="value1">
+                                              <option value='0' selected>Valor</option>
+                                              <option value="1">Formosa</option>
+                                              <option value="2">Nacional</option>
+                                              
+                                            
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="filtro-anios">
+                                    <label>Indicador economico:</label>
+                                    <div class="anio_inicio">
+                                        <select name="model_context2">
+                                            <option value='0' selected>Dato</option>
+                                            <option value="Patentamiento - auto">Patentamiento - auto</option>
+                                            <option value="Transferencia - auto">Transferencia - auto</option>
+                                            <option value="Patentamiento - moto">Patentamiento - moto</option>
+                                            <option value="Transferencia - moto">Transferencia - moto</option>
+                                            <option value="Supermercado - corriente">Supermercado - corriente</option>
+                                            <option value="Supermercado - constante">Supermercado - constante</option>
+                                            <option value="Indice precio al consumidor">Indice precio al consumidor</option>
+                                            <option value="Puestos trabajo - sector construccion">Puestos trabajo - sector construccion</option>
+                                            <option value="Privado - evolucion de empleo">Privado - evolucion de empleo</option>
+                                            
+                                        </select>
+                                        <span>—</span>
+                                        <select name="value2">
+                                              <option value='0' selected>Valor</option>
+                                              <option value="1">Formosa</option>
+                                              <option value="2">Nacional</option>
+                                              
+                                            
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="submit">Comparar</button>
+                            </div>     
+                        </form>
+                        <div id="chartView" class="view active">
+                            <div class="chart-style" id="chart"></div>
+                        </div>
+
+                       
+
+                        
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    function showView(viewId) {
+        // Oculta todas las vistas
+        document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+
+        // Muestra la vista seleccionada
+        document.getElementById(viewId + 'View').classList.add('active');
+
+        // Actualiza el estado de los botones
+        document.querySelectorAll('.toolbar button').forEach(btn => btn.classList.remove('active'));
+        const button = document.querySelector(`.toolbar button[onclick="showView('${viewId}')"]`);
+        if (button) {
+            button.classList.add('active');
+        }
+    }
+var options = {
+          series: [{
+            name: "Session Duration",
+            data: [45, 52, 38, 24, 33, 26, 21, 20, 6, 8, 15, 10]
+          },
+          {
+            name: "Session Durations",
+            data: [35, 41, 62, 42, 13, 18, 29, 37, 36, 51, 32, 35]
+          },
+          {
+            name: 'Session Duration',
+            data: [87, 57, 74, 99, 75, 38, 62, 47, 82, 56, 45, 47]
+          },
+          {
+            name: 'Session Duration',
+            data: [83, 57, 14, 80, 70, 48, 52, 37, 22, 16, 35, 27]
+          }
+        ],
+          chart: {
+          height: 350,
+          
+          zoom: {
+            enabled: true
+          },
+        },
+        dataLabels: {
+          enabled: false
+        },
+        
+        title: {
+          text: 'Page Statistics',
+          align: 'left'
+        },
+        legend: {
+          tooltipHoverFormatter: function(val, opts) {
+            return val + ' - <strong>' + opts.w.globals.series[opts.seriesIndex][opts.dataPointIndex] + '</strong>'
+          }
+        },
+       
+        xaxis: {
+          categories: ['01 Jan', '02 Jan', '03 Jan', '04 Jan', '05 Jan', '06 Jan', '07 Jan', '08 Jan', '09 Jan',
+            '10 Jan', '11 Jan', '12 Jan'
+          ],
+        },
+        
+        grid: {
+          borderColor: '#f1f1f1',
+        }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chart"), options);
+        chart.render();
+      
+   
+    
+  
+</script>
+{% endblock container %}

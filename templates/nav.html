@@ -1,59 +1,65 @@
-<header id="header" class="header d-flex align-items-left sticky-top">
-  <div class="container position-relative d-flex align-items-left">
-
-    <a href="#" class="logo ">
-     
-      <h1 >Observatorio Economico</h1>
-    </a>
-
-    <nav id="navmenu" class="navmenu">
+<header>
+    <div class="logo">
+      <a href="{% url 'index' %}"><h1>OBSERVATORIO<br><span>ECONÓMICO</span></h1></a>
+    </div>
+    <nav>
       <ul>
-        <li><a href="{% url 'index' %}" class="active">Panel</a></li>
-        <li class="dropdown"><a href="#"><span>Supermercado</span> </a>
-          <ul>
-            <li><a href="{% url 'precio-corriente' %}">Precio corriente</a></li>
-            <li><a href="testimonials.html">Precio constante</a></li>
+        <li id="menu-item"><a href="#">Supermercado</a>
+          <ul id="submenu" class="submenu">
+            <li><a href="{% url 'precio-corriente' %}">Precios corriente</a></li>
+            <li><a href="#">Precios constante</a></li>
+          </ul> 
+        
+        </li>
+        <li id="menu-item"><a href="#">Auto</a>
+          <ul id="submenu" class="submenu">
+            <li><a href="#">Precios corriente</a></li>
+            <li><a href="#">Precios constante</a></li>
+          </ul> 
+        
+        </li>
+        <li id="menu-item"><a href="#">Moto</a>
+          <ul id="submenu" class="submenu">
+            <li><a href="#">Precios corriente</a></li>
+            <li><a href="#">Precios constante</a></li>
+          </ul> 
+        
+        </li>
+        <li id="menu-item"><a href="#">Construccion</a>
+          <ul id="submenu" class="submenu">
+            <li><a href="#">Precios corriente</a></li>
+            <li><a href="#">Precios constante</a></li>
+          </ul> 
+        
+        </li>
+        <li id="menu-item"><a href="#">Sector privado</a>
+          <ul id="submenu" class="submenu">
+            <li><a href="#">Precios corriente</a></li>
+            <li><a href="#">Precios constante</a></li>
+          </ul> 
+        
+        </li>
+        <li id="menu-item"><a href="#">ATP</a>
+          <ul id="submenu" class="submenu">
+            <li><a href="#">Precios corriente</a></li>
+            <li><a href="#">Precios constante</a></li>
+          </ul> 
+        
+        </li>
+        <li id="menu-item"><a href="#">Transferencias</a>
+          <ul id="submenu" class="submenu">
+            <li><a href="#">Precios corriente</a></li>
+            <li><a href="#">Precios constante</a></li>
+          </ul> 
+        
+        </li>
+        <li id="menu-item"><a href="#">IPC</a>
+          <ul id="submenu" class="submenu">
+            <li><a href="#">Precio consumidor</a></li>
             
-          </ul>
+          </ul> 
+        
         </li>
-        <li class="dropdown"><a href="about.html"><span>Auto</span> </a>
-          <ul>
-            <li><a href="team.html">Patentamiento</a></li>
-            <li><a href="testimonials.html">Transferencia</a></li>
-            
-          </ul>
-        </li>
-        <li class="dropdown"><a href="about.html"><span>Moto</span> </a>
-          <ul>
-            <li><a href="team.html">Patentamiento</a></li>
-            <li><a href="testimonials.html">Transferencia</a></li>
-            
-          </ul>
-        </li>
-        <li class="dropdown"><a href="about.html"><span>Contsruccion</span> </a>
-          <ul>
-            <li><a href="team.html">Salario</a></li>
-            <li><a href="testimonials.html">Puesto trabajo</a></li>
-            <li><a href="testimonials.html">Puesto trabajo</a></li>
-            <li><a href="testimonials.html">Evolucion trabajo</a></li>
-            <li><a href="testimonials.html">Empresas</a></li>
-          </ul>
-        </li>
-        <li class="dropdown"><a href="about.html"><span>Sector privado</span> </a>
-          <ul>
-            <li><a href="team.html">Evolucion empleo</a></li>
-            <li><a href="testimonials.html">Trabajadores</a></li>
-            
-          </ul>
-        </li>
-        <li><a href="#">ATP</a></li>
-        <li><a href="#">Transferencias</a></li>
-        <li><a href="#">IPC</a></li>
-       
       </ul>
-      <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
     </nav>
-
-    
-  </div>
-</header>
+  </header>

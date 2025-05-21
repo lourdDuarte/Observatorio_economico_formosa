@@ -39,10 +39,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'Ipc',
+    'Patentamiento',
+    'Sector_construccion',
     'Supermercado',
     'Mes',
     'Anio',
-    'Valor'
+    'Valor',
+    'sector_privado',
+    'Dgr',
+    'Transferencia'
     
 ]
 

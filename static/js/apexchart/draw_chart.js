@@ -17,7 +17,7 @@ function generar_grafico(funcion, titulo, id_grafico)
 
     let [data_intermensual, data_interanual, meses,anio, valor, type, data_chart, data_total] = funcion();
    
-    console.log(data_total)
+    
     let[maximo,minimo] = max_min_chart(data_intermensual, data_interanual)
 
     if (type === 1){

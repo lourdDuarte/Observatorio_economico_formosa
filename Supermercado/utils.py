@@ -1,6 +1,8 @@
 
 from Supermercado.models import *
 from django.shortcuts import render
+
+from Anio.views import *
 from collections import defaultdict
 from django.db.models import OuterRef, Subquery, QuerySet
 
@@ -31,14 +33,17 @@ def data_model_supermercado(request, tipo_precio, context_keys, template):
     anio_inicio = request.GET.get('anio_inicio')
     anio_fin = request.GET.get('anio_fin')
     valor = request.GET.get('valor') 
-
+    indicador_comparativo = request.GET.get('indicador')
+    valor_comparativo = request.GET.get('valor-comparativo')
     meses = Mes.objects.all()
+   
    
     data_variacion = []
     type_graphic = 0
     error_message = None
     context_chart = {}
-   
+    inicio = ''
+    fin = ''
 
     anio_default = 7
     
@@ -49,7 +54,16 @@ def data_model_supermercado(request, tipo_precio, context_keys, template):
             anio_inicio = int(anio_inicio)
             anio_fin = int(anio_fin)
             valor = int(valor)
-           
+            anios = all_year()
+            for x in anios:
+                if x.id == anio_inicio:
+                    inicio = x.anio
+                if x.id == anio_fin:
+                    fin = x.anio
+                
+
+            anio_filter = str(inicio) + "-" + str(fin)
+            print(anio_filter)
             data_variacion = get_data_variaciones().filter(
                 anio_id__gte=anio_inicio,
                 anio_id__lte=anio_fin,
@@ -70,9 +84,7 @@ def data_model_supermercado(request, tipo_precio, context_keys, template):
            
             type_graphic = 1
 
-           
-
-            
+          
         except ValueError:
             error_message = "Los filtros ingresados no son válidos."
             data_variacion = get_data_variaciones().none()
@@ -83,8 +95,7 @@ def data_model_supermercado(request, tipo_precio, context_keys, template):
             valor_id=valor_default
         )
 
-        print(data_variacion.query)
-      
+       
 
     context = {
         'error_message': error_message,
