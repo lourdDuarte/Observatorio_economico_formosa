@@ -4,13 +4,17 @@ from requests.exceptions import RequestException, SSLError
 from collections import defaultdict
 import json
 from Supermercado.models import Variacion as supermercado
-from Patentamiento.models import Indicadores as auto
+from Patentamiento.models import Indicadores as vehiculo
+from sector_privado.models import IndicadoresPrivado as privado
+from Ipc.models import Indicadores as ipc
+from Sector_construccion.models import Indicadores as construccion
 
 
 def obtener_datos_de_modelo(
     modelo_django,
     anio_id: int,
     valor_id: int,
+    link: str,
     # Los kwargs permiten pasar filtros adicionales específicos de cada modelo
     **kwargs) -> dict:
     """
@@ -32,12 +36,14 @@ def obtener_datos_de_modelo(
             return {
                 "valor_intermensual": getattr(obj, 'variacion_intermensual', 'N/D'),
                 "valor_interanual": getattr(obj, 'variacion_interanual', 'N/D'),
+                "link": link,
                 "fecha_actualizacion": getattr(obj, 'fecha_actualizacion', 'N/D'),
             }
         else:
             return {
                 "valor_intermensual": "N/D",
                 "valor_interanual": "N/D",
+                "link":  "precio-corriente",
                "fecha_actualizacion": "N/D"
             }
     except:
@@ -58,31 +64,85 @@ def generar_panel_json(
             modelo_django=supermercado,
             anio_id=7,
             valor_id=1,
+            link = 'precio-corriente',
             tipoPrecio__id=2
         ),
         "Precio Constante": obtener_datos_de_modelo(
             modelo_django=supermercado,
             anio_id=7,
             valor_id=1,
+            link = 'precio-constante',
             tipoPrecio__id=1
         )
     }
     panel_data["Auto"] ={
         "Patentamiento": obtener_datos_de_modelo(
-            modelo_django = auto,
-            anio_id= 6,
+            modelo_django = vehiculo,
+            anio_id= 7,
             valor_id= 1,
+            link = 'precio-corriente',
             movimiento_vehicular = 1,
             tipo_vehiculo = 2
         ),
         "Transeferencia":  obtener_datos_de_modelo(
-            modelo_django = auto,
-            anio_id= 6,
+            modelo_django = vehiculo,
+            anio_id= 7,
             valor_id= 1,
+            link = 'precio-corriente',
             movimiento_vehicular= 2,
             tipo_vehiculo = 2
         ),
     }
+    panel_data["Moto"] ={
+        "Patentamiento": obtener_datos_de_modelo(
+            modelo_django = vehiculo,
+            anio_id= 7,
+            valor_id= 1,
+            link = 'precio-corriente',
+            movimiento_vehicular = 1,
+            tipo_vehiculo = 1
+        ),
+        "Transeferencia":  obtener_datos_de_modelo(
+            modelo_django = vehiculo,
+            anio_id= 7,
+            valor_id= 1,
+            link = 'precio-corriente',
+            movimiento_vehicular= 2,
+            tipo_vehiculo = 1
+        ),
+    }
+    panel_data["Sector privado"] ={
+        "Evolucion empleo": obtener_datos_de_modelo(
+            modelo_django = privado,
+            anio_id= 7,
+            valor_id= 1,
+            link = 'precio-corriente',
+            estacionalidad = 1
+        ),
+       
+    }
+    panel_data["IPC"] ={
+         "Indice precio al consumidor (NEA)": obtener_datos_de_modelo(
+            modelo_django = ipc,
+            anio_id= 7,
+            valor_id= 3,
+            link = 'precio-corriente',
+            
+        ),
+       
+    }
+    panel_data["Sector construccion"] ={
+        "Puestos de trabajo": obtener_datos_de_modelo(
+            modelo_django = construccion,
+            anio_id= 7,
+            valor_id= 1,
+            link = 'precio-corriente',
+            tipo_dato = 1
+          
+        ),
+       
+    }
+    
     return panel_data
     
 def index(request):
@@ -138,11 +198,5 @@ def index(request):
 
 
 
-
-def consulta(model, value, anio_start, anio_end):
-
-    data = model
-
-def cruce_variables(request):
-   
-    return render (request, 'cruce-variables.html')
+def prueba(request):
+    return render(request, 'prueba.html')

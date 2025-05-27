@@ -160,13 +160,11 @@
   background: white;
   color: #111;
 }
-
 header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 20px 40px;
-  
 }
 
 .logo h1 {
@@ -181,50 +179,92 @@ header {
   margin-top: 5px;
 }
 
-nav{
+nav {
   border-bottom: 1px solid #003764;
+  margin-top: -4em;
 }
 
 nav ul {
   list-style: none;
-  display:flex;
+  display: flex;
   gap: 20px;
-  margin: -5em 2em 2em 0;
+  /* El margen es 0 para asegurar la funcionalidad del hover */
+  margin: 0;
+  padding: 0;
   justify-content: end;
-  
+}
+
+/* Base para los ítems del menú con desplegable */
+.menu-item {
+  position: relative;
+  padding-bottom: 5px; /* Ayuda a que el área de hover sea más grande */
 }
 
 nav a {
   text-decoration: none;
   color: #333;
   font-weight: 500;
+  display: block; /* Hace que toda el área del enlace sea interactiva */
+  padding: 5px 8px; /* Padding para un área de hover generosa */
 }
-
 
 nav a:hover {
- color: #003764;
+  color: #003764;
 }
 
-.submenu{
-  display: none;
-  position: absolute;
+/* Estilos base del submenú */
+.submenu {
+  display: none; /* Oculto por defecto */
+  position: absolute; /* Posicionamiento absoluto */
   background-color: #fff;
   border: 1px solid #ccc;
   list-style: none;
   padding: 18px 18px;
-  margin: 10px -15px 10px;
+  margin: 0; /* Asegurar que no hay margen que cause desplazamiento */
   box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
-  z-index: 1;
+  z-index: 1000; /* Asegurar que esté por encima */
   border-radius: 5px;
-
+  top: 100%; /* Posicionar justo debajo del ítem padre */
+  left: 0; /* POR DEFECTO: alinea a la izquierda */
+  min-width: 180px; /* Ancho mínimo para el contenido */
 }
-.submenu li{
+
+.submenu li {
   margin-bottom: 1em;
 }
-nav li:hover .submenu, li:hover .submenu, a:hover .submenu, .submenu:hover{
-    display: block;
-  }
 
+/* Muestra el submenú al hacer hover */
+.menu-item:hover > .submenu {
+  display: block;
+}
+
+/* === SOLUCIÓN PARA EL ÚLTIMO ÍTEM === */
+/* Selecciona el último elemento LI con la clase menu-item */
+.menu-item:last-child .submenu {
+  left: auto; /* Desactiva la alineación a la izquierda */
+  right: 0; /* Alinea el submenú a la derecha del ítem padre */
+}
+
+/* Opcional: Si necesitas que el submenú se mueva un poco más hacia la izquierda
+   para no pegarse al borde de la pantalla. Ajusta el valor de 'right' */
+/* .menu-item:last-child .submenu {
+  left: auto;
+  right: -10px; /* Ejemplo: mueve 10px hacia la izquierda desde el borde derecho */
+/* } */
+
+/* Si el último ítem es 'IPC' y no quieres que afecte a otros futuros últimos ítems,
+   puedes ser más específico, aunque es menos flexible: */
+/* .menu-item:nth-last-child(1) .submenu {
+    left: auto;
+    right: 0;
+} */
+/* === FIN DE CAMBIOS FUNCIONALES === */
+/* === FIN DE CAMBIOS PARA LA FUNCIONALIDAD === */
+
+/* La siguiente regla fue la que te causaba problemas y fue reemplazada */
+/* nav li:hover .submenu, li:hover .submenu, a:hover .submenu, .submenu:hover{
+    display: block;
+  } */
 /*start section api bcra */
 .title-bcra{
   font-size: 15px;

@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.conf import settings
+from observatorioeconomico import utils 
 from django.conf.urls.static import static
 
 from observatorioeconomico import views as observatorio
@@ -24,7 +25,7 @@ from Supermercado import views as supermercado
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('index/', observatorio.index, name='index'),
-    path('variables/', observatorio.cruce_variables, name='variables'),
+    path('api/chart/<str:model_name>/<int:anio_id>/<int:valor_id>/', utils.get_api_chart_view, name='get_chart_data'),
     path('precio-corriente/', supermercado.view_precio_corriente, name='precio-corriente'),
     path('precio-constante/', supermercado.view_precio_constante, name='precio-constante')
 

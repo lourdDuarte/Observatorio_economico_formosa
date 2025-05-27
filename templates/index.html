@@ -1,6 +1,8 @@
 
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
+{% load l10n %} 
 {% block head_content %}
 
   
@@ -24,7 +26,7 @@
               
                 {% for fecha, valor in pares %}
                   
-                  <h1 class="title-value-api">{{ valor }}</h1> 
+                  <h1 class="title-value-api">{{ valor |intcomma  }}</h1> 
                   <h1 class="date-value-api">act: {{ fecha }}</h1> 
                 {% endfor %}
             
@@ -44,17 +46,17 @@
         <div class="container-data">
             {% for tipo_nombre, tipo_datos in categoria_datos.items %}
             <div class="data">
-                <button class="title-data">{{ tipo_nombre }}</button> {# Botón (Precio Corriente / Constante / Patentamiento / Transferencia) #}
+                <a href= "{% url tipo_datos.link %}"><button class="title-data">{{ tipo_nombre }}</button></a> {# Botón (Precio Corriente / Constante / Patentamiento / Transferencia) #}
 
                 <div class="tarjeta">
                     <p>Valor intermensual</p>
-                    <p class="valor">{{ tipo_datos.valor_intermensual }}</p> {# Aquí se inserta el valor intermensual #}
+                    <p class="valor">{{ tipo_datos.valor_intermensual }} %</p> {# Aquí se inserta el valor intermensual #}
                     <small>Act. {{ tipo_datos.fecha_actualizacion |date:"M d, Y"}}</small> {# Aquí se inserta la fecha de actualización #}
                 </div>
 
                 <div class="tarjeta">
                     <p>Valor interanual</p>
-                    <p class="valor">{{ tipo_datos.valor_interanual }}</p> {# Aquí se inserta el valor interanual #}
+                    <p class="valor">{{ tipo_datos.valor_interanual }} %</p> {# Aquí se inserta el valor interanual #}
                     <small>Act. {{ tipo_datos.fecha_actualizacion |date:"M d, Y"}}</small> {# Aquí se inserta la fecha de actualización #}
                 </div>
             </div>

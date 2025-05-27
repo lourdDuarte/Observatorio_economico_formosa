@@ -63,7 +63,7 @@ def data_model_supermercado(request, tipo_precio, context_keys, template):
                 
 
             anio_filter = str(inicio) + "-" + str(fin)
-            print(anio_filter)
+         
             data_variacion = get_data_variaciones().filter(
                 anio_id__gte=anio_inicio,
                 anio_id__lte=anio_fin,
