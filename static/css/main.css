@@ -1180,17 +1180,6 @@ section,
   fill: #6610f2;
 }
 
-.services .service-item.item-pink i {
-  color: #f3268c;
-}
-
-.services .service-item.item-pink:hover .icon i {
-  color: #fff;
-}
-
-.services .service-item.item-pink:hover .icon path {
-  fill: #f3268c;
-}
 
 /*--------------------------------------------------------------
 # Portfolio Section

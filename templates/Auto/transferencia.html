@@ -16,15 +16,14 @@
             <div class="card-body">
                 
                 <div class="typography-line">
-                    <h3 class="color-typography"><span>Supermercado -</span> precio constante </h3>
+                    <h3 class="color-typography"><span>Auto -</span> transferencia </h3>
                 </div>
                 <div class="typography-line">
                     
                     <blockquote>
                         <p class="blockquote blockquote-primary">
-                            Si se analizan los guarismos a precios constantes (sin el efecto de la inflación), se observa que las ventas totales en supermercados de Formosa en marzo de 2025 fueron de $112 millones (en febrero fueron $101 millones). 
-                            Estas aumentaron un 10,4%, con respecto al mes de febrero, y disminuyeron un 2,1% con respecto al mes de marzo del 2025.
-                        </p>
+                        En el mes de abril, se transfirieron 740 automóviles, 51,3% más que en el mes de marzo. Si se comparan los datos anualmente, en el mes de abril, las transferencias de autos fueron un 7,7% más con respecto al mes de abril del año 2024. 
+                        En lo que va del año, se transfirieron en Formosa, un total de 3.237 autos, en relación al mismo periodo del 2024 (enero a abril) se transfirieron 1.308 autos más.                        </p>
                     </blockquote>
                         <div class="toolbar">
                             <button onclick="showView('chart')" class="active">📈</button>
@@ -32,7 +31,7 @@
                             <button onclick="showView('table')">📋</button>
                            
                         </div>
-                        <form method= "GET" action="{% url 'precio-constante' %} ">
+                        <form method= "GET" action="{% url 'transferencia-auto' %} ">
                             {% csrf_token %}
                             <div class ="content-error">
                                 
@@ -83,7 +82,7 @@
                             </div>     
                         </form>
                         <div id="chartView" class="view active">
-                            <div class="chart-style" id="chart-constante"></div>
+                            <div class="chart-style" id="chart-transferencia"></div>
                         </div>
 
                         <div id="tableView" class="view">
@@ -107,7 +106,7 @@
                                         <td>{{ data.valor__valor }}</td>
                                         <td>{{ data.variacion_intermensual }}</td>
                                         <td>{{ data.variacion_interanual }}</td>
-                                        <td>{{ data.venta_total }}</td>
+                                        <td>{{ data.total }}</td>
                                     </tr>
                                     {% empty %}
                                     <tr><td colspan="5">No hay datos disponibles.</td></tr>
@@ -128,7 +127,7 @@
 <script>
     
 
-    function data_variacion_corriente(){
+    function data_variacion_patentamiento(){
         data_intermensual = []
         data_interanual = []
         data_total = []
@@ -174,10 +173,10 @@
                 divBasic.style.display = "block";
                 divComparative.style.display = "none";
       
-                {% if data.venta_total == None %}
+                {% if data.total == None %}
                     data_total.push('Sin datos')
                 {% else %}
-                    data_total.push({{data.venta_total}})
+                    data_total.push({{data.total}})
                 {% endif %}
                 
             {% endif %}
@@ -194,7 +193,7 @@
     }
     
     
-    data_graficos_supermercado()
+   data_graficos_vehiculo()
     
     // Inicializa la vista del gráfico al cargar la página
     document.addEventListener("DOMContentLoaded", function() {

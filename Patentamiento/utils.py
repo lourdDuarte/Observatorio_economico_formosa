@@ -1,7 +1,7 @@
 
-from Supermercado.models import *
+from Patentamiento.models import Indicadores
 from django.shortcuts import render
-import json
+from Mes.models import *
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core import serializers
 from Anio.views import *
@@ -10,28 +10,20 @@ from django.db.models import OuterRef, Subquery, QuerySet
 
 def get_data_variaciones(**kwargs) -> dict:
     
-    venta_total_subquery = Total.objects.filter(
-    anio=OuterRef('anio'),
-    mes=OuterRef('mes'),
-    valor=OuterRef('valor'),
-    tipoPrecio=OuterRef('tipoPrecio')
-    ).values('venta_total')[:1]  # Solo el primero si hay varios
 
     
-    return Variacion.objects.select_related('mes', 'anio', 'valor', 'tipoPrecio').annotate(
-        venta_total=Subquery(venta_total_subquery)
-    ).values(
+    return Indicadores.objects.select_related('mes', 'anio', 'valor', 'tipoPrecio').values(
         'mes__mes',
         'anio__anio',
         'valor__valor',
         'variacion_interanual',
         'variacion_intermensual',
-        'venta_total'
+        'total'
     ).filter(**kwargs)
 
 
 
-def data_model_supermercado(request, tipo_precio, context_keys, template):
+def data_model_vehiculo(request, tipo_vehiculo,tipo_movimiento, context_keys, template):
     anio_inicio = request.GET.get('anio_inicio')
     anio_fin = request.GET.get('anio_fin')
     valor = request.GET.get('valor') 
@@ -48,20 +40,20 @@ def data_model_supermercado(request, tipo_precio, context_keys, template):
     anio_default = 7
     
     valor_default = 1
-    data_variacion_json = ""
+    
     if anio_inicio and anio_fin and valor:
         try:
             anio_inicio = int(anio_inicio)
             anio_fin = int(anio_fin)
             valor = int(valor)
             
-                
 
            
          
             data_variacion = get_data_variaciones(anio_id__gte=anio_inicio,
                 anio_id__lte=anio_fin,
-                tipoPrecio_id=tipo_precio,
+                movimiento_vehicular_id= tipo_movimiento,
+                tipo_vehiculo_id = tipo_vehiculo,
                 valor_id=valor).order_by('anio__anio', 'mes__id')
             
            
@@ -70,11 +62,11 @@ def data_model_supermercado(request, tipo_precio, context_keys, template):
 
             for item in data_variacion:
                 anio = item['anio__anio']
-                valor = item['venta_total']
+                valor = item['total']
                 context_chart[anio].append(valor)
 
 
-            context_chart_json = {str(k): v for k, v in context_chart.items()}
+           
 
             # Convertir a dict normal (opcional)
             context_chart = dict(context_chart)
@@ -87,7 +79,8 @@ def data_model_supermercado(request, tipo_precio, context_keys, template):
             data_variacion = get_data_variaciones().none()
     else:
         data_variacion = context_chart = get_data_variaciones( anio_id=anio_default,
-            tipoPrecio_id=tipo_precio,
+            movimiento_vehicular_id= tipo_movimiento,
+            tipo_vehiculo_id = tipo_vehiculo,
             valor_id=valor_default)
        
 
@@ -97,7 +90,6 @@ def data_model_supermercado(request, tipo_precio, context_keys, template):
     context = {
         'error_message': error_message,
         context_keys['data_variacion']: data_variacion,
-        
         context_keys['context_chart']: context_chart,
         context_keys['type_graphic']: type_graphic,
        

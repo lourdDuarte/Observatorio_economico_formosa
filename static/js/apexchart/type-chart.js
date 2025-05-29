@@ -207,7 +207,7 @@ function column_chart_basic(id, data, meses) {
       height: 350,
       type: 'bar',
     },
-    colors: ['#007D9D'],
+    colors: ['#003764'],
     plotOptions: {
       bar: {
         borderRadius: 10,

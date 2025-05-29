@@ -80,7 +80,7 @@ def generar_panel_json(
             modelo_django = vehiculo,
             anio_id= 7,
             valor_id= 1,
-            link = 'precio-corriente',
+            link = 'patentamiento-auto',
             movimiento_vehicular = 1,
             tipo_vehiculo = 2
         ),
@@ -88,7 +88,7 @@ def generar_panel_json(
             modelo_django = vehiculo,
             anio_id= 7,
             valor_id= 1,
-            link = 'precio-corriente',
+            link = 'transferencia-auto',
             movimiento_vehicular= 2,
             tipo_vehiculo = 2
         ),

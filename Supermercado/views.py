@@ -7,6 +7,8 @@ def view_precio_corriente(request):
     context_keys = {
        
         'data_variacion': 'data_variacion',
+       
+      
         'type_graphic': 'type_graphic',
         'context_chart': 'context_chart'
  
@@ -21,7 +23,9 @@ def view_precio_constante(request):
     context_keys = {
        
         'data_variacion': 'data_variacion',
+       
         'type_graphic': 'type_graphic',
+       
         'context_chart': 'context_chart'
  
     }
