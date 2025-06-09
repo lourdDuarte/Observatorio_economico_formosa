@@ -98,7 +98,7 @@ def generar_panel_json(
             modelo_django = vehiculo,
             anio_id= 7,
             valor_id= 1,
-            link = 'precio-corriente',
+            link = 'patentamiento-moto',
             movimiento_vehicular = 1,
             tipo_vehiculo = 1
         ),
@@ -106,7 +106,7 @@ def generar_panel_json(
             modelo_django = vehiculo,
             anio_id= 7,
             valor_id= 1,
-            link = 'precio-corriente',
+            link = 'transferencia-moto',
             movimiento_vehicular= 2,
             tipo_vehiculo = 1
         ),
@@ -116,6 +116,7 @@ def generar_panel_json(
             modelo_django = privado,
             anio_id= 7,
             valor_id= 1,
+            tipo= 1,
             link = 'precio-corriente',
             estacionalidad = 1
         ),
@@ -126,7 +127,7 @@ def generar_panel_json(
             modelo_django = ipc,
             anio_id= 7,
             valor_id= 3,
-            link = 'precio-corriente',
+            link = 'ipc',
             
         ),
        

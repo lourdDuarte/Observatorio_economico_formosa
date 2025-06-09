@@ -12,7 +12,8 @@ function area_chart(id, intermensual_data, interanual_data,meses, titulo_chart, 
     {
       name: "Interanual",
       data: interanual_data
-    }
+    },
+    
   ],
   chart: {
     height: 350,

@@ -18,8 +18,13 @@
         </li>
         <li class="menu-item"><a href="#">Moto</a>
           <ul class="submenu">
-            <li><a href="#">Patentamiento</a></li>
-            <li><a href="#">Transferencia</a></li>
+            <li><a href="{% url 'patentamiento-moto' %}">Patentamiento</a></li>
+            <li><a href="{% url 'transferencia-moto' %}">Transferencia</a></li>
+          </ul>
+        </li>
+        <li class="menu-item"><a href="#">IPC</a>
+          <ul class="submenu">
+            <li><a href="{% url 'ipc' %}">Precio consumidor</a></li>
           </ul>
         </li>
         <li class="menu-item"><a href="#">Construccion</a>
@@ -48,11 +53,7 @@
            
           </ul>
         </li>
-        <li class="menu-item"><a href="#">IPC</a>
-          <ul class="submenu">
-            <li><a href="#">Precio consumidor</a></li>
-          </ul>
-        </li>
+        
       </ul>
     </nav>
 </header>

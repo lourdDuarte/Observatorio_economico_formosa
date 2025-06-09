@@ -16,23 +16,26 @@
             <div class="card-body">
                 
                 <div class="typography-line">
-                    <h3 class="color-typography"><span>Moto -</span> patentamiento </h3>
+                    <h3 class="color-typography"><span>Índice precios al consumidor (IPC)</h3>
                 </div>
                 <div class="typography-line">
                     
                     <blockquote>
                         <p class="blockquote blockquote-primary">
-                        En el mes de abril, se patentaron 824 motocicletas, 24,5% más que en el mes de marzo. Si se comparan los datos anualmente, en el mes de abril, el patentamiento de motos fue un 12,4% más con respecto al mes de abril del año 2024. En lo que va del año, se patentaron en Formosa, 
-                        un total de 2.998 motos, en relación al mismo periodo del 2024 (enero a abril) se patentaron 421 motos más.
+                        La inflación mensual para la Región NEA, tuvo un incremento del 2,7% en el mes de abril de 2025, respecto al mes de marzo de 2025. 
+                        A su vez, la inflación anual arroja un valor de 45% de incremento en abril, frente al mismo mes del año 2024.
+                        <br>
+                        Durante el mes de abril de 2025, la inflación mensual a nivel país tuvo un incremento de un 2,8%. Al realizar la comparativa, se observa que desde el mes de noviembre de 2022, hasta enero del año 2023, el IPC NEA se mantuvo por debajo del IPC a nivel país. En el mes de febrero se revierte la tendencia, pasando a ser más elevado el IPC NEA frente al IPC país y desde el mes de marzo en hasta enero, si bien los valores son similares, la tendencia es fluctuante, en los últimos dos meses el IPC NEA fue mayor al IPC país . 
+                        Para el mes de abril de 2025, la variación del IPC NEA es menor al IPC nacional, asumiendo el valor de 2,7%
                         </p>
                     </blockquote>
                         <div class="toolbar">
-                            <button onclick="showView('chart')" class="active">📈</button>
-                            <button onclick="showView('stats')">📊</button>
+                            <button onclick="showView('chart')" class="active">📈 NEA</button>
+                            <button onclick="showView('stats')">📈 PAIS</button>
                             <button onclick="showView('table')">📋</button>
                            
                         </div>
-                        <form method= "GET" action="{% url 'patentamiento-moto' %} ">
+                        <form method= "GET" action="{% url 'ipc' %} ">
                             {% csrf_token %}
                             <div class ="content-error">
                                 
@@ -69,21 +72,12 @@
                                     </div>
                                 </div>
                             
-                                <div class="filtro-categoria">
-                                    <label for="categoria">Valor:</label>
-                                    <select id="valor" name="valor">
-                                        <option value="">Todas</option>
-                                        <option value="1">Formosa</option>
-                                        <option value="2">NEA</option>
-                                    
-                                    </select>
-                                </div>
-                            
+                                
                                 <button type="submit">Aplicar filtros</button>
                             </div>     
                         </form>
                         <div id="chartView" class="view active">
-                            <div class="chart-style" id="chart-patentamiento"></div>
+                            <div class="chart-style" id="chart-ipc-nea"></div>
                         </div>
 
                         <div id="tableView" class="view">
@@ -95,19 +89,18 @@
                                         <th>Valor</th>
                                         <th>Intermensual</th>
                                         <th>Interanual</th>
-                                        <th>Venta total</th>
-                                       
+                                        
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for data in data_variacion %}
+                                    {% for data in data_variacion_ipc_table %}
                                     <tr>
                                         <td>{{ data.mes__mes }}</td>
                                         <td>{{ data.anio__anio }}</td>
                                         <td>{{ data.valor__valor }}</td>
                                         <td>{{ data.variacion_intermensual }}</td>
                                         <td>{{ data.variacion_interanual }}</td>
-                                        <td>{{ data.total }}</td>
+                                        
                                     </tr>
                                     {% empty %}
                                     <tr><td colspan="5">No hay datos disponibles.</td></tr>
@@ -117,8 +110,8 @@
                         </div>
 
                         <div id="statsView" class="view">
-                            <div class="chart-style" id="chart-comparative"></div>
-                            <div class="chart-style" id="chart-basic"></div>
+                            <div class="chart-style" id="chart-ipc-pais"></div>
+                            
                         </div>
                     </div>
             </div>
@@ -126,75 +119,75 @@
     </div>
 </div>
 <script>
-    
+       
 
-    function data_variacion_patentamiento(){
+    function data_variacion_ipc_pais(){
         data_intermensual = []
-        data_interanual = []
-        data_total = []
+        data_interanual= []
         meses = []
+
+        
         anio = ' '
-        valor = ' '
-        type = 0
-        const divComparative = document.getElementById("chart-comparative");
-        const divBasic = document.getElementById("chart-basic");
-        data_chart = {}
-
-        {% if type_graphic != 0 %}
-        type = 1;
-        divComparative.style.display = "block";
-        divBasic.style.display = "none";
-      
-       
-        {% for anio, ventas in context_chart.items %}
-        data_chart['{{ anio }}'] = [
-            {% for venta in ventas %}
-                {% if venta == None %}
-                    0
-                {% else %}
-                    {{ venta }}
-                {% endif %}
-                {% if not forloop.last %},{% endif %}
-            {% endfor %}
-
-        ];
-        {% endfor %}
+        valor = 'PAIS '
         
-        {% endif %}
-       
-
-        {% for data in data_variacion %}
-            data_intermensual.push({{ data.variacion_intermensual }});
-            data_interanual.push({{ data.variacion_interanual }});
-            meses.push('{{data.mes__mes}}' + " " + {{data.anio__anio}});
-            
-            anio = {{data.anio__anio}};
-            valor = '{{data.valor__valor}}'
-            {% if type_graphic == 0 %}
-                divBasic.style.display = "block";
-                divComparative.style.display = "none";
-      
-                {% if data.total == None %}
-                    data_total.push('Sin datos')
-                {% else %}
-                    data_total.push({{data.total}})
-                {% endif %}
-                
-            {% endif %}
-        {% endfor %}
         
+       
+         {% for item in final_chart_data %}
+            {
+               meses.push('{{item.mes}}');
+               data_intermensual.push({{ item.variacion_nea }})
+               data_interanual.push({{ item.variacion_nacional}});
+              
+            }
+        {% endfor %}
+
+
+     
+       
         return [data_intermensual,
                 data_interanual,
                 meses,
                 anio,
                 valor,
-                type,
-                data_chart,
-                data_total]
+                ]
+    }
+
+     function data_variacion_ipc_nea(){
+        
+
+        data_intermensual = []
+        data_interanual= []
+        meses = []
+        
+        anio = ' '
+        valor = ' '
+        
+        
+       
+
+        {% for data in data_variacion_nea %}
+            data_intermensual.push({{ data.variacion_intermensual }} );
+            data_interanual.push({{ data.variacion_interanual }});
+            meses.push('{{data.mes__mes}}' + " " + {{data.anio__anio}});
+            
+            
+            valor = '{{data.valor__valor}}'
+            
+        {% endfor %}
+
+
+        
+        return [data_intermensual,
+                data_interanual,
+                meses,
+               
+                anio,
+                valor,
+                ]
     }
     
     
-   data_graficos_vehiculo()
+   data_graficos_ipc()
     
     // Inicializa la vista del gráfico al cargar la página
     document.addEventListener("DOMContentLoaded", function() {

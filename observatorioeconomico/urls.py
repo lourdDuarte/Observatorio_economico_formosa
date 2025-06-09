@@ -22,6 +22,7 @@ from django.conf.urls.static import static
 from observatorioeconomico import views as observatorio
 from Supermercado import views as supermercado
 from Patentamiento import views as vehiculo
+from Ipc import views as ipc
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,6 +31,9 @@ urlpatterns = [
     path('precio-corriente/', supermercado.view_precio_corriente, name='precio-corriente'),
     path('precio-constante/', supermercado.view_precio_constante, name='precio-constante'),
     path('patentamiento-auto/', vehiculo.view_patentamiento_auto, name='patentamiento-auto'),
+    path('patentamiento-moto/', vehiculo.view_patentamiento_moto, name='patentamiento-moto'),
     path('transferencia-auto/', vehiculo.view_transferencia_auto, name='transferencia-auto'),
+    path('transferencia-moto/', vehiculo.view_transferencia_moto, name='transferencia-moto'),
+    path('ipc/', ipc.ipc, name='ipc'),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
