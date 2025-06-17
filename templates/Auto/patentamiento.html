@@ -32,6 +32,7 @@
                             <button onclick="showView('table')">📋</button>
                            
                         </div>
+                       
                         <form method= "GET" action="{% url 'patentamiento-auto' %} ">
                             {% csrf_token %}
                             <div class ="content-error">
@@ -127,7 +128,7 @@
 </div>
 <script>
     
-
+    
     function data_variacion_patentamiento(){
         data_intermensual = []
         data_interanual = []
@@ -146,7 +147,7 @@
         divBasic.style.display = "none";
       
        
-        {% for anio, ventas in context_chart.items %}
+        {% for anio, ventas in chart_totales.items %}
         data_chart['{{ anio }}'] = [
             {% for venta in ventas %}
                 {% if venta == None %}
@@ -166,8 +167,8 @@
         {% for data in data_variacion %}
             data_intermensual.push({{ data.variacion_intermensual }});
             data_interanual.push({{ data.variacion_interanual }});
-            meses.push('{{data.mes__mes}}');
-            console.log('{{data.mes__mes}}')
+            meses.push('{{data.mes__mes}}' + " " + {{data.anio__anio}});
+            
             anio = {{data.anio__anio}};
             valor = '{{data.valor__valor}}'
             {% if type_graphic == 0 %}

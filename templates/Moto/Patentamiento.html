@@ -146,7 +146,7 @@
         divBasic.style.display = "none";
       
        
-        {% for anio, ventas in context_chart.items %}
+        {% for anio, ventas in chart_totales.items %}
         data_chart['{{ anio }}'] = [
             {% for venta in ventas %}
                 {% if venta == None %}
