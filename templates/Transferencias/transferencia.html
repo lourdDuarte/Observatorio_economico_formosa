@@ -16,14 +16,16 @@
             <div class="card-body">
                 
                 <div class="typography-line">
-                    <h3 class="color-typography"><span>Moto -</span> transferencia </h3>
+                    <h3 class="color-typography"><span>Transferencias automaticas por coparticipacion, leyes complementarias y compensaciones </span> </h3>
                 </div>
                 <div class="typography-line">
                     
                     <blockquote>
                         <p class="blockquote blockquote-primary">
-                        En el mes de abril, se transfirieron 190 motos, 2,6% más con respecto al mes de marzo. Si se comparan los datos anualmente, en el mes de abril, las transferencias de motos fueron un 37,5% más que el mes de abril del año 2024. En lo que va del año, 
-                        se transfirieron en Formosa, un total de 836 motos, en relación al mismo periodo del 2024 (enero a abril) se transfirieron 215 motos más.</p>
+                        Las transferencias automáticas en concepto de coparticipación, leyes complementarias y compensaciones evidencian un incremento nominal del 9,5% en mayo con respecto al mismo mes del año 2024. 
+                        Al deflactar la serie por el índice de precios al consumidor, se observa una disminución del 23,3% en términos reales. 
+                        Si bien se observa un incremento real en los meses de noviembre, diciembre, y en los primeros cuatro meses de 2024, la disminución en términos reales de estos fondos en todos los meses anteriores refleja el impacto de la recesión nacional en los tributos coparticipables e implica una reducción en la capacidad de la Provincia de Formosa para afrontar sus obligaciones, llevar a cabo inversiones e implementar políticas públicas, esto se demuestra al comparar mayo 2025 con mayo 2023, donde la caída en términos reales es de 5,3%.
+                        </p>
                     </blockquote>
                         <div class="toolbar">
                             <button onclick="showView('chart')" class="active">📈</button>
@@ -31,7 +33,7 @@
                             <button onclick="showView('table')">📋</button>
                            
                         </div>
-                        <form method= "GET" action="{% url 'transferencia-moto' %} ">
+                        <form method= "GET" action="{% url 'transferencias' %} ">
                             {% csrf_token %}
                             <div class ="content-error">
                                 
@@ -86,15 +88,16 @@
                         </div>
 
                         <div id="tableView" class="view">
-                          <table id="example" class="stripe row-border order-column" style="width:100%">
+                        <table id="example" class="stripe row-border order-column" style="width:100%">
                                 <thead>
                                     <tr>
                                         <th>Mes</th>
                                         <th>Año</th>
                                         <th>Valor</th>
-                                        <th>Intermensual</th>
-                                        <th>Interanual</th>
-                                        <th>Venta total</th>
+                                        
+                                        <th>Total millones</th>
+                                        <th>Variacion anual nominal</th>
+                                        <th>Variacion anual real</th>
                                        
                                     </tr>
                                 </thead>
@@ -104,15 +107,17 @@
                                         <td>{{ data.mes__mes }}</td>
                                         <td>{{ data.anio__anio }}</td>
                                         <td>{{ data.valor__valor }}</td>
-                                        <td>{{ data.variacion_intermensual }}</td>
-                                        <td>{{ data.variacion_interanual }}</td>
-                                        <td>{{ data.total }}</td>
+                                        
+                                        <td>{{ data.total_millones }}</td>
+                                        <td>{{ data.variacion_anual_nominal }}</td>
+                                        <td>{{ data.variacion_anual_real  }}</td>
                                     </tr>
                                     {% empty %}
                                     <tr><td colspan="5">No hay datos disponibles.</td></tr>
                                     {% endfor %}
                                 </tbody>
-                            </table>
+                            </table> 
+                            
                         </div>
 
                         <div id="statsView" class="view">
@@ -124,10 +129,12 @@
         </div>
     </div>
 </div>
-<script>
-    
 
-    function data_variacion_patentamiento(){
+
+<script>
+   
+   
+    function data_variacion_transferencias(){
         data_intermensual = []
         data_interanual = []
         data_total = []
@@ -145,13 +152,13 @@
         divBasic.style.display = "none";
       
        
-        {% for anio, ventas in chart_totales.items %}
+         {% for anio, totales in context_chart.items %}
         data_chart['{{ anio }}'] = [
-            {% for venta in ventas %}
-                {% if venta == None %}
+            {% for total in totales %}
+                {% if total == None %}
                     0
                 {% else %}
-                    {{ venta }}
+                    {{ total }}
                 {% endif %}
                 {% if not forloop.last %},{% endif %}
             {% endfor %}
@@ -159,12 +166,13 @@
         ];
         {% endfor %}
         
+        
         {% endif %}
        
 
         {% for data in data_variacion %}
-            data_intermensual.push({{ data.variacion_intermensual }});
-            data_interanual.push({{ data.variacion_interanual }});
+            data_intermensual.push({{ data.variacion_anual_nominal }});
+            data_interanual.push({{ data.variacion_anual_real }});
             meses.push('{{data.mes__mes}}' + " " + {{data.anio__anio}});
             
             anio = {{data.anio__anio}};
@@ -173,10 +181,10 @@
                 divBasic.style.display = "block";
                 divComparative.style.display = "none";
       
-                {% if data.total == None %}
+                {% if data.total_millones == None %}
                     data_total.push('Sin datos')
                 {% else %}
-                    data_total.push({{data.total}})
+                    data_total.push({{data.total_millones}})
                 {% endif %}
                 
             {% endif %}
@@ -193,7 +201,7 @@
     }
     
     
-   data_graficos_vehiculo()
+    data_graficos_transferencia()
     
     // Inicializa la vista del gráfico al cargar la página
     document.addEventListener("DOMContentLoaded", function() {

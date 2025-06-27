@@ -16,14 +16,14 @@
             <div class="card-body">
                 
                 <div class="typography-line">
-                    <h3 class="color-typography"><span>Moto -</span> transferencia </h3>
+                    <h3 class="color-typography"><span>Sector construccion Formosa -</span> puestos de trabajo </h3>
                 </div>
                 <div class="typography-line">
                     
                     <blockquote>
                         <p class="blockquote blockquote-primary">
-                        En el mes de abril, se transfirieron 190 motos, 2,6% más con respecto al mes de marzo. Si se comparan los datos anualmente, en el mes de abril, las transferencias de motos fueron un 37,5% más que el mes de abril del año 2024. En lo que va del año, 
-                        se transfirieron en Formosa, un total de 836 motos, en relación al mismo periodo del 2024 (enero a abril) se transfirieron 215 motos más.</p>
+                        En el mes de marzo, los puestos de trabajo generados por el sector en la provincia fueron 3.002 lo que representa un incremento del 8,1% en relación al mes anterior, 
+                        así también un incremento interanual de 21,5%, esto representa 531 puestos más  frente al mes marzo del año 2024.                        </p>
                     </blockquote>
                         <div class="toolbar">
                             <button onclick="showView('chart')" class="active">📈</button>
@@ -31,7 +31,7 @@
                             <button onclick="showView('table')">📋</button>
                            
                         </div>
-                        <form method= "GET" action="{% url 'transferencia-moto' %} ">
+                        <form method= "GET" action="{% url 'salario-construccion' %} ">
                             {% csrf_token %}
                             <div class ="content-error">
                                 
@@ -77,12 +77,16 @@
                                     
                                     </select>
                                 </div>
+                               
+
+
+
                             
                                 <button type="submit">Aplicar filtros</button>
                             </div>     
                         </form>
                         <div id="chartView" class="view active">
-                            <div class="chart-style" id="chart-transferencia"></div>
+                            <div class="chart-style" id="chart-puestos-construccion"></div>
                         </div>
 
                         <div id="tableView" class="view">
@@ -92,21 +96,21 @@
                                         <th>Mes</th>
                                         <th>Año</th>
                                         <th>Valor</th>
-                                        <th>Intermensual</th>
-                                        <th>Interanual</th>
-                                        <th>Venta total</th>
+                                        <th>Total empresas</th>
+                                        <th>Total puestos de trabajo</th>
+                                        <th>Salario promedio</th>
                                        
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for data in data_variacion %}
+                                    {% for data in data_variacion_salario_table %}
                                     <tr>
                                         <td>{{ data.mes__mes }}</td>
                                         <td>{{ data.anio__anio }}</td>
                                         <td>{{ data.valor__valor }}</td>
-                                        <td>{{ data.variacion_intermensual }}</td>
-                                        <td>{{ data.variacion_interanual }}</td>
-                                        <td>{{ data.total }}</td>
+                                        <td>{{ data.total_empresas }}</td>
+                                        <td>{{ data.total_puesto_trabajo }}</td>
+                                        <td>{{ data.salario_promedio }}</td>
                                     </tr>
                                     {% empty %}
                                     <tr><td colspan="5">No hay datos disponibles.</td></tr>
@@ -125,9 +129,10 @@
     </div>
 </div>
 <script>
-    
+    function data_indicadores_salario(){
 
-    function data_variacion_patentamiento(){
+
+
         data_intermensual = []
         data_interanual = []
         data_total = []
@@ -140,46 +145,53 @@
         data_chart = {}
 
         {% if type_graphic != 0 %}
-        type = 1;
-        divComparative.style.display = "block";
-        divBasic.style.display = "none";
-      
-       
-        {% for anio, ventas in chart_totales.items %}
-        data_chart['{{ anio }}'] = [
-            {% for venta in ventas %}
-                {% if venta == None %}
-                    0
-                {% else %}
-                    {{ venta }}
-                {% endif %}
-                {% if not forloop.last %},{% endif %}
-            {% endfor %}
-
-        ];
-        {% endfor %}
+            type = 1;
+            divComparative.style.display = "block";
+            divBasic.style.display = "none";
         
+        
+            {% for anio, ventas in chart_totales.items %}
+              
+                data_chart['{{ anio }}'] = [
+                    {% for venta in ventas %}
+                        {% if venta == None %}
+                            0
+                        {% else %}
+                            
+                            {{ venta }}
+                        {% endif %}
+                        {% if not forloop.last %},{% endif %}
+                    {% endfor %}
+
+                ];
+            
+            {% endfor %}
+        {% endif %}
+
+    
+        {% if type_graphic == 0 %}
+                
+                divBasic.style.display = "block";
+                divComparative.style.display = "none";
+                {% for x in salario_formosa %}
+                    {% if x.total_empresas == None %}
+                        data_total.push('Sin datos')
+                    {% else %}
+                        data_total.push({{x.total_empresas}})
+                    {% endif %}
+
+                {% endfor %}
+                
         {% endif %}
        
 
-        {% for data in data_variacion %}
-            data_intermensual.push({{ data.variacion_intermensual }});
-            data_interanual.push({{ data.variacion_interanual }});
-            meses.push('{{data.mes__mes}}' + " " + {{data.anio__anio}});
-            
-            anio = {{data.anio__anio}};
-            valor = '{{data.valor__valor}}'
-            {% if type_graphic == 0 %}
-                divBasic.style.display = "block";
-                divComparative.style.display = "none";
-      
-                {% if data.total == None %}
-                    data_total.push('Sin datos')
-                {% else %}
-                    data_total.push({{data.total}})
-                {% endif %}
-                
-            {% endif %}
+        {% for item in final_chart_data %}
+            {
+               meses.push('{{item.mes}}');
+               data_intermensual.push({{ item.salario_formosa }})
+               data_interanual.push({{ item.salario_nacional}});
+              
+            }
         {% endfor %}
         
         return [data_intermensual,
@@ -190,14 +202,26 @@
                 type,
                 data_chart,
                 data_total]
+        
     }
     
     
-   data_graficos_vehiculo()
     
+   
     // Inicializa la vista del gráfico al cargar la página
     document.addEventListener("DOMContentLoaded", function() {
         showView('chart');
     });
+
+    data_construccion()
+    
 </script>
+
+
+
+
 {% endblock container %}
+
+
+
+

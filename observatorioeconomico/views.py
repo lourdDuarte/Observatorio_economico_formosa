@@ -8,6 +8,11 @@ from Patentamiento.models import Indicadores as vehiculo
 from sector_privado.models import IndicadoresPrivado as privado
 from Ipc.models import Indicadores as ipc
 from Sector_construccion.models import Indicadores as construccion
+from Transferencia.models import Transferencia as transferencia
+
+from typing import List, Dict
+
+
 
 
 def obtener_datos_de_modelo(
@@ -15,12 +20,15 @@ def obtener_datos_de_modelo(
     anio_id: int,
     valor_id: int,
     link: str,
+    data: int = 0,
     # Los kwargs permiten pasar filtros adicionales específicos de cada modelo
     **kwargs) -> dict:
     """
     Realiza una consulta genérica a un modelo de Django y extrae
     variacion_interanual, variacion_intermensual y fecha_actualizacion.
     """
+    
+    
     
     try:
         # Construye el diccionario de filtros base
@@ -32,13 +40,26 @@ def obtener_datos_de_modelo(
 
         obj = modelo_django.objects.filter(**filtros).order_by('-id').first()
         if obj:
-           
-            return {
-                "valor_intermensual": getattr(obj, 'variacion_intermensual', 'N/D'),
-                "valor_interanual": getattr(obj, 'variacion_interanual', 'N/D'),
-                "link": link,
-                "fecha_actualizacion": getattr(obj, 'fecha_actualizacion', 'N/D'),
-            }
+
+            if data == 1:
+               
+                return {
+                    "valor_intermensual": getattr(obj, 'variacion_anual_nominal', 'N/D'),
+                    "valor_interanual": getattr(obj, 'variacion_anual_real', 'N/D'),
+                    "link": link,
+                    "title_one": 'Valor anual nominal',
+                    "title_two": 'Valor anual real',
+                    "fecha_actualizacion": getattr(obj, 'fecha_actualizacion', 'N/D'),
+                }
+            else: 
+                return {
+                    "valor_intermensual": getattr(obj, 'variacion_intermensual', 'N/D'),
+                    "valor_interanual": getattr(obj, 'variacion_interanual', 'N/D'),
+                    "link": link,
+                    "title_one": 'Valor intermensual',
+                    "title_two": 'Valor interanual',
+                    "fecha_actualizacion": getattr(obj, 'fecha_actualizacion', 'N/D'),
+                }
         else:
             return {
                 "valor_intermensual": "N/D",
@@ -143,11 +164,22 @@ def generar_panel_json(
         ),
        
     }
+    panel_data["Transferencias automaticas Formosa"] ={
+        "Transferencias": obtener_datos_de_modelo(
+            modelo_django = transferencia,
+            anio_id= 7,
+            valor_id= 1,
+            link = 'transferencias',
+            data = 1
+          
+        ),
+       
+    }
     
     return panel_data
     
 def index(request):
- 
+   
     data_json = generar_panel_json()
     context = {
         'data_json' : data_json

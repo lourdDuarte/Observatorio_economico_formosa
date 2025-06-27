@@ -27,12 +27,17 @@
             <li><a href="{% url 'ipc' %}">Precio consumidor</a></li>
           </ul>
         </li>
+        <li class="menu-item"><a href="#">Transferencias</a>
+          <ul class="submenu">
+            <li><a href="{% url 'transferencias' %}">Transferencias</a></li>
+           
+          </ul>
+        </li>
         <li class="menu-item"><a href="#">Construccion</a>
           <ul class="submenu">
-            <li><a href="#">Salario</a></li>
+            <li><a href="{% url 'salario-construccion' %}">Salario</a></li>
             <li><a href="#">Puesto de trabajo</a></li>
-            <li><a href="#">Evolucion</a></li>
-            <li><a href="#">Empresas</a></li>
+           
           </ul>
         </li>
         <li class="menu-item"><a href="#">Sector privado</a>
@@ -47,12 +52,7 @@
             
           </ul>
         </li>
-        <li class="menu-item"><a href="#">Transferencias</a>
-          <ul class="submenu">
-            <li><a href="#">Transferencias</a></li>
-           
-          </ul>
-        </li>
+        
         
       </ul>
     </nav>

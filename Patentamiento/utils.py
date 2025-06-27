@@ -43,6 +43,7 @@ class VehiculoDataProcessor:
             QuerySet con los datos filtrados
         """
         if params['is_valid']:
+            
             return cls.get_data_variaciones(
                 anio_id__gte=params['anio_inicio'],
                 anio_id__lte=params['anio_fin'],

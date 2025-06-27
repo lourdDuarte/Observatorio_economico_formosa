@@ -49,13 +49,13 @@
                 <a href= "{% url tipo_datos.link %}"><button class="title-data">{{ tipo_nombre }}</button></a> {# Botón (Precio Corriente / Constante / Patentamiento / Transferencia) #}
 
                 <div class="tarjeta">
-                    <p>Valor intermensual</p>
+                    <p>{{ tipo_datos.title_one}} </p>
                     <p class="valor">{{ tipo_datos.valor_intermensual }} %</p> {# Aquí se inserta el valor intermensual #}
                     <small>Act. {{ tipo_datos.fecha_actualizacion |date:"M d, Y"}}</small> {# Aquí se inserta la fecha de actualización #}
                 </div>
 
                 <div class="tarjeta">
-                    <p>Valor interanual</p>
+                    <p>{{ tipo_datos.title_two}}</p>
                     <p class="valor">{{ tipo_datos.valor_interanual }} %</p> {# Aquí se inserta el valor interanual #}
                     <small>Act. {{ tipo_datos.fecha_actualizacion |date:"M d, Y"}}</small> {# Aquí se inserta la fecha de actualización #}
                 </div>

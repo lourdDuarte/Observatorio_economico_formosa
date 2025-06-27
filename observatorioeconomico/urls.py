@@ -23,17 +23,20 @@ from observatorioeconomico import views as observatorio
 from Supermercado import views as supermercado
 from Patentamiento import views as vehiculo
 from Ipc import views as ipc
+from Transferencia import views as transferencia
+from Sector_construccion import views as construccion
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('index/', observatorio.index, name='index'),
-    path('api/chart/<str:model_name>/<int:anio_id>/<int:valor_id>/', utils.get_api_chart_view, name='get_chart_data'),
     path('precio-corriente/', supermercado.view_precio_corriente, name='precio-corriente'),
     path('precio-constante/', supermercado.view_precio_constante, name='precio-constante'),
     path('patentamiento-auto/', vehiculo.view_patentamiento_auto, name='patentamiento-auto'),
     path('patentamiento-moto/', vehiculo.view_patentamiento_moto, name='patentamiento-moto'),
     path('transferencia-auto/', vehiculo.view_transferencia_auto, name='transferencia-auto'),
     path('transferencia-moto/', vehiculo.view_transferencia_moto, name='transferencia-moto'),
+    path('transferencias/', transferencia.view_transferencia, name='transferencias'),
     path('ipc/', ipc.ipc, name='ipc'),
+    path('salario-construccion/', construccion.view_construccion_salarios, name='salario-construccion'),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

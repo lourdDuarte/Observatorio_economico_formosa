@@ -1,22 +1,19 @@
-new DataTable('#example', {
-    
-    fixedColumns: {
-        start: 0
-    },
-    layout: {
-      topStart: {
-        buttons: [
-            {
-                extend: 'colvis',
-                text: 'Esconder columna',
-               
-            }
-        ]
-         
-    }
-    },
-    order: [],
-    paging: true,
-   
 
+
+new DataTable('#example', {
+    layout: {
+        topStart: {
+            buttons: [
+                {
+                    extend: 'excelHtml5',
+                    autoFilter: true,
+                    sheetName: 'Exported data'
+                },
+                {
+                    extend: 'colvis',
+                    text: 'Mostrar/Ocultar columnas'
+                }
+            ]
+        }
+    }
 });

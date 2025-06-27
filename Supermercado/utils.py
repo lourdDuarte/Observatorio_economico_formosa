@@ -14,6 +14,8 @@ from django.db.models import OuterRef, Subquery, QuerySet
 
 from Supermercado.models import Variacion, Total, Mes
 
+from observatorioeconomico.utils import process_data_consult
+
 
 class SupermercadoDataProcessor:
     """
@@ -75,24 +77,33 @@ class SupermercadoDataProcessor:
             anio_inicio = request.GET.get('anio_inicio')
             anio_fin = request.GET.get('anio_fin')
             valor = request.GET.get('valor')
-            
-            if anio_inicio and anio_fin and valor:
+
+   
+
+            filtros = {}
+            if anio_inicio:
+                filtros['anio_inicio'] = int(anio_inicio)
+            if anio_fin:
+                filtros['anio_fin'] = int(anio_fin)
+            if valor:
+                filtros['valor'] = int(valor)
+
+           
+
+               
                 return {
-                    'anio_inicio': int(anio_inicio),
-                    'anio_fin': int(anio_fin),
-                    'valor': int(valor),
+                    **filtros,
                     'is_valid': True,
-                    'error_message': None
-                }
+                    'error_message': None,
+                    
+                }   
             else:
                 return {
-                    'anio_inicio': None,
-                    'anio_fin': None,
-                    'valor': None,
+                    **filtros,
                     'is_valid': False,
-                    'error_message': None
+                    'error_message': None,
+                    'data_comparacion': []
                 }
-                
         except ValueError:
             return {
                 'anio_inicio': None,

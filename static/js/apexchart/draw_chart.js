@@ -16,7 +16,7 @@ function generar_grafico(funcion, titulo, id_grafico)
 {
 
     let [data_intermensual, data_interanual, meses,anio, valor, type, data_chart, data_total] = funcion();
-   
+    let data_params = [15,12.8,25.8]
     
     let[maximo,minimo] = max_min_chart(data_intermensual, data_interanual)
 

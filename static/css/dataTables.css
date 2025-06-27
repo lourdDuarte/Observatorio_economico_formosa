@@ -556,7 +556,11 @@ div.dt-container div.dt-layout-row {
   align-items: center;
   width: 100%;
   margin: 0.75em 0;
+
+ 
 }
+
+
 div.dt-container div.dt-layout-row div.dt-layout-cell {
   display: flex;
   justify-content: space-between;
@@ -649,12 +653,15 @@ div.dt-container .dt-input {
 div.dt-container select.dt-input {
   padding: 4px;
 }
+
 div.dt-container .dt-paging .dt-paging-button {
   box-sizing: border-box;
   display: inline-block;
   min-width: 1.5em;
   padding: 0.5em 1em;
   margin-left: 2px;
+ 
+
   text-align: center;
   text-decoration: none !important;
   cursor: pointer;

@@ -1,10 +1,6 @@
-
-
-function area_chart(id, intermensual_data, interanual_data,meses, titulo_chart, max_chart, min_chart)
-{
-   
- var options = {
-  series: [
+function area_chart(id, intermensual_data, interanual_data, meses, titulo_chart, max_chart, min_chart, serie_puntos_data = null, nombre_puntos = "Tercera Serie") {
+  
+  let series = [
     {
       name: "Intermensual",
       data: intermensual_data
@@ -12,131 +8,123 @@ function area_chart(id, intermensual_data, interanual_data,meses, titulo_chart, 
     {
       name: "Interanual",
       data: interanual_data
-    },
-    
-  ],
-  chart: {
-    height: 350,
-    type: 'line',
-    dropShadow: {
-      enabled: true,
-      color: '#000',
-      top: 18,
-      left: 7,
-      blur: 10,
-      opacity: 0.5
-    },
-    zoom: {
-      enabled: true
-    },
-    toolbar: {
-      show: true
     }
-  },
-  colors: ['#003764', '#859222'], // Tus colores actuales
+  ];
 
-  dataLabels: {
-    enabled: false, // Deshabilitado como lo pediste
-  },
-  stroke: {
-    curve: 'smooth', // Hace que la línea sea suave, como en la imagen
-    width: 2,
-  },
-  title: {
-    text: titulo_chart,
-    align: 'left'
-  },
-  grid: {
-    show: true,
-    borderColor: '#e7e7e7', // Color de borde para la rejilla
-    strokeDashArray: 0, // No usar líneas punteadas para la rejilla
-    position: 'back', // La rejilla detrás de las líneas del gráfico
-    row: {
-      colors: ['#f3f3f3', 'transparent'], // Toma un array que se repetirá en las filas
-      opacity: 0.5
+  let colors = ['#003764', '#859222'];
+  let widths = [2, 2];
+  let marker_sizes = [5, 5];
+  let dashArray = [0, 0]; // 0 = línea sólida
+
+  if (serie_puntos_data && Array.isArray(serie_puntos_data) && serie_puntos_data.length > 0) {
+    series.push({
+      name: nombre_puntos,
+      data: serie_puntos_data
+    });
+    colors.push('#F5B041');        // color para la serie punteada
+    widths.push(2);                // grosor de línea
+    marker_sizes.push(6);          // tamaño de puntos
+    dashArray.push(8);             // 8 = línea punteada
+  }
+
+  var options = {
+    series: series,
+    chart: {
+      height: 350,
+      type: 'line',
+      dropShadow: {
+        enabled: true,
+        color: '#000',
+        top: 18,
+        left: 7,
+        blur: 10,
+        opacity: 0.5
+      },
+      zoom: { enabled: true },
+      toolbar: { show: true }
+    },
+    colors: colors,
+    dataLabels: { enabled: false },
+    stroke: {
+      curve: 'straight',
+      width: widths,
+      dashArray: dashArray
+    },
+    markers: {
+      size: marker_sizes,
+      colors: colors,
+      strokeColors: '#fff',
+      strokeWidth: 2,
+      hover: { sizeOffset: 2 }
+    },
+    title: {
+      text: titulo_chart,
+      align: 'left'
+    },
+    grid: {
+      show: true,
+      borderColor: '#e7e7e7',
+      strokeDashArray: 0,
+      position: 'back',
+      row: {
+        colors: ['#f3f3f3', 'transparent'],
+        opacity: 0.5
+      },
+      xaxis: { lines: { show: false } },
+      yaxis: { lines: { show: true, colors: ['#e7e7e7'] } }
     },
     xaxis: {
-      lines: {
-        show: false // Ocultar las líneas verticales de la rejilla
+      categories: meses,
+      title: { text: 'Meses' },
+      tooltip: {
+        enabled: true,
+        formatter: function (val, { series, seriesIndex, dataPointIndex, w }) {
+          return w.globals.categoryLabels[dataPointIndex];
+        }
       }
     },
     yaxis: {
-        lines: {
-            show: true,
-            colors: ['#e7e7e7'] // Color muy claro para las líneas horizontales
-        }
-    }
-  },
-  markers: {
-    size: 5,        // Tamaño de los círculos en los puntos de datos (estos son los "puntos" que quieres ver)
-    colors: ['#007D9D', '#859222'], // Colores que coinciden con tus series
-    strokeColors: '#fff', // Color del borde de los marcadores (blanco para que resalten)
-    strokeWidth: 2,       // Ancho del borde de los marcadores
-    hover: {
-      sizeOffset: 2 // Los marcadores pueden crecer un poco al pasar el ratón
-    }
-  },
-  xaxis: {
-    categories: meses, // Tus categorías de meses
-    title: {
-      text: 'Meses'
+      min: min_chart,
+      max: max_chart
+    },
+    legend: {
+      position: 'top',
+      horizontalAlign: 'right',
+      floating: true,
+      offsetY: -25,
+      offsetX: -5
+    },
+    annotations: {
+      yaxis: [{
+        y: 0,
+        borderColor: '#000000',
+        strokeDashArray: 0
+      }]
     },
     tooltip: {
-      enabled: true, // Habilita el tooltip en el eje X
-      formatter: function (val, { series, seriesIndex, dataPointIndex, w }) {
-        // Asegúrate de que el valor sea el nombre del mes de tus categorías
-        return w.globals.categoryLabels[dataPointIndex];
-      }
-    }
-  },
-  yaxis: {
-    min: min_chart,
-    max: max_chart
-  },
-  legend: {
-    position: 'top',
-    horizontalAlign: 'right',
-    floating: true,
-    offsetY: -25,
-    offsetX: -5
-  },
-  annotations: {
-    yaxis: [{
-      y: 0,
-      borderColor: '#000000', // Color de la línea
-      strokeDashArray: 0, // Línea sólida (0 para no punteada)
-    }]
-  },
-  tooltip: {
-    enabled: true, // Habilitar el tooltip en general
-    x: {
-      show: true,
-      formatter: function(val, { series, seriesIndex, dataPointIndex, w }) {
-        // Muestra el nombre del mes de las categorías en la parte superior del tooltip
-        return w.globals.categoryLabels[dataPointIndex];
-      }
-    },
-    y: {
-      formatter: function (val) {
-        // Muestra el valor como un porcentaje en el tooltip
-        if (typeof val === 'number') {
-            return val.toFixed(1) + '%'; // Formatea a un decimal y añade '%'
+      enabled: true,
+      x: {
+        show: true,
+        formatter: function(val, { series, seriesIndex, dataPointIndex, w }) {
+          return w.globals.categoryLabels[dataPointIndex];
         }
-        return val;
       },
-      title: {
+      y: {
+        formatter: function (val) {
+          return typeof val === 'number' ? val.toFixed(1) + '%' : val;
+        },
+        title: {
           formatter: function (seriesName) {
-              return seriesName; // Muestra el nombre de la serie (ej. "Intermensual")
+            return seriesName;
           }
+        }
       }
     }
-  }
-};
+  };
 
-var chart = new ApexCharts(document.querySelector('#' + id), options);
-chart.render();
+  var chart = new ApexCharts(document.querySelector('#' + id), options);
+  chart.render();
 }
-
 
 function column_chart_comparative(id,series){
   var options = {
