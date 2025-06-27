@@ -33,8 +33,8 @@ class VehiculoViewConfig:
     TEMPLATE_AUTO_PATENTAMIENTO = 'Auto/patentamiento.html'
     TEMPLATE_AUTO_TRANSFERENCIA= 'Auto/transferencia.html'
 
-    TEMPLATE_MOTO_PATENTAMIENTO = 'Moto/patentamiento.html'
-    TEMPLATE_MOTO_TRANSFERENCIA= 'Moto/transferencia.html'
+    TEMPLATE_MOTO_PATENTAMIENTO = 'Moto/Patentamiento.html'
+    TEMPLATE_MOTO_TRANSFERENCIA= 'Moto/Transferencia.html'
 
 
 
