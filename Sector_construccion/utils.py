@@ -14,7 +14,7 @@ class ConstruccionProcessor:
 
     # Constantes de configuración
     DEFAULT_YEAR = 7
-    DEFAULT_VALUE = 7
+    DEFAULT_VALUE = 1
 
    
 
@@ -41,12 +41,12 @@ class ConstruccionProcessor:
         
 
         
-        return SectorConstruccion.objects.select_related('mes', 'anio', 'valor').values(
+        return Indicadores.objects.select_related('mes', 'anio', 'valor').values(
             'mes__mes',
             'mes',
             'anio__anio',
             'valor__valor',
-            'tipo_dato'
+            'tipo_dato',
             'variacion_interanual',
             'variacion_intermensual'
             
@@ -127,6 +127,29 @@ class ConstruccionProcessor:
                 anio_id=cls.DEFAULT_YEAR,
                 valor_id = value
             )
+        
+    @classmethod
+    def get_filtered_indicadores(cls, tipo_dato:int,  params: Dict[str, Any]) -> QuerySet:
+        """
+        Obtiene datos filtrados según los parámetros.
+        
+        Returns:
+            QuerySet con los datos filtrados
+        """
+        if params['is_valid']:
+           
+            return cls.get_data_indicadores(
+                tipo_dato = tipo_dato,
+                anio_id__gte=params['anio_inicio'],
+                anio_id__lte=params['anio_fin'],
+                valor_id = params['valor']).order_by('anio__anio', 'mes__id')
+        else:
+            
+            return cls.get_data_indicadores(
+               anio_id=cls.DEFAULT_YEAR,
+               tipo_dato = tipo_dato,
+               valor_id = cls.DEFAULT_VALUE
+            )
     @staticmethod
     def process_chart_data_totales(type_date, data_variacion: QuerySet) -> Dict[str, list]:
             """
@@ -186,7 +209,7 @@ class ConstruccionProcessor:
         
 
 
-def process_construccion_data(request:HttpRequest, context_keys: Dict[str, str], template: str) -> HttpResponse:
+def process_construccion_data(request:HttpRequest, tipo_dato:int, value_totales:str, context_keys: Dict[str, str], template: str) -> HttpResponse:
     DEFAULT_FORMOSA = 1
     DEFAULT_NACION = 2
     
@@ -194,23 +217,63 @@ def process_construccion_data(request:HttpRequest, context_keys: Dict[str, str],
 
     processor = ConstruccionProcessor
     params = processor.procces_request_parameters(request)
-    FILTER = params['valor']
 
-    salario_formosa = processor.get_filtered_data(DEFAULT_FORMOSA, params)
+    if params['valor'] is None:
+        FILTER = DEFAULT_FORMOSA
+    else:
+        FILTER = params['valor']
+   
+    #context for template salarios
     
+    salario_formosa = processor.get_filtered_data(DEFAULT_FORMOSA, params)
     salario_nacion = processor.get_filtered_data(DEFAULT_NACION,params)
    
-    data = processor.get_filtered_data(FILTER, params)
-
-   
+    data_totales = processor.get_filtered_data(FILTER, params) 
     
-    data_variacion_salario_table =salario_formosa | salario_nacion 
+    
+    
+    
+    data_variacion_salario_table = salario_formosa | salario_nacion 
    
     final_chart_data = processor.process_and_validate_ipc_data(data_variacion_salario_table)
-    
+
+
+    # ******** puestos trabajo 
+    indicadores_puestos_trabajo = processor.get_filtered_indicadores(tipo_dato, params)
+
+    data_variacion_puestos_table = data_totales
+    # Convertir a listas normales (si no lo están)
+    lista_1 = list(indicadores_puestos_trabajo)
+    lista_2 = list(data_variacion_puestos_table)
+
+    # Crear un diccionario auxiliar para buscar por mes-año-valor
+    dict_puestos = {
+        (item['anio__anio'], item['mes'], item['valor__valor']): item
+        for item in lista_2
+    }
+
+    # Unir la información
+    contexto_unificado = []
+    for item in lista_1:
+        clave = (item['anio__anio'], item['mes'], item['valor__valor'])
+        puestos_info = dict_puestos.get(clave, {})  # puede venir vacío si no hay match
+
+        # Crear el nuevo diccionario unificado
+        combinado = {
+            'anio': item['anio__anio'],
+            'mes': item['mes__mes'],
+            
+            'valor': item['valor__valor'],
+            'variacion_intermensual': item.get('variacion_intermensual'),
+            'variacion_interanual': item.get('variacion_interanual'),
+            'total_puesto_trabajo': puestos_info.get('total_puesto_trabajo'),
+        }
+
+        contexto_unificado.append(combinado)
     if params['is_valid']:
         type_graphic = 1
-        chart_totales = processor.process_chart_data_totales('total_empresas',  data)
+        chart_totales = processor.process_chart_data_totales(value_totales,  data_totales)
+        
         
     else:
         type_graphic = 0
@@ -220,8 +283,12 @@ def process_construccion_data(request:HttpRequest, context_keys: Dict[str, str],
         'error_message': params['error_message'],
         context_keys['final_chart_data']: final_chart_data,
         context_keys['data_variacion_salario_table']: data_variacion_salario_table,
-        context_keys['chart_totales']:chart_totales,
         context_keys['salario_formosa']:salario_formosa,
+         
+        context_keys['chart_totales']:chart_totales,
+        context_keys['indicadores_puestos_trabajo']: indicadores_puestos_trabajo,
+        
+        context_keys['data_variacion_puestos_table']: contexto_unificado,
         context_keys['type_graphic']: type_graphic,
         'meses': meses,
     }

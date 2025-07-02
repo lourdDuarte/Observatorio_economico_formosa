@@ -158,7 +158,7 @@ def generar_panel_json(
             modelo_django = construccion,
             anio_id= 7,
             valor_id= 1,
-            link = 'precio-corriente',
+            link = 'puestos-construccion',
             tipo_dato = 1
           
         ),

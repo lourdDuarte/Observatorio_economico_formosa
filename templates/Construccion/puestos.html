@@ -31,7 +31,7 @@
                             <button onclick="showView('table')">📋</button>
                            
                         </div>
-                        <form method= "GET" action="{% url 'salario-construccion' %} ">
+                        <form method= "GET" action="{% url 'puestos-construccion' %} ">
                             {% csrf_token %}
                             <div class ="content-error">
                                 
@@ -96,21 +96,23 @@
                                         <th>Mes</th>
                                         <th>Año</th>
                                         <th>Valor</th>
-                                        <th>Total empresas</th>
                                         <th>Total puestos de trabajo</th>
-                                        <th>Salario promedio</th>
+                                        <th>Variacion intermensual</th>
+                                        <th>Variacion interanual</th>
+                                       
                                        
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for data in data_variacion_salario_table %}
+                                    {% for data in data_variacion_puestos_table %}
                                     <tr>
-                                        <td>{{ data.mes__mes }}</td>
-                                        <td>{{ data.anio__anio }}</td>
-                                        <td>{{ data.valor__valor }}</td>
-                                        <td>{{ data.total_empresas }}</td>
+                                        <td>{{ data.mes }}</td>
+                                        <td>{{ data.anio }}</td>
+                                        <td>{{ data.valor }}</td>
                                         <td>{{ data.total_puesto_trabajo }}</td>
-                                        <td>{{ data.salario_promedio }}</td>
+                                        <td>{{ data.variacion_intermensual }}</td>
+                                        <td>{{ data.variacion_interanual }}</td>
+                                       
                                     </tr>
                                     {% empty %}
                                     <tr><td colspan="5">No hay datos disponibles.</td></tr>
@@ -174,10 +176,10 @@
                 divBasic.style.display = "block";
                 divComparative.style.display = "none";
                 {% for x in salario_formosa %}
-                    {% if x.total_empresas == None %}
+                    {% if x.total_puesto_trabajo == None %}
                         data_total.push('Sin datos')
                     {% else %}
-                        data_total.push({{x.total_empresas}})
+                        data_total.push({{x.total_puesto_trabajo}})
                     {% endif %}
 
                 {% endfor %}
@@ -185,14 +187,16 @@
         {% endif %}
        
 
-        {% for item in final_chart_data %}
+        {% for item in indicadores_puestos_trabajo%}
             {
-               meses.push('{{item.mes}}');
-               data_intermensual.push({{ item.salario_formosa }})
-               data_interanual.push({{ item.salario_nacional}});
+               meses.push('{{item.mes__mes}}' + " " + {{item.anio__anio}});
+
+               data_intermensual.push({{ item.variacion_intermensual }})
+               data_interanual.push({{ item.variacion_interanual}});
               
             }
         {% endfor %}
+       
         
         return [data_intermensual,
                 data_interanual,

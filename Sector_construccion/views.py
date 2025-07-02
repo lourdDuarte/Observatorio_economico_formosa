@@ -15,13 +15,18 @@ class ConstruccionViewConfig:
         'data_variacion_salario_table':'data_variacion_salario_table',
         'type_graphic': 'type_graphic',
         'chart_totales': 'chart_totales',
-        'salario_formosa':'salario_formosa'
+        'salario_formosa':'salario_formosa',
+        'indicadores_puestos_trabajo': 'indicadores_puestos_trabajo',
+        'data_variacion_puestos_table':'data_variacion_puestos_table'
         
     }
     
     # Tipos
     TYPE_PUESTO_TRABAJO = 1
     TYPE_SALARIO = 2
+
+    VALUE_SALARIO = 'total_empresas'
+    VALUE_PUESTOS = 'total_puesto_trabajo'
     
     # Templates
     TEMPLATE_PUESTOS = 'Construccion/puestos.html'
@@ -58,7 +63,27 @@ def view_construccion_salarios(request: HttpRequest) -> HttpResponse:
     """
     return process_construccion_data(
         request=request,
-        
+        tipo_dato = ConstruccionViewConfig.TYPE_SALARIO,
+        value_totales=ConstruccionViewConfig.VALUE_SALARIO,
         context_keys= ConstruccionViewConfig.CONTEXT_KEYS,
         template=ConstruccionViewConfig.TEMPLATE_SALARIOS
+    )
+
+
+def view_construccion_puestos(request: HttpRequest) -> HttpResponse:
+    """
+    Vista para mostrar datos de sector construccion -> salarios y cantidades empresas.
+    
+    Args:
+        request: Objeto HttpRequest de Django
+        
+    Returns:
+        HttpResponse: Respuesta renderizada con datos 
+    """
+    return process_construccion_data(
+        request=request,
+        tipo_dato = ConstruccionViewConfig.TYPE_PUESTO_TRABAJO,
+        value_totales=ConstruccionViewConfig.VALUE_PUESTOS,
+        context_keys= ConstruccionViewConfig.CONTEXT_KEYS,
+        template=ConstruccionViewConfig.TEMPLATE_PUESTOS
     )

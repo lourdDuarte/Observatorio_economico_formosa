@@ -38,5 +38,6 @@ urlpatterns = [
     path('transferencias/', transferencia.view_transferencia, name='transferencias'),
     path('ipc/', ipc.ipc, name='ipc'),
     path('salario-construccion/', construccion.view_construccion_salarios, name='salario-construccion'),
+    path('puestos-construccion/', construccion.view_construccion_puestos, name='puestos-construccion'),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
