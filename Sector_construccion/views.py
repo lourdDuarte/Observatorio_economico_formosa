@@ -11,8 +11,8 @@ class ConstruccionViewConfig:
     
     # Configuración de contexto 
     CONTEXT_KEYS= {
-        'final_chart_data': 'final_chart_data',
-        'data_variacion_salario_table':'data_variacion_salario_table',
+        'salarios_promedios': 'salarios_promedios',
+        'data_tabla_salarios':'data_tabla_salarios',
         'type_graphic': 'type_graphic',
         'chart_totales': 'chart_totales',
         'salario_formosa':'salario_formosa',

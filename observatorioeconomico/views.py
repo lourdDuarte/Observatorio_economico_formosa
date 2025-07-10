@@ -138,7 +138,7 @@ def generar_panel_json(
             anio_id= 7,
             valor_id= 1,
             tipo= 1,
-            link = 'precio-corriente',
+            link = 'sector-privado',
             estacionalidad = 1
         ),
        

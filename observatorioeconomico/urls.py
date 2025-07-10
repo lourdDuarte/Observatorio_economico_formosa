@@ -25,6 +25,7 @@ from Patentamiento import views as vehiculo
 from Ipc import views as ipc
 from Transferencia import views as transferencia
 from Sector_construccion import views as construccion
+from sector_privado import views as privado
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -39,5 +40,6 @@ urlpatterns = [
     path('ipc/', ipc.ipc, name='ipc'),
     path('salario-construccion/', construccion.view_construccion_salarios, name='salario-construccion'),
     path('puestos-construccion/', construccion.view_construccion_puestos, name='puestos-construccion'),
+    path('sector-privado/', privado.view_sector_privado, name='sector-privado'),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -16,14 +16,14 @@
             <div class="card-body">
                 
                 <div class="typography-line">
-                    <h3 class="color-typography"><span>Sector construccion Formosa -</span> salario promedio </h3>
+                    <h3 class="color-typography"><span>Sector privado -</span> Evolucion del empleo registrado </h3>
                 </div>
                 <div class="typography-line">
                     
                     <blockquote>
                         <p class="blockquote blockquote-primary">
-                        En el mes de marzo, el salario promedio del sector Construcción en Formosa fue de $857.153 representando un incremento nominal del 7,5% con respecto al mes anterior. Con respecto a marzo del año 2024 se observa un incremento del 83,5%. Si bien, los salarios nominales del sector se vienen incrementando de manera sostenida desde el año 2021, Los salarios reales promedio se viene deteriorando desde principios del año 2022. 
-                        Para el caso particular del mes de marzo del año 2025, este incrementó un 35% con respecto al mes de marzo del año 2024.                         </p>
+                        En el mes de marzo, la cantidad de asalariados del sector privado aumentó un 0,67% con respecto al mes de febrero. Asimismo, los puestos de trabajo aumentaron un 1% en comparación a marzo del año 2024. Expresado en cantidades, en el mes de marzo se registraron 22.912 puestos de trabajo, 153 puestos más que en el mes de febrero. La diferencia de puestos de trabajo, con respecto a marzo del año 2024, representa un aumento de 228 puestos. 
+                        Si lo comparamos con marzo de 2023 la caída en términos porcentuales asciende a 16,6%, esto representa 4.563 empleos menos.                        </p>
                     </blockquote>
                         <div class="toolbar">
                             <button onclick="showView('chart')" class="active">📈</button>
@@ -31,7 +31,7 @@
                             <button onclick="showView('table')">📋</button>
                            
                         </div>
-                        <form method= "GET" action="{% url 'salario-construccion' %} ">
+                        <form method= "GET" action="{% url 'sector-privado' %} ">
                             {% csrf_token %}
                             <div class ="content-error">
                                 
@@ -69,7 +69,7 @@
                                 </div>
                             
                                 <div class="filtro-categoria">
-                                    <label for="categoria">Valor (visualizar empresas):</label>
+                                    <label for="categoria">Valor:</label>
                                     <select id="valor" name="valor">
                                         <option value="">Todas</option>
                                         <option value="1">Formosa</option>
@@ -86,7 +86,7 @@
                             </div>     
                         </form>
                         <div id="chartView" class="view active">
-                            <div class="chart-style" id="chart-salario"></div>
+                            <div class="chart-style" id="chart-privado"></div>
                         </div>
 
                         <div id="tableView" class="view">
@@ -96,21 +96,21 @@
                                         <th>Mes</th>
                                         <th>Año</th>
                                         <th>Valor</th>
-                                        <th>Total empresas</th>
-                                       
-                                        <th>Salario promedio</th>
+                                        <th>Intermensual</th>
+                                        <th>Interanual</th>
+                                        
                                        
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for data in data_tabla_salarios %}
+                                    {% for data in data_variacion %}
                                     <tr>
                                         <td>{{ data.mes__mes }}</td>
                                         <td>{{ data.anio__anio }}</td>
                                         <td>{{ data.valor__valor }}</td>
-                                        <td>{{ data.total_empresas }}</td>
+                                        <td>{{ data.variacion_intermensual }}</td>
+                                        <td>{{ data.variacion_interanual }}</td>
                                        
-                                        <td>{{ data.salario_promedio }}</td>
                                     </tr>
                                     {% empty %}
                                     <tr><td colspan="5">No hay datos disponibles.</td></tr>
@@ -129,10 +129,9 @@
     </div>
 </div>
 <script>
-    function data_indicadores_salario(){
+    
 
-
-
+    function data_variacion_privado(){
         data_intermensual = []
         data_interanual = []
         data_total = []
@@ -143,55 +142,46 @@
         const divComparative = document.getElementById("chart-comparative");
         const divBasic = document.getElementById("chart-basic");
         data_chart = {}
-
         {% if type_graphic != 0 %}
             type = 1;
             divComparative.style.display = "block";
             divBasic.style.display = "none";
-        
-        
-            {% for anio, ventas in chart_totales.items %}
-              
-                data_chart['{{ anio }}'] = [
-                    {% for venta in ventas %}
-                        {% if venta == None %}
-                            0
-                        {% else %}
-                            
-                            {{ venta }}
-                        {% endif %}
-                        {% if not forloop.last %},{% endif %}
-                    {% endfor %}
+      
+       
+        {% for anio, ventas in context_chart.items %}
+            data_chart['{{ anio }}'] = [
+                {% for venta in ventas %}
+                    {% if venta == None %}
+                        0
+                    {% else %}
+                        {{ venta }}
+                    {% endif %}
+                    {% if not forloop.last %},{% endif %}
+                {% endfor %}
 
-                ];
-            
-            {% endfor %}
+            ];
+        {% endfor %}
+        
         {% endif %}
 
-    
-        {% if type_graphic == 0 %}
-                
+        {% for data in data_variacion %}
+            data_intermensual.push({{ data.variacion_intermensual }});
+            data_interanual.push({{ data.variacion_interanual }});
+            meses.push('{{data.mes__mes}}' + " " + {{data.anio__anio}});
+            
+            anio = {{data.anio__anio}};
+            valor = '{{data.valor__valor}}'
+            {% if type_graphic == 0 %}
                 divBasic.style.display = "block";
                 divComparative.style.display = "none";
-                {% for x in salario_formosa %}
-                    {% if x.total_empresas == None %}
-                        data_total.push('Sin datos')
-                    {% else %}
-                        data_total.push({{x.total_empresas}})
-                    {% endif %}
-
-                {% endfor %}
+      
+                {% if data.cantidad_empresas == None %}
+                    data_total.push('Sin datos')
+                {% else %}
+                    data_total.push({{data.cantidad_empresas}})
+                {% endif %}
                 
-        {% endif %}
-       
-
-        {% for item in salarios_promedios %}
-            {
-               meses.push('{{item.mes}}');
-               data_intermensual.push({{ item.salario_formosa }})
-               data_interanual.push({{ item.salario_nacional}});
-              
-            }
+            {% endif %}
         {% endfor %}
         
         return [data_intermensual,
@@ -202,18 +192,17 @@
                 type,
                 data_chart,
                 data_total]
-        
     }
     
     
+    data_graficos_privado()
     
-   
+    
     // Inicializa la vista del gráfico al cargar la página
     document.addEventListener("DOMContentLoaded", function() {
         showView('chart');
     });
 
-    data_construccion()
     
 </script>
 
