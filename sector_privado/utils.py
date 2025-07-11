@@ -151,6 +151,16 @@ class PrivadoDataProcessor:
         return dict(context_chart)
 
 
+
+
+
+
+
+class RamasPrivadoDataProcessor:
+    pass
+
+
+
 def process_privado_data(request: HttpRequest, 
                             context_keys: Dict[str, str], template: str) -> HttpResponse:
    
@@ -164,7 +174,7 @@ def process_privado_data(request: HttpRequest,
     
     # Obtener datos filtrados
     data_variacion = processor.get_filtered_data(params)
-    print(data_variacion)
+   
     # Determinar tipo de gráfico y procesar datos del gráfico
     if params['is_valid']:
         type_graphic = 1

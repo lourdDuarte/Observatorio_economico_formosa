@@ -81,6 +81,7 @@ def generar_panel_json(
 
     
     panel_data["Supermercado"] = {
+        "icon": "fa-shopping-cart",
         "Precio Corriente": obtener_datos_de_modelo(
             modelo_django=supermercado,
             anio_id=7,
@@ -97,6 +98,7 @@ def generar_panel_json(
         )
     }
     panel_data["Auto"] ={
+        "icon": "fa-solid fa-car",
         "Patentamiento": obtener_datos_de_modelo(
             modelo_django = vehiculo,
             anio_id= 7,
@@ -115,6 +117,7 @@ def generar_panel_json(
         ),
     }
     panel_data["Moto"] ={
+        "icon": "fa-solid fa-motorcycle",
         "Patentamiento": obtener_datos_de_modelo(
             modelo_django = vehiculo,
             anio_id= 7,
@@ -133,6 +136,7 @@ def generar_panel_json(
         ),
     }
     panel_data["Sector privado"] ={
+        "icon": "fas fa-suitcase",
         "Evolucion empleo": obtener_datos_de_modelo(
             modelo_django = privado,
             anio_id= 7,
@@ -144,6 +148,7 @@ def generar_panel_json(
        
     }
     panel_data["IPC"] ={
+        "icon": "fa-signal",
          "Indice precio al consumidor (NEA)": obtener_datos_de_modelo(
             modelo_django = ipc,
             anio_id= 7,
@@ -154,6 +159,7 @@ def generar_panel_json(
        
     }
     panel_data["Sector construccion"] ={
+        "icon": "fa-wrench",
         "Puestos de trabajo": obtener_datos_de_modelo(
             modelo_django = construccion,
             anio_id= 7,
@@ -165,6 +171,7 @@ def generar_panel_json(
        
     }
     panel_data["Transferencias automaticas Formosa"] ={
+        "icon": "fa-dollar-sign",
         "Transferencias": obtener_datos_de_modelo(
             modelo_django = transferencia,
             anio_id= 7,
