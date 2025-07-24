@@ -8,8 +8,9 @@ class TransferenciaViewConfig:
 
     CONTEXT_KEYS = {
         'data_variacion': 'data_variacion',
-        'type_graphic': 'type_graphic',
-        'context_chart': 'context_chart'
+        'context_chart_formosa': 'context_chart_formosa',
+        'context_chart_nacional': 'context_chart_nacional',
+        'diccionario_variacion': 'diccionario_variacion'
     }
 
     #template

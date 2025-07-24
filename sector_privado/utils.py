@@ -7,12 +7,12 @@ de variaciones de precios y ventas en supermercados.
 
 from typing import Dict, Any, Optional
 from collections import defaultdict
-
+import json
 from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse
 from django.db.models import OuterRef, Subquery, QuerySet
 
-from sector_privado.models import IndicadoresPrivado,CantidadesPrivado, Mes
+from sector_privado.models import IndicadoresPrivado,CantidadesPrivado,AsalariadoRama, Mes
 
 
 
@@ -21,7 +21,7 @@ class PrivadoDataProcessor:
     
     # Constantes de configuración
     DEFAULT_YEAR = 7
-    DEFAULT_VALUE = 1
+    
     ESTACIONALIDAD = 2
     
     
@@ -65,7 +65,7 @@ class PrivadoDataProcessor:
         try:
             anio_inicio = request.GET.get('anio_inicio')
             anio_fin = request.GET.get('anio_fin')
-            valor = request.GET.get('valor')
+           
 
    
 
@@ -74,8 +74,7 @@ class PrivadoDataProcessor:
                 filtros['anio_inicio'] = int(anio_inicio)
             if anio_fin:
                 filtros['anio_fin'] = int(anio_fin)
-            if valor:
-                filtros['valor'] = int(valor)
+            
 
            
 
@@ -97,7 +96,7 @@ class PrivadoDataProcessor:
             return {
                 'anio_inicio': None,
                 'anio_fin': None,
-                'valor': None,
+                
                 'is_valid': False,
                 'error_message': "Los filtros ingresados no son válidos."
             }
@@ -119,46 +118,74 @@ class PrivadoDataProcessor:
                 anio_id__gte=params['anio_inicio'],
                 anio_id__lte=params['anio_fin'],
                 estacionalidad = 1,
-                valor_id=params['valor']
+                
             ).order_by('anio__anio', 'mes__id')
         else:
             return cls.get_variacion_data(
                 anio_id=cls.DEFAULT_YEAR,
                 
                 estacionalidad = 1,
-                valor_id=cls.DEFAULT_VALUE
+                
             )
     
     @staticmethod
     def process_chart_data_totales(data_variacion: QuerySet) -> Dict[str, list]:
-        """
-        Procesa los datos para generar información de gráficos.
-        
-        Args:
-            data_variacion: QuerySet con datos de variaciones
-            
-        Returns:
-            Dict con datos organizados por año para gráficos
-        """
-        context_chart = defaultdict(list)
-        
+        context_chart_formosa = defaultdict(list)
+        context_chart_nacional = defaultdict(list)
+
         for item in data_variacion:
             anio = item['anio__anio']
-            cantidad_empresas = item['cantidad_empresas']
-            if cantidad_empresas is not None:
-                context_chart[anio].append(cantidad_empresas)
-        
-        return dict(context_chart)
+            cantidad_empresas = item['cantidad_empresas'] or 0  # Reemplaza None por 0
 
+            if item['valor__valor'] == 'Formosa':
+                context_chart_formosa[anio].append(cantidad_empresas)
+            elif item['valor__valor'] == 'Nacional':
+                context_chart_nacional[anio].append(cantidad_empresas)
 
+        return {
+            'Formosa': dict(context_chart_formosa),
+            'Nacional': dict(context_chart_nacional)
+        }
 
+def diccionario(queryset):
+    formosa_intermensual = []
+    formosa_interanual = []
+    nacional_intermensual = []
+    nacional_interanual = []
+    meses = []
 
+    # Para mantener el orden, usamos listas separadas para cada región con su mes
+    meses_formosa = []
+    meses_nacional = []
 
+    for item in queryset:
+        mes = item['mes__mes'] + " " +  str(item['anio__anio'])
+        region = item['valor__valor']
+        intermensual = float(item['variacion_intermensual'])
+        interanual = float(item['variacion_interanual'])
 
+        if region == 'Formosa':
+            formosa_intermensual.append(intermensual)
+            formosa_interanual.append(interanual)
+            meses_formosa.append(mes)
+        elif region == 'Nacional':
+            nacional_intermensual.append(intermensual)
+            nacional_interanual.append(interanual)
+            meses_nacional.append(mes)
 
-class RamasPrivadoDataProcessor:
-    pass
+    # Obtener la cantidad mínima común
+    minimo = min(len(formosa_intermensual), len(nacional_intermensual))
 
+    # Recortar todas las listas al mismo tamaño
+    datos = {
+        'meses': meses_formosa[:minimo],  # o meses_nacional[:minimo], ambos deberían coincidir en orden
+        'Valor intermensual Formosa': formosa_intermensual[:minimo],
+        'Valor interanual Formosa': formosa_interanual[:minimo],
+        'Valor intermensual Nacional': nacional_intermensual[:minimo],
+        'Valor interanual Nacional': nacional_interanual[:minimo],
+    }
+
+    return datos
 
 
 def process_privado_data(request: HttpRequest, 
@@ -174,22 +201,153 @@ def process_privado_data(request: HttpRequest,
     
     # Obtener datos filtrados
     data_variacion = processor.get_filtered_data(params)
-   
-    # Determinar tipo de gráfico y procesar datos del gráfico
-    if params['is_valid']:
-        type_graphic = 1
-        context_chart = processor.process_chart_data_totales(data_variacion)
-        
-    else:
-        type_graphic = 0
-        context_chart = {}
+    diccionario_variacion = diccionario(data_variacion)
+    
+    context_chart = processor.process_chart_data_totales(data_variacion)
     
     # Construir contexto
     context = {
         'error_message': params['error_message'],
         context_keys['data_variacion']: data_variacion,
-        context_keys['context_chart']: context_chart,
-        context_keys['type_graphic']: type_graphic,
+        context_keys['diccionario_variacion']: diccionario_variacion,
+        'data_chart_formosa': json.dumps(context_chart['Formosa']),
+        'data_chart_nacional': json.dumps(context_chart['Nacional']),
+        'meses': meses,
+    }
+    
+    return render(request, template, context)
+
+
+
+
+
+class PrivadoRamasDataProcessor:
+
+    DEFAULT_YEAR = 6
+
+    @staticmethod
+    def get_cantidad_asalariados(**filters) -> QuerySet:
+        return AsalariadoRama.objects.select_related(
+            'rama', 'trimestre', 'anio', 'mes'
+        ).values(
+            'rama__rama',
+            'trimestre__trimestre',
+            'mes__mes',
+            'anio__anio',
+            'valor',
+            'cantidad'
+        ).filter(**filters)
+    
+
+    @classmethod
+    def process_request_parameters(cls, request: HttpRequest) -> Dict[str, Any]:
+        try:
+            anio_inicio = request.GET.get('anio_inicio')
+            anio_fin = request.GET.get('anio_fin')
+            trimestre_inicio = request.GET.get('trimestre_inicio')
+            trimestre_fin = request.GET.get('trimestre_fin')      
+   
+
+            filtros = {}
+            if anio_inicio:
+                filtros['anio_inicio'] = int(anio_inicio)
+            if anio_fin:
+                filtros['anio_fin'] = int(anio_fin)
+            if trimestre_inicio:
+                filtros['trimestre_inicio'] = int(trimestre_inicio)
+            if trimestre_fin:
+                filtros['trimestre_fin'] = int(trimestre_fin)
+
+           
+
+               
+                return {
+                    **filtros,
+                    'is_valid': True,
+                    'error_message': None,
+                    
+                }   
+            else:
+                return {
+                    **filtros,
+                    'is_valid': False,
+                    'error_message': None,
+                    
+                }
+        except ValueError:
+            return {
+                'anio_inicio': None,
+                'anio_fin': None,
+                'trimestre_inicio': None,
+                'trimestre_fin': None,
+                'is_valid': False,
+                'error_message': "Los filtros ingresados no son válidos."
+            }
+        
+    @classmethod
+    def get_filtered_data_cantidades(cls, params: Dict[str, Any]) -> QuerySet:
+        if params['is_valid']:
+            return cls.get_cantidad_asalariados(
+                anio_id__gte=params['anio_inicio'],
+                anio_id__lte=params['anio_fin'],
+                trimestre_id__gte=params['trimestre_inicio'],
+                trimestre_id__lte=params['trimestre_fin'],    
+            ).order_by('anio__anio', 'mes__id')
+        else:
+             return cls.get_cantidad_asalariados(
+                anio_id=cls.DEFAULT_YEAR,
+            
+            )
+        
+
+    @staticmethod
+    def process_chart_ramas_cantidad(data_cantidades: QuerySet) -> Dict[str, Dict[str, Dict[str, int]]]:
+        context_chart = defaultdict(lambda: defaultdict(dict))
+        # Resultado: context_chart[rama][anio][trimestre] = cantidad
+
+        for item in data_cantidades:
+            trimestre = item['trimestre__trimestre']
+            anio = str(item['anio__anio'])
+            cantidad = item['cantidad']
+            rama = item['rama__rama']
+
+            if cantidad is not None:
+                context_chart[rama][anio][trimestre] = int(cantidad)
+
+        return dict(context_chart)
+
+def process_privado_ramas_data(request: HttpRequest, 
+                            context_keys: Dict[str, str], template: str) -> HttpResponse:
+   
+    processor = PrivadoRamasDataProcessor()
+    
+    # Obtener todos los meses
+    meses = Mes.objects.all()
+    
+    # Procesar parámetros de la solicitud
+    params = processor.process_request_parameters(request)
+    
+    # Obtener datos filtrados
+    data_variacion = processor.get_filtered_data_cantidades(params)
+   
+    # Determinar tipo de gráfico y procesar datos del gráfico
+    if params['is_valid']:
+        
+        context_chart = processor.process_chart_ramas_cantidad(data_variacion)
+        
+    else:
+        type_graphic = 0
+        context_chart = processor.process_chart_ramas_cantidad(data_variacion)
+    
+
+    
+    # Construir contexto
+    context = {
+        'error_message': params['error_message'],
+        
+        context_keys['chart_data_json']: json.dumps(context_chart),
+        context_keys['data_variacion']: data_variacion,
+       
         'meses': meses,
     }
     

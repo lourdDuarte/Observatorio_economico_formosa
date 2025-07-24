@@ -393,3 +393,22 @@ nav a:hover {
 
 
 /* end content card data bd */
+  .transition-slide {
+    transition: all 0.5s ease;
+  }
+
+  .slide-hidden {
+    transform: translateX(100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .slide-visible {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .invisible {
+    display: none;
+  }

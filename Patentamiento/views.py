@@ -12,9 +12,10 @@ class VehiculoViewConfig:
     # Configuración de contexto común
     CONTEXT_KEYS = {
         'data_variacion': 'data_variacion',
-        'type_graphic': 'type_graphic',
-        'chart_totales': 'chart_totales',
-        'error_message': 'error_message'
+        
+        'context_chart_formosa': 'context_chart_formosa',
+        'context_chart_nacional': 'context_chart_nacional',
+        'diccionario_variacion': 'diccionario_variacion'
     }
 
 

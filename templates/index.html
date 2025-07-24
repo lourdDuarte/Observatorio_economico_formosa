@@ -42,7 +42,7 @@
     <section class="secciones">
       {% for categoria_nombre, categoria_datos in data_json.items %}
     <div class="caja">
-        <h4><i class="fas {{ categoria_datos.icon }}"></i> {{ categoria_nombre }}</h4>
+        <h4><img style="width: 32px; margin-right: 5px;"src="{{ categoria_datos.icon }}"> {{ categoria_nombre }}</h4>
 
         <div class="container-data">
             {% for tipo_nombre, tipo_datos in categoria_datos.items %}

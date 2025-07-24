@@ -6,14 +6,10 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
   <script src="{% static 'js/apexchart/type-chart.js' %} " ></script>
-  <script src="{% static 'js/apexchart/draw_chart.js' %} " ></script>
+  <script src="{% static 'js/apexchart/chart-ramas.js' %} " ></script>
+ 
    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
-  <script src="{% static 'js/apexchart/supermercado/chart.js' %} " ></script>
-  <script src="{% static 'js/apexchart/vehiculo/chart.js' %} " ></script>
-  <script src="{% static 'js/apexchart/ipc/chart.js' %} " ></script>
-  <script src="{% static 'js/apexchart/construccion/chart.js' %} " ></script>
-  <script src="{% static 'js/apexchart/transferencia/chart.js' %} " ></script>
-  <script src="{% static 'js/apexchart/privado/chart.js' %} " ></script>
+  
  <!-- Fonts -->
  <link href="https://fonts.googleapis.com" rel="preconnect">
  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
@@ -121,6 +117,49 @@
             button.classList.add('active');
         }
     }
+
+     
+  function mostrarChartNacional() {
+    
+    const btnNacional = document.getElementById('btn-nacional').style.display = 'none'
+    const btnFormosa = document.getElementById('btn-formosa').style.display = 'block'
+    const containerNacional = document.getElementById("container-nacional");
+    const containerFormosa = document.getElementById("container-formosa");
+     // Eliminar clase invisible primero
+    containerNacional.classList.remove("invisible");
+
+    // Forzar reflujo para que la transición funcione
+    void containerNacional.offsetWidth;
+
+    // Mostrar con slide
+    containerNacional.classList.remove("slide-hidden");
+    containerNacional.classList.add("slide-visible");
+
+    // Reducir Formosa
+    containerFormosa.style.width = "50%";
+    containerFormosa.classList.remove("flex-fill");
+}
+
+
+  function mostrarChartFormosa() {
+   
+    const btnNacional = document.getElementById('btn-nacional').style.display = 'block'
+    const btnFormosa = document.getElementById('btn-formosa').style.display = 'none'
+    const containerNacional = document.getElementById("container-nacional");
+    const containerFormosa = document.getElementById("container-formosa");
+    // Aplicar slide de salida
+    containerNacional.classList.remove("slide-visible");
+    containerNacional.classList.add("slide-hidden");
+
+    // Restaurar Formosa
+    containerFormosa.style.width = "";
+    containerFormosa.classList.add("flex-fill");
+
+    // Ocultar después de la transición
+    setTimeout(() => {
+      containerNacional.classList.add("invisible");
+    }, 500); // 500ms = duración del transition
+  }
   </script>
   <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
   <script>

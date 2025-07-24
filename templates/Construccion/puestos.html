@@ -68,16 +68,6 @@
                                     </div>
                                 </div>
                             
-                                <div class="filtro-categoria">
-                                    <label for="categoria">Valor:</label>
-                                    <select id="valor" name="valor">
-                                        <option value="">Todas</option>
-                                        <option value="1">Formosa</option>
-                                        <option value="2">Nacional</option>
-                                    
-                                    </select>
-                                </div>
-                               
 
 
 
@@ -104,7 +94,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for data in data_variacion_puestos_table %}
+                                    {% for data in data_variacion %}
                                     <tr>
                                         <td>{{ data.mes }}</td>
                                         <td>{{ data.anio }}</td>
@@ -122,8 +112,20 @@
                         </div>
 
                         <div id="statsView" class="view">
-                            <div class="chart-style" id="chart-comparative"></div>
-                            <div class="chart-style" id="chart-basic"></div>
+                                  <!-- Botón para alternar los gráficos -->
+                          <button id="btn-nacional" onclick="mostrarChartNacional()" style="margin-bottom: 15px; display:block">
+                              Comprar con valor nacional
+                          </button>
+                          <button id="btn-formosa" onclick="mostrarChartFormosa()" style="margin-bottom: 15px; display:none">
+                              Ver gráfico formosa
+                          </button>
+                          <div id="contenedor-chart" class="d-flex" style="gap: 10px;">
+                          <div id="container-formosa" class="flex-fill transition-slide slide-visible">
+                            <div id="chart-formosa" style="height: 350px;"></div>
+                          </div>
+                          <div id="container-nacional" class="transition-slide slide-hidden invisible" style="width: 50%; height: 350px;">
+                            <div id="chart-nacional" style="height: 100%;"></div>
+                          </div>
                         </div>
                     </div>
             </div>
@@ -131,93 +133,23 @@
     </div>
 </div>
 <script>
-    function data_indicadores_salario(){
+  const datos = {{ diccionario_variacion|safe }};
+
+  area_chart_variation(
+    'chart-puestos-construccion',
+    datos,
+    'Variación mensual e interanual'
+  );
+
+  const data_chart_formosa = {{ data_chart_formosa|safe }};
+  column_chart_comparative('chart-formosa', data_chart_formosa, 'Empresas Constructoras:Formosa');
+
+  const data_chart_nacional = {{ data_chart_nacional|safe }};
+  column_chart_comparative('chart-nacional', data_chart_nacional, 'Empresas Constructoras: Nacional');
 
 
-
-        data_intermensual = []
-        data_interanual = []
-        data_total = []
-        meses = []
-        anio = ' '
-        valor = ' '
-        type = 0
-        const divComparative = document.getElementById("chart-comparative");
-        const divBasic = document.getElementById("chart-basic");
-        data_chart = {}
-
-        {% if type_graphic != 0 %}
-            type = 1;
-            divComparative.style.display = "block";
-            divBasic.style.display = "none";
-        
-        
-            {% for anio, ventas in chart_totales.items %}
-              
-                data_chart['{{ anio }}'] = [
-                    {% for venta in ventas %}
-                        {% if venta == None %}
-                            0
-                        {% else %}
-                            
-                            {{ venta }}
-                        {% endif %}
-                        {% if not forloop.last %},{% endif %}
-                    {% endfor %}
-
-                ];
-            
-            {% endfor %}
-        {% endif %}
-
-    
-        {% if type_graphic == 0 %}
-                
-                divBasic.style.display = "block";
-                divComparative.style.display = "none";
-                {% for x in salario_formosa %}
-                    {% if x.total_puesto_trabajo == None %}
-                        data_total.push('Sin datos')
-                    {% else %}
-                        data_total.push({{x.total_puesto_trabajo}})
-                    {% endif %}
-
-                {% endfor %}
-                
-        {% endif %}
-       
-
-        {% for item in indicadores_puestos_trabajo%}
-            {
-               meses.push('{{item.mes__mes}}' + " " + {{item.anio__anio}});
-
-               data_intermensual.push({{ item.variacion_intermensual }})
-               data_interanual.push({{ item.variacion_interanual}});
-              
-            }
-        {% endfor %}
-       
-        
-        return [data_intermensual,
-                data_interanual,
-                meses,
-                anio,
-                valor,
-                type,
-                data_chart,
-                data_total]
-        
-    }
-    
-    
-    
-   
-    // Inicializa la vista del gráfico al cargar la página
-    document.addEventListener("DOMContentLoaded", function() {
-        showView('chart');
-    });
-
-    data_construccion()
+  
+ 
     
 </script>
 

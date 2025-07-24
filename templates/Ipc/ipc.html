@@ -30,8 +30,8 @@
                         </p>
                     </blockquote>
                         <div class="toolbar">
-                            <button onclick="showView('chart')" class="active">📈 NEA</button>
-                            <button onclick="showView('stats')">📈 PAIS</button>
+                            <button onclick="showView('chart')" class="active">📈 NEA / PAIS</button>
+                            
                             <button onclick="showView('table')">📋</button>
                            
                         </div>
@@ -93,7 +93,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for data in data_variacion_ipc_table %}
+                                    {% for data in data_variacion %}
                                     <tr>
                                         <td>{{ data.mes__mes }}</td>
                                         <td>{{ data.anio__anio }}</td>
@@ -120,78 +120,14 @@
 </div>
 <script>
        
+ const datos = {{ diccionario_variacion|safe }};
 
-    function data_variacion_ipc_pais(){
-        data_intermensual = []
-        data_interanual= []
-        meses = []
+  area_chart_variation(
+    'chart-ipc-nea',
+    datos,
+    'Variación mensual e interanual NEA/PAIS'
+  );
 
-        
-        anio = ' '
-        valor = 'PAIS '
-        
-        
-       
-         {% for item in final_chart_data %}
-            {
-               meses.push('{{item.mes}}');
-               data_intermensual.push({{ item.variacion_nea }})
-               data_interanual.push({{ item.variacion_nacional}});
-              
-            }
-        {% endfor %}
-
-
-     
-       
-        return [data_intermensual,
-                data_interanual,
-                meses,
-                anio,
-                valor,
-                ]
-    }
-
-     function data_variacion_ipc_nea(){
-        
-
-        data_intermensual = []
-        data_interanual= []
-        meses = []
-        
-        anio = ' '
-        valor = ' '
-        
-        
-       
-
-        {% for data in data_variacion_nea %}
-            data_intermensual.push({{ data.variacion_intermensual }} );
-            data_interanual.push({{ data.variacion_interanual }});
-            meses.push('{{data.mes__mes}}' + " " + {{data.anio__anio}});
-            
-            
-            valor = '{{data.valor__valor}}'
-            
-        {% endfor %}
-
-
-        
-        return [data_intermensual,
-                data_interanual,
-                meses,
-               
-                anio,
-                valor,
-                ]
-    }
-    
-    
-   data_graficos_ipc()
-    
-    // Inicializa la vista del gráfico al cargar la página
-    document.addEventListener("DOMContentLoaded", function() {
-        showView('chart');
-    });
+ 
 </script>
 {% endblock container %}

@@ -69,15 +69,7 @@
                                     </div>
                                 </div>
                             
-                                <div class="filtro-categoria">
-                                    <label for="categoria">Valor:</label>
-                                    <select id="valor" name="valor">
-                                        <option value="">Todas</option>
-                                        <option value="1">Formosa</option>
-                                        <option value="2">Nacional</option>
-                                    
-                                    </select>
-                                </div>
+                                
                                
 
 
@@ -121,96 +113,46 @@
                         </div>
 
                         <div id="statsView" class="view">
-                            <div class="chart-style" id="chart-comparative"></div>
-                            <div class="chart-style" id="chart-basic"></div>
-                        </div>
+                            <!-- Botón para alternar los gráficos -->
+                          <button id="btn-nacional" onclick="mostrarChartNacional()" style="margin-bottom: 15px; display:block">
+                              Comprar con valor nacional
+                          </button>
+                          <button id="btn-formosa" onclick="mostrarChartFormosa()" style="margin-bottom: 15px; display:none">
+                              Ver gráfico formosa
+                          </button>
+                          <div id="contenedor-chart" class="d-flex" style="gap: 10px;">
+                          <div id="container-formosa" class="flex-fill transition-slide slide-visible">
+                            <div id="chart-formosa" style="height: 350px;"></div>
+                          </div>
+                          <div id="container-nacional" class="transition-slide slide-hidden invisible" style="width: 50%; height: 350px;">
+                            <div id="chart-nacional" style="height: 100%;"></div>
+                          </div>                        
                     </div>
             </div>
         </div>
     </div>
 </div>
 <script>
-    
+   
 
-    function data_variacion_corriente(){
-        data_intermensual = []
-        data_interanual = []
-        data_total = []
-        meses = []
-        anio = ' '
-        valor = ' '
-        type = 0
-        const divComparative = document.getElementById("chart-comparative");
-        const divBasic = document.getElementById("chart-basic");
-        data_chart = {}
+  const datos = {{ diccionario_variacion|safe }};
 
-        {% if type_graphic != 0 %}
-        type = 1;
-        divComparative.style.display = "block";
-        divBasic.style.display = "none";
-      
-       
-        {% for anio, ventas in context_chart.items %}
-        data_chart['{{ anio }}'] = [
-            {% for venta in ventas %}
-                {% if venta == None %}
-                    0
-                {% else %}
-                    {{ venta }}
-                {% endif %}
-                {% if not forloop.last %},{% endif %}
-            {% endfor %}
+  area_chart_variation(
+    'chart-constante',
+     datos,
+    'Variación mensual e interanual'
+  );
 
-        ];
-        {% endfor %}
-        
-        {% endif %}
-       
+  const data_chart_formosa = {{ data_chart_formosa|safe }};
+  column_chart_comparative('chart-formosa', data_chart_formosa, 'Ventas totales:Formosa');
 
-        {% for data in data_variacion %}
-            data_intermensual.push({{ data.variacion_intermensual }});
-            data_interanual.push({{ data.variacion_interanual }});
-            meses.push('{{data.mes__mes}}' + " " + {{data.anio__anio}});
-            
-            anio = {{data.anio__anio}};
-            valor = '{{data.valor__valor}}'
-            {% if type_graphic == 0 %}
-                divBasic.style.display = "block";
-                divComparative.style.display = "none";
-      
-                {% if data.venta_total == None %}
-                    data_total.push('Sin datos')
-                {% else %}
-                    data_total.push({{data.venta_total}})
-                {% endif %}
-                
-            {% endif %}
-        {% endfor %}
-        
-        return [data_intermensual,
-                data_interanual,
-                meses,
-                anio,
-                valor,
-                type,
-                data_chart,
-                data_total]
-    }
-    
-    
-    data_graficos_supermercado()
+  const data_chart_nacional = {{ data_chart_nacional|safe }};
+  column_chart_comparative('chart-nacional', data_chart_nacional, 'Ventas totales: Nacional');
 
-    
-    
-    // Inicializa la vista del gráfico al cargar la página
-    document.addEventListener("DOMContentLoaded", function() {
-        showView('chart');
-    });
 
-    
+  
+ 
 </script>
-
-
 
 
 {% endblock container %}

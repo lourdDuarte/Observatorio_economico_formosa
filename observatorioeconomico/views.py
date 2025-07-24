@@ -81,7 +81,7 @@ def generar_panel_json(
 
     
     panel_data["Supermercado"] = {
-        "icon": "fa-shopping-cart",
+        "icon": "../static/img/icons/marketplace-store_14897272.png",
         "Precio Corriente": obtener_datos_de_modelo(
             modelo_django=supermercado,
             anio_id=7,
@@ -98,7 +98,7 @@ def generar_panel_json(
         )
     }
     panel_data["Auto"] ={
-        "icon": "fa-solid fa-car",
+        "icon": "../static/img/icons/car-rear_11747026.png",
         "Patentamiento": obtener_datos_de_modelo(
             modelo_django = vehiculo,
             anio_id= 7,
@@ -117,7 +117,7 @@ def generar_panel_json(
         ),
     }
     panel_data["Moto"] ={
-        "icon": "fa-solid fa-motorcycle",
+        "icon": "../static/img/icons/moped_11747100.png",
         "Patentamiento": obtener_datos_de_modelo(
             modelo_django = vehiculo,
             anio_id= 7,
@@ -136,7 +136,7 @@ def generar_panel_json(
         ),
     }
     panel_data["Sector privado"] ={
-        "icon": "fas fa-suitcase",
+        "icon": "../static/img/icons/briefcase-dollar_19000214.png",
         "Evolucion empleo": obtener_datos_de_modelo(
             modelo_django = privado,
             anio_id= 7,
@@ -148,7 +148,7 @@ def generar_panel_json(
        
     }
     panel_data["IPC"] ={
-        "icon": "fa-signal",
+        "icon": "../static/img/icons/stats_10513377.png",
          "Indice precio al consumidor (NEA)": obtener_datos_de_modelo(
             modelo_django = ipc,
             anio_id= 7,
@@ -159,7 +159,7 @@ def generar_panel_json(
        
     }
     panel_data["Sector construccion"] ={
-        "icon": "fa-wrench",
+        "icon": "../static/img/icons/wrench-alt_11270131.png",
         "Puestos de trabajo": obtener_datos_de_modelo(
             modelo_django = construccion,
             anio_id= 7,
@@ -171,7 +171,7 @@ def generar_panel_json(
        
     }
     panel_data["Transferencias automaticas Formosa"] ={
-        "icon": "fa-dollar-sign",
+        "icon": "../static/img/icons/money-coin-transfer_15355096.png",
         "Transferencias": obtener_datos_de_modelo(
             modelo_django = transferencia,
             anio_id= 7,

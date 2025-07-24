@@ -16,7 +16,7 @@
             <div class="card-body">
                 
                 <div class="typography-line">
-                    <h3 class="color-typography"><span>Comparador de Indicadores Economicos</h3>
+                    <h3 class="color-typography"><span>Comparador de Variaciones Economicas</h3>
                 </div>
                 <div class="typography-line">
                     
@@ -38,7 +38,7 @@
                             <div class="filtros-contenedor">
                                 <div class="filtro-anios">
                                     <label>Años:</label>
-                                    <div class="anio_inicio">
+                                      <div class="anio_inicio">
                                         <select name="anio_inicio">
                                             <option value="">Desde</option>
                                             <option value="2">2020</option>
@@ -60,13 +60,13 @@
                                             <option value="7">2025</option>
                                             
                                         </select>
-                                    </div>
+                                      </div>
                                 </div>
                                
                                   <div class="filtro-anios">
                                     <label>Indicador economico:</label>
                                       <div class="anio_inicio">
-                                        <select name="model_context1">
+                                        <select name="modelo_uno">
                                             <option value='0' selected>Dato</option>
                                             <option value="Patentamiento - auto">Patentamiento - auto</option>
                                             <option value="Transferencia - auto">Transferencia - auto</option>
@@ -79,11 +79,7 @@
                                             <option value="Privado - evolucion de empleo">Privado - evolucion de empleo</option>
                                             
                                         </select>
-                                        <span>—</span>
-                                        <select name="value1">
-                                              <option value='0' selected>Valor</option>
-                                              <option value="1">Formosa</option>
-                                              <option value="2">Nacional</option>
+                                        
                                               
                                             
                                         </select>
@@ -92,7 +88,7 @@
                                 <div class="filtro-anios">
                                     <label>Indicador economico:</label>
                                     <div class="anio_inicio">
-                                        <select name="model_context2">
+                                        <select name="modelo_dos">
                                             <option value='0' selected>Dato</option>
                                             <option value="Patentamiento - auto">Patentamiento - auto</option>
                                             <option value="Transferencia - auto">Transferencia - auto</option>
@@ -105,14 +101,7 @@
                                             <option value="Privado - evolucion de empleo">Privado - evolucion de empleo</option>
                                             
                                         </select>
-                                        <span>—</span>
-                                        <select name="value2">
-                                              <option value='0' selected>Valor</option>
-                                              <option value="1">Formosa</option>
-                                              <option value="2">Nacional</option>
-                                              
-                                            
-                                        </select>
+                                        
                                     </div>
                                 </div>
                                 <button type="submit">Comparar</button>
@@ -146,60 +135,40 @@
             button.classList.add('active');
         }
     }
-var options = {
-          series: [{
-            name: "Session Duration",
-            data: [45, 52, 38, 24, 33, 26, 21, 20, 6, 8, 15, 10]
-          },
-          {
-            name: "Session Durations",
-            data: [35, 41, 62, 42, 13, 18, 29, 37, 36, 51, 32, 35]
-          },
-          {
-            name: 'Session Duration',
-            data: [87, 57, 74, 99, 75, 38, 62, 47, 82, 56, 45, 47]
-          },
-          {
-            name: 'Session Duration',
-            data: [83, 57, 14, 80, 70, 48, 52, 37, 22, 16, 35, 27]
-          }
-        ],
-          chart: {
-          height: 350,
-          
-          zoom: {
-            enabled: true
-          },
-        },
-        dataLabels: {
-          enabled: false
-        },
-        
-        title: {
-          text: 'Page Statistics',
-          align: 'left'
-        },
-        legend: {
-          tooltipHoverFormatter: function(val, opts) {
-            return val + ' - <strong>' + opts.w.globals.series[opts.seriesIndex][opts.dataPointIndex] + '</strong>'
-          }
-        },
-       
-        xaxis: {
-          categories: ['01 Jan', '02 Jan', '03 Jan', '04 Jan', '05 Jan', '06 Jan', '07 Jan', '08 Jan', '09 Jan',
-            '10 Jan', '11 Jan', '12 Jan'
-          ],
-        },
-        
-        grid: {
-          borderColor: '#f1f1f1',
-        }
-        };
+ 
+     const serieUno = JSON.parse('{{ serie_uno|safe }}');
+    const serieDos = JSON.parse('{{ serie_dos|safe }}');
+    
+  // Unimos ambas series
+  const categorias = serieUno.categorias || serieDos.categorias;
 
-        var chart = new ApexCharts(document.querySelector("#chart"), options);
-        chart.render();
-      
-   
+  const series = [];
+
+  for (const [key, values] of Object.entries(serieUno)) {
+    if (key !== 'categorias') {
+      series.push({ name: key, data: values });
+    }
+  }
+
+  for (const [key, values] of Object.entries(serieDos)) {
+    if (key !== 'categorias') {
+      series.push({ name: key, data: values });
+    }
+  }
+
+  const options = {
+    chart: {
+      type: 'line',
+      height: 400
+    },
+    series: series,
+    xaxis: {
+      categories: categorias
+    }
+  };
+
+  const chart = new ApexCharts(document.querySelector("#chart"), options);
+  chart.render();
     
   
 </script>

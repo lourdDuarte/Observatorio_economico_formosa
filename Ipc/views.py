@@ -7,10 +7,9 @@ class IpcViewConfig:
 
     CONTEXT_KEYS = {
         
-            'data_variacion_nea':'data_variacion_nea',
-            'data_variacion_nacion': 'data_variacion_nacion',
-            'data_variacion_ipc_table': 'data_variacion_ipc_table',
-            'final_chart_data':  'final_chart_data'
+            'data_variacion':'data_variacion',
+            'diccionario_variacion': 'diccionario_variacion',
+            
     
     }
 

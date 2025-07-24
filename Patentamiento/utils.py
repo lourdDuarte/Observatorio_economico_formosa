@@ -2,7 +2,7 @@
 from Patentamiento.models import Indicadores
 from django.shortcuts import render
 from Mes.models import *
-
+import json
 from django.http import HttpRequest, HttpResponse
 from typing import Dict, Any, Optional
 from collections import defaultdict
@@ -49,14 +49,14 @@ class VehiculoDataProcessor:
                 anio_id__lte=params['anio_fin'],
                 movimiento_vehicular_id=tipo_movimiento,
                 tipo_vehiculo_id = tipo_vehiculo,
-                valor_id=params['valor']
+               
             ).order_by('anio__anio', 'mes__id')
         else:
             return cls.get_data_variaciones(
                 anio_id=cls.DEFAULT_YEAR,
                 movimiento_vehicular_id=tipo_movimiento,
                 tipo_vehiculo_id = tipo_vehiculo,
-                valor_id=cls.DEFAULT_VALUE
+                
             )
         
 
@@ -65,56 +65,100 @@ class VehiculoDataProcessor:
         try:
             anio_inicio = request.GET.get('anio_inicio')
             anio_fin = request.GET.get('anio_fin')
-            valor = request.GET.get('valor')
-            
-            if anio_inicio and anio_fin and anio_inicio < anio_fin and valor:     
+           
+
+   
+
+            filtros = {}
+            if anio_inicio:
+                filtros['anio_inicio'] = int(anio_inicio)
+            if anio_fin:
+                filtros['anio_fin'] = int(anio_fin)
+           
+
+           
+
+               
                 return {
-                    'anio_inicio': int(anio_inicio),
-                    'anio_fin': int(anio_fin),
-                    'valor':int(valor),
-                    'is_valid' : True,
-                    'error_message': None
-                }
+                    **filtros,
+                    'is_valid': True,
+                    'error_message': None,
+                    
+                }   
             else:
                 return {
-                    'anio_inicio': None,
-                    'anio_fin': None,
-                    'valor':None,
-                    'is_valid' : False,
-                    'error_message': 'filtros invalidos, intente nuevamente'
+                    **filtros,
+                    'is_valid': False,
+                    'error_message': None,
+                    
                 }
-
         except ValueError:
-             return {
-                    'anio_inicio': None,
-                    'anio_fin': None,
-                    'valor':None,
-                    'is_valid' : False,
-                    'error_message': 'Los filtros ingresados no son validos'
-                }
-        
+            return {
+                'anio_inicio': None,
+                'anio_fin': None,
+                'is_valid': False,
+                'error_message': "Los filtros ingresados no son válidos."
+            }
     @staticmethod
     def process_chart_data_totales(data_variacion: QuerySet) -> Dict[str, list]:
-        """
-        Procesa los datos para generar información de gráficos.
-        
-        Args:
-            data_variacion: QuerySet con datos de variaciones
-            
-        Returns:
-            Dict con datos organizados por año para gráficos
-        """
-        chart_totales = defaultdict(list)
-        
+        context_chart_formosa = defaultdict(list)
+        context_chart_nacional = defaultdict(list)
+
         for item in data_variacion:
             anio = item['anio__anio']
-            venta_total = item['total']
-            if venta_total is not None:
-                chart_totales[anio].append(venta_total)
-        
-        return dict(chart_totales)
+            venta_total = item['total'] or 0  # Reemplaza None por 0
+
+            if item['valor__valor'] == 'Formosa':
+                context_chart_formosa[anio].append(venta_total)
+            elif item['valor__valor'] == 'Nacional':
+                context_chart_nacional[anio].append(venta_total)
+
+        return {
+            'Formosa': dict(context_chart_formosa),
+            'Nacional': dict(context_chart_nacional)
+        }
     
 
+
+def diccionario(queryset):
+    formosa_intermensual = []
+    formosa_interanual = []
+    nacional_intermensual = []
+    nacional_interanual = []
+    meses = []
+
+    # Para mantener el orden, usamos listas separadas para cada región con su mes
+    meses_formosa = []
+    meses_nacional = []
+
+    for item in queryset:
+        mes = item['mes__mes'] + " " +  str(item['anio__anio'])
+        region = item['valor__valor']
+        intermensual = float(item['variacion_intermensual'])
+        interanual = float(item['variacion_interanual'])
+
+        if region == 'Formosa':
+            formosa_intermensual.append(intermensual)
+            formosa_interanual.append(interanual)
+            meses_formosa.append(mes)
+        elif region == 'Nacional':
+            nacional_intermensual.append(intermensual)
+            nacional_interanual.append(interanual)
+            meses_nacional.append(mes)
+
+    # Obtener la cantidad mínima común
+    minimo = min(len(formosa_intermensual), len(nacional_intermensual))
+
+    # Recortar todas las listas al mismo tamaño
+    datos = {
+        'meses': meses_formosa[:minimo],  # o meses_nacional[:minimo], ambos deberían coincidir en orden
+        'Valor intermensual Formosa': formosa_intermensual[:minimo],
+        'Valor interanual Formosa': formosa_interanual[:minimo],
+        'Valor intermensual Nacional': nacional_intermensual[:minimo],
+        'Valor interanual Nacional': nacional_interanual[:minimo],
+    }
+
+    return datos
 
 def process_vehiculo_data(request:HttpRequest, tipo_vehiculo: int, tipo_movimiento: int, context_keys: Dict[str, str], template: str) -> HttpResponse:
     
@@ -126,21 +170,36 @@ def process_vehiculo_data(request:HttpRequest, tipo_vehiculo: int, tipo_movimien
    
     
     data_variacion = processor.get_filtered_data(tipo_vehiculo, tipo_movimiento, params)
-  
-    if params['is_valid']:
-        type_graphic = 1
-        chart_totales = processor.process_chart_data_totales(data_variacion)
-    else:
-        type_graphic = 0
-        chart_totales = {}
+    diccionario_variacion = diccionario(data_variacion)
+    
+    context_chart = processor.process_chart_data_totales(data_variacion)
+    
 
     # Construir contexto
     context = {
         'error_message': params['error_message'],
         context_keys['data_variacion']: data_variacion,
-        context_keys['chart_totales']: chart_totales,
-        context_keys['type_graphic']: type_graphic,
+        context_keys['diccionario_variacion']: diccionario_variacion,
+        'data_chart_formosa': json.dumps(context_chart['Formosa']),
+        'data_chart_nacional': json.dumps(context_chart['Nacional']),
+       
+       
         'meses': meses,
     }
     
     return render(request, template, context)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

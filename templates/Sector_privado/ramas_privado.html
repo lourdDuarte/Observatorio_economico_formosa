@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head_content %}
+
+    
+    <!DOCTYPE html>
+    
+      
+
+{% endblock head_content %}
+{% block container %}
+<div class="content">
+    <div class="row">
+        <div class="col-md-12">
+            
+            <div class="card-body">
+                
+                <div class="typography-line">
+                    <h3 class="color-typography"><span>Sector privado -</span> Trabajadores por rama de actividad </h3>
+                </div>
+                <div class="typography-line">
+                    
+                    <blockquote>
+                        <p class="blockquote blockquote-primary">
+                        El último dato disponible (cuarto trimestre de 2024), 
+                        deja ver que las actividades económicas que más puestos de trabajo asalariado generaron en la 
+                        provincia fueron las relacionadas al comercio (30,9%) 
+                        del total de trabajadores y la construcción (10,8%). En el tercer trimestre de 2024, el sector de la construcción en la provincia de Formosa empleó a 2.441 trabajadores asalariados, lo que representa un marcado descenso en comparación con los 4.165 registrados en el mismo período de 2023. Esta caída refleja una disminución significativa en la participación de la construcción en el total de trabajadores de la provincia, que pasó del 16% en el tercer trimestre de 2023 al 10,8% en 2024. La reducción en la cantidad de trabajadores vinculados a esta actividad esta estrechamente relacionado a la paralización de la obras públicas nacionales.
+</p>
+                    </blockquote>
+                        <div class="toolbar">
+                            <button onclick="showView('chart')" class="active">📈</button>
+                            {% comment %} <button onclick="showView('stats')">📊</button> {% endcomment %}
+                            <button onclick="showView('table')">📋</button>
+                           
+                        </div>
+                        <form method= "GET" action="{% url 'sector-privado-ramas' %} ">
+                            {% csrf_token %}
+                            <div class ="content-error">
+                                
+                                {% if error_message %}
+                                    {{error_message}}
+                                {%endif%}
+                            </div>
+                        
+                            <div class="filtros-contenedor">
+                                <div class="filtro-anios">
+                                    <label>Años:</label>
+                                    <div class="anio_inicio">
+                                        <select name="anio_inicio">
+                                            <option value="">Desde</option>
+                                            <option value="2">2020</option>
+                                            <option value="3">2021</option>
+                                            <option value="4">2022</option>
+                                            <option value="5">2023</option>
+                                            <option value="6">2024</option>
+                                            <option value="7">2025</option>
+                                            
+                                        </select>
+                                        <span>—</span>
+                                        <select name="anio_fin">
+                                            <option value="">Hasta</option>
+                                            <option value="2">2020</option>
+                                            <option value="3">2021</option>
+                                            <option value="4">2022</option>
+                                            <option value="5">2023</option>
+                                            <option value="6">2024</option>
+                                            <option value="7">2025</option>
+                                            
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="filtro-anios">
+                                    <label>Trimestres:</label>
+                                    <div class="trimestre_inicio">
+                                        <select name="trimestre_inicio">
+                                            <option value="">Desde</option>
+                                            <option value="1">Primer trimestre</option>
+                                            <option value="2">Segundo trimestre</option>
+                                            <option value="3">Tercer trimestre</option>
+                                            <option value="4">Cuarto trimestre</option>
+                                            
+                                            
+                                        </select>
+                                        <span>—</span>
+                                        <select name="trimestre_fin">
+                                            <option value="">Hasta</option>
+                                            <option value="1">Primer trimestre</option>
+                                            <option value="2">Segundo trimestre</option>
+                                            <option value="3">Tercer trimestre</option>
+                                            <option value="4">Cuarto trimestre</option>
+                                            
+                                        </select>
+                                    </div>
+                                </div>
+                            
+                                
+
+
+                            
+                                <button type="submit">Aplicar filtros</button>
+                            </div>     
+                        </form>
+                        <div id="chartView" class="view active">
+                            <div id="backButton" style="display: none; margin-bottom: 10px;">
+                              <button onclick="volverAGraficoPrincipal()">← Volver al gráfico principal</button>
+                            </div>
+
+                            <div class="chart-style" id="chart-ramas"></div>
+                        </div>
+
+                        <div id="tableView" class="view">
+                          <table id="example" class="stripe row-border order-column" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        
+                                        <th>Año</th>
+                                        <th>Trimestre</th>
+                                        <th>Rama</th>
+                                        <th>Cantidad</th>
+                                        
+                                       
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for data in data_variacion %}
+                                    <tr>
+                                    
+                                        <td>{{ data.anio__anio }}</td>
+                                        <td>{{ data.trimestre__trimestre }}</td>
+                                        <td>{{ data.rama__rama }}</td>
+                                        <td>{{ data.cantidad }}</td>
+                                        
+                                    </tr>
+                                    {% empty %}
+                                    <tr><td colspan="5">No hay datos disponibles.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="statsView" class="view">
+                      
+                            <div class="chart-style" id="chart-basic"></div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    
+const chartData = JSON.parse('{{ chart_data_json|escapejs }}');
+chart_dynamic_column_chart_comparative(chartData)
+    
+    // Inicializa la vista del gráfico al cargar la página
+    document.addEventListener("DOMContentLoaded", function() {
+        showView('chart');
+    });
+
+    
+</script>
+
+
+
+
+
+
+{% endblock container %}
+
+
+
+

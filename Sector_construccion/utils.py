@@ -7,18 +7,13 @@ from django.http import HttpRequest, HttpResponse
 from Anio.views import *
 from collections import defaultdict
 from django.db.models import OuterRef, Subquery, QuerySet
-
+import json
 
 
 class ConstruccionProcessor:
 
     # Constantes de configuración
     DEFAULT_YEAR = 7
-    DEFAULT_VALUE = 1
-
-   
-
-
 
     @staticmethod
     def get_data_model_sector_construccion(**kwargs) -> dict:
@@ -27,7 +22,6 @@ class ConstruccionProcessor:
         
         return SectorConstruccion.objects.select_related('mes', 'anio', 'valor').values(
             'mes__mes',
-            'mes',
             'anio__anio',
             'valor__valor',
             'total_empresas',
@@ -36,11 +30,96 @@ class ConstruccionProcessor:
         
         ).filter(**kwargs)
     
+    @classmethod
+    def get_filter_data_model_construccion(cls,  params: Dict[str, Any]) -> QuerySet:
+        """
+        Obtiene datos filtrados según los parámetros.
+        
+        Returns:
+            QuerySet con los datos filtrados
+        """
+        if params['is_valid']:
+           
+            return cls.get_data_model_sector_construccion(
+               
+                anio_id__gte=params['anio_inicio'],
+                anio_id__lte=params['anio_fin']).order_by('anio__anio', 'mes__id')
+        else:
+            
+            return cls.get_data_model_sector_construccion(
+                anio_id=cls.DEFAULT_YEAR,
+                
+            )
+        
+    @classmethod
+    def procces_request_parameters(cls, request: HttpRequest,) -> Dict[str,any]:
+        try:
+            anio_inicio = request.GET.get('anio_inicio')
+            anio_fin = request.GET.get('anio_fin')
+           
+
+   
+
+            filtros = {}
+            if anio_inicio:
+                filtros['anio_inicio'] = int(anio_inicio)
+            if anio_fin:
+                filtros['anio_fin'] = int(anio_fin)
+           
+
+           
+
+               
+                return {
+                    **filtros,
+                    'is_valid': True,
+                    'error_message': None,
+                    
+                }   
+            else:
+                return {
+                    **filtros,
+                    'is_valid': False,
+                    'error_message': None,
+                    
+                }
+        except ValueError:
+            return {
+                'anio_inicio': None,
+                'anio_fin': None,
+                'is_valid': False,
+                'error_message': "Los filtros ingresados no son válidos."
+            }
+   
+
     @staticmethod
-    def get_data_model_indicadores(**kwargs) -> dict:
+    def process_chart_data_totales(value_total, data_variacion: QuerySet) -> Dict[str, list]:
+        context_chart_formosa = defaultdict(list)
+        context_chart_nacional = defaultdict(list)
+       
+        for item in data_variacion:
+            anio = item['anio__anio']
+            total = item[value_total] or 0  # Reemplaza None por 0
+
+            if item['valor__valor'] == 'Formosa':
+                context_chart_formosa[anio].append(total)
+            elif item['valor__valor'] == 'Nacional':
+                context_chart_nacional[anio].append(total)
+
+        return {
+            'Formosa': dict(context_chart_formosa),
+            'Nacional': dict(context_chart_nacional)
+        }
+   
+
+class ConstruccionIndicadoresProcessor:
+    # Constantes de configuración
+    DEFAULT_YEAR = 7
+
+    @staticmethod
+    def get_data_model_indicadores_construccion(**kwargs) -> dict:
         
 
-        
         return Indicadores.objects.select_related('mes', 'anio', 'valor').values(
             'mes__mes',
             'mes',
@@ -53,62 +132,10 @@ class ConstruccionProcessor:
         
         ).filter(**kwargs)
     
-        
 
 
     @classmethod
-    def process_validate_salarios_construccion(cls,data):
-            meses_vistos = set()  # Almacena pares (mes, año)
-
-            #Validación de Meses Repetidos 
-            for item_validacion in data:
-                mes_nombre = item_validacion['mes__mes']
-                anio = item_validacion['anio__anio']
-                valor_tipo = item_validacion['valor__valor']
-                
-                clave_mes_anio = (mes_nombre, anio)
-                
-                if clave_mes_anio in meses_vistos:
-                    pass
-                else:
-                    #Mes encontrado por primera vez
-                    meses_vistos.add(clave_mes_anio)
-            
-            grouped_data = defaultdict(lambda: {'Formosa': None, 'Nacional': None, 'mes_nombre': None, 'anio': None})
-
-            for item in data:
-                mes_id = item['mes']
-                mes_nombre = item['mes__mes']
-                anio = item['anio__anio']
-                valor_tipo = item['valor__valor'] 
-                salario = item['salario_promedio']
-
-                clave = (anio, mes_id)
-
-                grouped_data[clave]['mes_nombre'] = mes_nombre
-                grouped_data[clave]['anio'] = anio
-
-                if valor_tipo == 'Formosa':
-                    grouped_data[clave]['Formosa'] = salario
-                elif valor_tipo == 'Nacional':
-                    grouped_data[clave]['Nacional'] = salario
-
-            # Armamos la lista final, ordenando por año y mes
-            final_chart_data = []
-
-            for clave in sorted(grouped_data.keys()):  # Ordena por (año, mes_id)
-                entry = grouped_data[clave]
-                if entry['Formosa'] is not None and entry['Nacional'] is not None:
-                    final_chart_data.append({
-                        'mes': f"{entry['mes_nombre']} {entry['anio']}",
-                        'salario_formosa': float(entry['Formosa']),
-                        'salario_nacional': float(entry['Nacional'])
-                    })
-
-            return final_chart_data
-    
-    @classmethod
-    def get_filter_data_model_construccion(cls, value:int,  params: Dict[str, Any]) -> QuerySet:
+    def get_filter_data_model_indicadores_construccion(cls,tipo_dato:int,  params: Dict[str, Any]) -> QuerySet:
         """
         Obtiene datos filtrados según los parámetros.
         
@@ -117,153 +144,161 @@ class ConstruccionProcessor:
         """
         if params['is_valid']:
            
-            return cls.get_data_model_sector_construccion(
-                valor_id = value,
+            return cls.get_data_model_indicadores_construccion(
+                tipo_dato = tipo_dato,
                 anio_id__gte=params['anio_inicio'],
                 anio_id__lte=params['anio_fin']).order_by('anio__anio', 'mes__id')
         else:
             
-            return cls.get_data_model_sector_construccion(
-                anio_id=cls.DEFAULT_YEAR,
-                valor_id = value
-            )
-        
-    @classmethod
-    def get_filter_data_model_indicadores(cls, tipo_dato:int,  params: Dict[str, Any]) -> QuerySet:
-        """
-        Obtiene datos filtrados según los parámetros.
-        
-        Returns:
-            QuerySet con los datos filtrados
-        """
-        if params['is_valid']:
-           
-            return cls.get_data_model_indicadores(
+            return cls.get_data_model_indicadores_construccion(
                 tipo_dato = tipo_dato,
-                anio_id__gte=params['anio_inicio'],
-                anio_id__lte=params['anio_fin'],
-                valor_id = params['valor']).order_by('anio__anio', 'mes__id')
-        else:
-            
-            return cls.get_data_model_indicadores(
-               anio_id=cls.DEFAULT_YEAR,
-               tipo_dato = tipo_dato,
-               valor_id = cls.DEFAULT_VALUE
+                anio_id=cls.DEFAULT_YEAR,
+                
             )
-    @staticmethod
-    def process_context_totales_construccion(type_date, data_variacion: QuerySet) -> Dict[str, list]:
-            """
-            Procesa los datos para generar información de gráficos.
-            
-            Args:
-                data_variacion: QuerySet con datos de variaciones
-                
-            Returns:
-                Dict con datos organizados por año para gráficos
-            """
-            chart_totales = defaultdict(list)
-            
-            for item in data_variacion:
-                anio = item['anio__anio']
-                
-                total = item[type_date]
-                if total is not None:
-                        
-                    chart_totales[anio].append(total)
-            
-            return dict(chart_totales)
-
-    @classmethod
-    def procces_request_parameters(cls, request: HttpRequest,) -> Dict[str,any]:
-        try:
-            anio_inicio = request.GET.get('anio_inicio')
-            anio_fin = request.GET.get('anio_fin')
-
-            valor = request.GET.get('valor')
-            if anio_inicio and anio_fin:
-                return {
-                    'anio_inicio': int(anio_inicio),
-                    'anio_fin': int(anio_fin),
-                    'valor':int(valor),
-                    'is_valid' : True,
-                    'error_message': None
-                }
-            else:
-                return {
-                    'anio_inicio': None,
-                    'anio_fin': None,
-                    'valor': None,
-                    'is_valid' : False,
-                    'error_message': None
-                }
-
-        except ValueError:
-             return {
-                    'anio_inicio': None,
-                    'anio_fin': None,
-                    'valor': None,
-                    'is_valid' : False,
-                    'error_message': False
-                }
-        
         
 
 
-def process_construccion_data(request:HttpRequest, tipo_dato:int, value_totales:str, context_keys: Dict[str, str], template: str) -> HttpResponse:
+def diccionario_salario(queryset): 
+
+
+    formosa_salario_promedio = []
     
-    #variables de configuracion
-    DEFAULT_FORMOSA = 1
-    DEFAULT_NACION = 2
-    meses = Mes.objects.all()
+    nacional_salario_promedio = []
+    
+
+    # Para mantener el orden, usamos listas separadas para cada región con su mes
+    meses_formosa = []
+    meses_nacional = []
+
+    for item in queryset:
+        mes = item['mes__mes'] + " " +  str(item['anio__anio'])
+        region = item['valor__valor']
+        salario_promedio = float(item['salario_promedio'])
+        
+
+        if region == 'Formosa':
+            formosa_salario_promedio.append(salario_promedio)
+            
+            meses_formosa.append(mes)
+        elif region == 'Nacional':
+            nacional_salario_promedio.append(salario_promedio)
+            
+            meses_nacional.append(mes)
+
+    # Obtener la cantidad mínima común
+    minimo = min(len( formosa_salario_promedio), len(nacional_salario_promedio))
+
+    # Recortar todas las listas al mismo tamaño
+    datos = {
+        'meses': meses_formosa[:minimo],  # o meses_nacional[:minimo], ambos deberían coincidir en orden
+        'Salario promedio Formosa': formosa_salario_promedio[:minimo],
+        'Salario promedio Nacional': nacional_salario_promedio[:minimo],
+        
+    }
+
+    return datos
+
+
+def diccionario_indicadores(queryset):
+    formosa_intermensual = []
+    formosa_interanual = []
+    nacional_intermensual = []
+    nacional_interanual = []
+    meses = []
+
+    # Para mantener el orden, usamos listas separadas para cada región con su mes
+    meses_formosa = []
+    meses_nacional = []
+
+    for item in queryset:
+        mes = item['mes__mes'] + " " +  str(item['anio__anio'])
+        region = item['valor__valor']
+        intermensual = float(item['variacion_intermensual'])
+        interanual = float(item['variacion_interanual'])
+
+        if region == 'Formosa':
+            formosa_intermensual.append(intermensual)
+            formosa_interanual.append(interanual)
+            meses_formosa.append(mes)
+        elif region == 'Nacional':
+            nacional_intermensual.append(intermensual)
+            nacional_interanual.append(interanual)
+            meses_nacional.append(mes)
+
+    # Obtener la cantidad mínima común
+    minimo = min(len(formosa_intermensual), len(nacional_intermensual))
+
+    # Recortar todas las listas al mismo tamaño
+    datos = {
+        'meses': meses_formosa[:minimo],  # o meses_nacional[:minimo], ambos deberían coincidir en orden
+        'Valor intermensual Formosa': formosa_intermensual[:minimo],
+        'Valor interanual Formosa': formosa_interanual[:minimo],
+        'Valor intermensual Nacional': nacional_intermensual[:minimo],
+        'Valor interanual Nacional': nacional_interanual[:minimo],
+    }
+
+    return datos
+
+
+
+
+def process_contruccion_salario_data(request:HttpRequest, value_totales:str, context_keys: Dict[str, str], template: str) -> HttpResponse:
+
     processor = ConstruccionProcessor
 
-    #se obtiene valores GET desde formulario
+    meses = Mes.objects.all()
+
     params = processor.procces_request_parameters(request)
 
+    data_variacion = processor.get_filter_data_model_construccion(params)
+    salario_promedio_diccionario = diccionario_salario(data_variacion)
+    context_chart = processor.process_chart_data_totales(value_totales, data_variacion)
 
-    #si no se pasaron params se define el filtro al valor FORMOSA (1)
-    if params['valor'] is None:
-        FILTER = DEFAULT_FORMOSA
-    else:
-        FILTER = params['valor']
-   
-    #******* context for template salarios ********* #
+     # Construir contexto
+    context = {
+        'error_message': params['error_message'],
+        context_keys['data_variacion']: data_variacion,
+        context_keys['salario_promedio_diccionario']: salario_promedio_diccionario,
+        'data_chart_formosa': json.dumps(context_chart['Formosa']),
+        'data_chart_nacional': json.dumps(context_chart['Nacional']),
+        'meses': meses,
+    }
+    
+    return render(request, template, context)
 
-    #se obtiene valores para concatenar y pasar a la funcion final de salarios
-    salario_formosa = processor.get_filter_data_model_construccion(DEFAULT_FORMOSA, params)
-    salario_nacion = processor.get_filter_data_model_construccion(DEFAULT_NACION,params)
-   
-    #concatenacion de valores final para obtener salarios F/N
-    data_tabla_salarios = salario_formosa | salario_nacion 
-   
-    #lista final de salarios
-    salarios_promedios = processor.process_validate_salarios_construccion(data_tabla_salarios)
-    
-    #******* context for template salarios ********* 
-    
-    #
-    data_totales = processor.get_filter_data_model_construccion(FILTER, params) 
-    
-    
-    
-    # ******** puestos trabajo 
-    indicadores_puestos_trabajo = processor.get_filter_data_model_indicadores(tipo_dato, params)
 
-    data_variacion_puestos_table = data_totales
+def process_contruccion_puestos_data(request:HttpRequest,tipo_dato:int, value_totales:str, context_keys: Dict[str, str], template: str) -> HttpResponse:
+
+    processor = ConstruccionIndicadoresProcessor
+    construccion = ConstruccionProcessor
+
+    meses = Mes.objects.all()
+
+    params = construccion.procces_request_parameters(request)
+
+    indicador = processor.get_filter_data_model_indicadores_construccion(tipo_dato, params)
+    
+    
+    data_total_puestos = construccion.get_filter_data_model_construccion(params)
+    diccionario_variacion_puestos = diccionario_indicadores(processor.get_filter_data_model_indicadores_construccion(tipo_dato, params))
+  
+    context_chart = construccion.process_chart_data_totales(value_totales, data_total_puestos)
+
+    
     # Convertir a listas normales (si no lo están)
-    lista_1 = list(indicadores_puestos_trabajo)
-    lista_2 = list(data_variacion_puestos_table)
+    lista_1 = list(indicador)
+    lista_2 = list(data_total_puestos)
 
     # Crear un diccionario auxiliar para buscar por mes-año-valor
     dict_puestos = {
-        (item['anio__anio'], item['mes'], item['valor__valor']): item
+        (item['anio__anio'], item['mes__mes'], item['valor__valor']): item
         for item in lista_2
     }
 
     # Unir la información
-    contexto_unificado = []
+    data_variacion = []
     for item in lista_1:
-        clave = (item['anio__anio'], item['mes'], item['valor__valor'])
+        clave = (item['anio__anio'], item['mes__mes'], item['valor__valor'])
         puestos_info = dict_puestos.get(clave, {})  # puede venir vacío si no hay match
 
         # Crear el nuevo diccionario unificado
@@ -277,30 +312,15 @@ def process_construccion_data(request:HttpRequest, tipo_dato:int, value_totales:
             'total_puesto_trabajo': puestos_info.get('total_puesto_trabajo'),
         }
 
-        contexto_unificado.append(combinado)
-    if params['is_valid']:
-        type_graphic = 1
-        chart_totales = processor.process_context_totales_construccion(value_totales,  data_totales)
-        
-        
-    else:
-        type_graphic = 0
-        chart_totales = {}
-       
+        data_variacion.append(combinado)
+
     context = {
         'error_message': params['error_message'],
-        context_keys['type_graphic']: type_graphic,
+        context_keys['data_variacion']: data_variacion,
+        context_keys['diccionario_variacion']: diccionario_variacion_puestos,
+        'data_chart_formosa': json.dumps(context_chart['Formosa']),
+        'data_chart_nacional': json.dumps(context_chart['Nacional']),
         'meses': meses,
-
-        context_keys['salarios_promedios']: salarios_promedios,
-        context_keys['data_tabla_salarios']: data_tabla_salarios,
-        context_keys['salario_formosa']:salario_formosa,
-         
-        context_keys['chart_totales']:chart_totales,
-        
-        context_keys['indicadores_puestos_trabajo']: indicadores_puestos_trabajo,
-        context_keys['data_variacion_puestos_table']: contexto_unificado,
-        
     }
-        
+    
     return render(request, template, context)

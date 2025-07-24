@@ -86,7 +86,7 @@ class IpcProcessor:
             return final_chart_data
     
     @classmethod
-    def get_filtered_data(cls, value:int,  params: Dict[str, Any]) -> QuerySet:
+    def get_filtered_data(cls,  params: Dict[str, Any]) -> QuerySet:
         """
         Obtiene datos filtrados según los parámetros.
         
@@ -96,8 +96,7 @@ class IpcProcessor:
         if params['is_valid']:
             return cls.get_data_variaciones(
                 anio_id__gte=params['anio_inicio'],
-                anio_id__lte=params['anio_fin'],
-                valor_id = value).order_by('anio__anio', 'mes__id')
+                anio_id__lte=params['anio_fin']).order_by('anio__anio', 'mes__id')
         else:
             return cls.get_data_variaciones(
                 anio_id=cls.DEFAULT_YEAR,
@@ -133,36 +132,69 @@ class IpcProcessor:
              return {
                     'anio_inicio': None,
                     'anio_fin': None,
-                    'valor':None,
+                    
                     'is_valid' : False,
                     'error_message': 'Los filtros ingresados no son validos'
                 }
         
     
+def diccionario(queryset):
+    nea_intermensual = []
+    nea_interanual = []
+    nacional_intermensual = []
+    nacional_interanual = []
+    meses = []
 
+    # Para mantener el orden, usamos listas separadas para cada región con su mes
+    meses_nea = []
+    meses_nacional = []
+
+    for item in queryset:
+        mes = item['mes__mes'] + " " +  str(item['anio__anio'])
+        region = item['valor__valor']
+        intermensual = float(item['variacion_intermensual'])
+        interanual = float(item['variacion_interanual'])
+
+        if region == 'NEA':
+            nea_intermensual.append(intermensual)
+            nea_interanual.append(interanual)
+            meses_nea.append(mes)
+        elif region == 'Nacional':
+            nacional_intermensual.append(intermensual)
+            nacional_interanual.append(interanual)
+            meses_nacional.append(mes)
+
+    # Obtener la cantidad mínima común
+    minimo = min(len(nea_intermensual), len(nacional_intermensual))
+   
+    # Recortar todas las listas al mismo tamaño
+    datos = {
+        'meses': meses_nea[:minimo],  # o meses_nacional[:minimo], ambos deberían coincidir en orden
+        'Valor intermensual NEA': nea_intermensual[:minimo],
+        'Valor interanual NEA': nea_interanual[:minimo],
+        'Valor intermensual Nacional': nacional_intermensual[:minimo],
+        'Valor interanual Nacional': nacional_interanual[:minimo],
+    }
+
+    return datos
 
 def process_ipc_data(request:HttpRequest, context_keys: Dict[str, str], template: str) -> HttpResponse:
-    DEFAULT_VALUE_NEA = 3
-    DEFAULT_VALUE_NACION = 2
+
     meses = Mes.objects.all()
 
     processor = IpcProcessor
     params = processor.procces_request_parameters(request)
 
 
-    data_variacion_nea = processor.get_filtered_data(DEFAULT_VALUE_NEA, params)
-    data_variacion_nacion = processor.get_filtered_data(DEFAULT_VALUE_NACION,params)
-    data_variacion_ipc_table = data_variacion_nea | data_variacion_nacion
+    data_variacion = processor.get_filtered_data(params)
+    diccionario_variacion = diccionario(data_variacion)
    
-    final_chart_data = processor.process_and_validate_ipc_data(data_variacion_ipc_table)
 
        
     context = {
         'error_message': params['error_message'],
-        context_keys['data_variacion_nea']: data_variacion_nea,
-        context_keys['data_variacion_nacion']: data_variacion_nacion,
-        context_keys['data_variacion_ipc_table']: data_variacion_ipc_table,
-        context_keys['final_chart_data']: final_chart_data,
+        context_keys['data_variacion']: data_variacion,
+        context_keys['diccionario_variacion']: diccionario_variacion,
         'meses': meses,
     }
         
