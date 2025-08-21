@@ -4,9 +4,9 @@ from django.shortcuts import render
 from Mes.models import *
 import json
 from django.http import HttpRequest, HttpResponse
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 from collections import defaultdict
-from django.db.models import OuterRef, Subquery, QuerySet
+from django.db.models import QuerySet
 
 
 
@@ -58,8 +58,7 @@ class VehiculoDataProcessor:
                 tipo_vehiculo_id = tipo_vehiculo,
                 
             )
-        
-
+    
     @classmethod
     def procces_request_parameters(cls, request: HttpRequest,) -> Dict[str,any]:
         try:
@@ -99,6 +98,7 @@ class VehiculoDataProcessor:
                 'is_valid': False,
                 'error_message': "Los filtros ingresados no son válidos."
             }
+    
     @staticmethod
     def process_chart_data_totales(data_variacion: QuerySet) -> Dict[str, list]:
         context_chart_formosa = defaultdict(list)
@@ -182,8 +182,6 @@ def process_vehiculo_data(request:HttpRequest, tipo_vehiculo: int, tipo_movimien
         context_keys['diccionario_variacion']: diccionario_variacion,
         'data_chart_formosa': json.dumps(context_chart['Formosa']),
         'data_chart_nacional': json.dumps(context_chart['Nacional']),
-       
-       
         'meses': meses,
     }
     

@@ -55,7 +55,7 @@ function column_chart_comparative(id,series, titulo){
 
 
 
-function area_chart_variation(id, diccionario_variacion, titulo_chart,  serie_puntos_data = null, nombre_puntos = "Tercera Serie") {
+function area_chart_variation(id, diccionario_variacion, titulo_chart, signo = '%', serie_puntos_data = null, nombre_puntos = "Tercera Serie") {
 
   const meses = diccionario_variacion['meses'];
 
@@ -189,7 +189,7 @@ function area_chart_variation(id, diccionario_variacion, titulo_chart,  serie_pu
       },
       y: {
         formatter: function (val) {
-          return typeof val === 'number' ? val.toFixed(1) + '%' : val;
+          return typeof val === 'number' ? val.toFixed(1) +signo : val;
         },
         title: {
           formatter: function (seriesName) {

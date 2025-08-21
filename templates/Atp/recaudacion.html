@@ -16,24 +16,23 @@
             <div class="card-body">
                 
                 <div class="typography-line">
-                    <h3 class="color-typography"><span>Transferencias automaticas por coparticipacion, leyes complementarias y compensaciones </span> </h3>
+                    <h3 class="color-typography"><span>ATP -</span> RECAUDACIÓN TRIBUTARIA TOTAL  </h3>
                 </div>
                 <div class="typography-line">
                     
                     <blockquote>
                         <p class="blockquote blockquote-primary">
-                        Las transferencias automáticas en concepto de coparticipación, leyes complementarias y compensaciones evidencian un incremento nominal del 9,5% en mayo con respecto al mismo mes del año 2024. 
-                        Al deflactar la serie por el índice de precios al consumidor, se observa una disminución del 23,3% en términos reales. 
-                        Si bien se observa un incremento real en los meses de noviembre, diciembre, y en los primeros cuatro meses de 2024, la disminución en términos reales de estos fondos en todos los meses anteriores refleja el impacto de la recesión nacional en los tributos coparticipables e implica una reducción en la capacidad de la Provincia de Formosa para afrontar sus obligaciones, llevar a cabo inversiones e implementar políticas públicas, esto se demuestra al comparar mayo 2025 con mayo 2023, donde la caída en términos reales es de 5,3%.
+                        En junio lo que respecta a la recaudación tributaria total, se registró un incremento anual del 51,4% y un incremento mensual de 0,48%. La recaudación por IIBB representó el 84,2% de los ingresos tributarios.
+                        El impuesto a los IIBB tiene una participación promedio de entre el 80 y el 90% en la recaudación total, lo que expresa la importancia que tiene este impuesto en particular como fuente de recursos por encima del resto de los impuestos que conforman el sistema impositivo provincial.
                         </p>
                     </blockquote>
                         <div class="toolbar">
                             <button onclick="showView('chart')" class="active">📈</button>
-                            <button onclick="showView('stats')">📊</button>
+                            
                             <button onclick="showView('table')">📋</button>
                            
                         </div>
-                        <form method= "GET" action="{% url 'transferencias' %} ">
+                        <form method= "GET" action="{% url 'recaudacion' %} ">
                             {% csrf_token %}
                             <div class ="content-error">
                                 
@@ -70,84 +69,69 @@
                                     </div>
                                 </div>
                             
-                                
+                               
                                 <button type="submit">Aplicar filtros</button>
                             </div>     
                         </form>
                         <div id="chartView" class="view active">
-                            <div class="chart-style" id="chart-transferencia"></div>
+                            <div class="chart-style" id="chart-recaudacion"></div>
                         </div>
 
                         <div id="tableView" class="view">
-                        <table id="example" class="stripe row-border order-column" style="width:100%">
+                          <table id="example" class="stripe row-border order-column" style="width:100%">
                                 <thead>
                                     <tr>
                                         <th>Mes</th>
                                         <th>Año</th>
                                         <th>Valor</th>
+                                        <th>Tipo</th>
+                                        <th>Recaudacion</th>
                                         
-                                        <th>Total millones</th>
-                                        <th>Variacion anual nominal</th>
-                                        <th>Variacion anual real</th>
                                        
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for data in data_variacion %}
+                                    {% for data in data_recaudacion %}
                                     <tr>
                                         <td>{{ data.mes__mes }}</td>
                                         <td>{{ data.anio__anio }}</td>
                                         <td>{{ data.valor__valor }}</td>
-                                        
-                                        <td>{{ data.total_millones }}</td>
-                                        <td>{{ data.variacion_anual_nominal }}</td>
-                                        <td>{{ data.variacion_anual_real  }}</td>
+                                         <td>{{ data.tipo__tipo }}</td>
+                                        <td>$ {{ data.recaudacion }}</td>
+                                       
                                     </tr>
                                     {% empty %}
                                     <tr><td colspan="5">No hay datos disponibles.</td></tr>
                                     {% endfor %}
                                 </tbody>
-                            </table> 
-                            
+                            </table>
                         </div>
 
                         <div id="statsView" class="view">
-                          <button id="btn-nacional" onclick="mostrarChartNacional()" style="margin-bottom: 15px; display:block">
-                              Comprar con valor nacional
-                          </button>
-                          <button id="btn-formosa" onclick="mostrarChartFormosa()" style="margin-bottom: 15px; display:none">
-                              Ver gráfico formosa
-                          </button>
+                       
                           <div id="contenedor-chart" class="d-flex" style="gap: 10px;">
                           <div id="container-formosa" class="flex-fill transition-slide slide-visible">
                             <div id="chart-formosa" style="height: 350px;"></div>
                           </div>
                           <div id="container-nacional" class="transition-slide slide-hidden invisible" style="width: 50%; height: 350px;">
                             <div id="chart-nacional" style="height: 100%;"></div>
-                          </div>   
+                          </div>
                         </div>
                     </div>
             </div>
         </div>
     </div>
 </div>
-
-
 <script>
-    const datos = {{ diccionario_variacion|safe }};
+    
+ const datos = {{ diccionario_recaudacion|safe }};
 
   area_chart_variation(
-    'chart-transferencia',
-     datos,
-    'Variación Real / Nominal',
-    
+    'chart-recaudacion',
+    datos,
+    'Recaudacion Tributaria - IIBB',
+    signo = '($)'
   );
-
-  const data_chart_formosa = {{ data_chart_formosa|safe }};
-  column_chart_comparative('chart-formosa', data_chart_formosa, 'Ventas totales:Formosa');
-
-  const data_chart_nacional = {{ data_chart_nacional|safe }};
-  column_chart_comparative('chart-nacional', data_chart_nacional, 'Ventas totales: Nacional');
 
 
  

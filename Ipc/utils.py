@@ -34,56 +34,6 @@ class IpcProcessor:
         ).filter(**kwargs)
 
 
-    @classmethod
-    def process_and_validate_ipc_data(cls,data):
-            meses_vistos = set()  # Almacena pares (mes, año)
-
-            #Validación de Meses Repetidos 
-            for item_validacion in data:
-                mes_nombre = item_validacion['mes__mes']
-                anio = item_validacion['anio__anio']
-                valor_tipo = item_validacion['valor__valor']
-                
-                clave_mes_anio = (mes_nombre, anio)
-                
-                if clave_mes_anio in meses_vistos:
-                    pass
-                else:
-                    #Mes encontrado por primera vez
-                    meses_vistos.add(clave_mes_anio)
-            
-            grouped_data = defaultdict(lambda: {'NEA': None, 'Nacional': None, 'mes_nombre': None, 'anio': None})
-
-            for item in data:
-                mes_id = item['mes']
-                mes_nombre = item['mes__mes']
-                anio = item['anio__anio']
-                valor_tipo = item['valor__valor'] 
-                variacion = item['variacion_intermensual']
-
-                clave = (anio, mes_id)
-
-                grouped_data[clave]['mes_nombre'] = mes_nombre
-                grouped_data[clave]['anio'] = anio
-
-                if valor_tipo == 'NEA':
-                    grouped_data[clave]['NEA'] = variacion
-                elif valor_tipo == 'Nacional':
-                    grouped_data[clave]['Nacional'] = variacion
-
-            # Armamos la lista final, ordenando por año y mes
-            final_chart_data = []
-
-            for clave in sorted(grouped_data.keys()):  # Ordena por (año, mes_id)
-                entry = grouped_data[clave]
-                if entry['NEA'] is not None and entry['Nacional'] is not None:
-                    final_chart_data.append({
-                        'mes': f"{entry['mes_nombre']} {entry['anio']}",
-                        'variacion_nea': float(entry['NEA']),
-                        'variacion_nacional': float(entry['Nacional'])
-                    })
-
-            return final_chart_data
     
     @classmethod
     def get_filtered_data(cls,  params: Dict[str, Any]) -> QuerySet:

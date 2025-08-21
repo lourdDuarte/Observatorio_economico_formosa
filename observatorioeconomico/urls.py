@@ -26,6 +26,7 @@ from Ipc import views as ipc
 from Transferencia import views as transferencia
 from Sector_construccion import views as construccion
 from sector_privado import views as privado
+from Dgr import views as dgr
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -42,6 +43,7 @@ urlpatterns = [
     path('puestos-construccion/', construccion.view_construccion_puestos, name='puestos-construccion'),
     path('sector-privado/', privado.view_sector_privado, name='sector-privado'),
     path('sector-privado-ramas/', privado.view_sector_privado_ramas, name='sector-privado-ramas'),
+    path('recaudacion/', dgr.view_recaudacion, name='recaudacion'),
     path('variables/', utils.process_data_consult, name='variables'),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
