@@ -1,0 +1,53 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+  <h2>Confirmar creación de indicadores</h2>
+
+  <p><strong>Registro:</strong> {{ obj }}</p>
+
+  
+<table class="adminlist">
+  <tr>
+    <th>Año</th>
+    <td>
+      <input type="text" step="0.1" name="anio_id"
+             value="{{ variaciones.anio_id}}">
+    </td>
+    <th>Mes</th>
+    <td>
+      <input type="text" step="0.1" name="mes_id"
+             value="{{ variaciones.mes_id}}">
+    </td>
+    <th>Valor</th>
+    <td>
+      <input type="text" step="0.1" name="valor_id"
+             value="{{ variaciones.valor_id}}">
+    </td>
+    <th>Tipo dato</th>
+    <td>
+      <input type="text" step="0.1" name="tipo_dato"
+             value="{{ variaciones.tipo_dato}}">
+    </td>
+    <th>Variación Intermensual</th>
+    <td>
+      <input type="text" step="0.1" name="var_intermensual"
+             value="{{ variaciones.var_intermensual|floatformat:1}}">
+    </td>
+  </tr>
+  <tr>
+    <th>Variación Interanual</th>
+    <td>
+      <input type="text" step="0.1" name="var_interanual"
+             value="{{ variaciones.var_interanual|floatformat:1}}">
+    </td>
+  </tr>
+</table>
+
+  <form method="post" action="{{ post_url }}">
+    {% csrf_token %}
+    <input type="hidden" name="_confirmar" value="1">
+    <input type="submit" value="Confirmar y Guardar" class="default">
+    {% comment %} <a href="{% url 'admin:%s_%s_changelist' opts.app_label opts.model_name %}">
+      Cancelar
+    </a> {% endcomment %}
+  </form>
+{% endblock %}

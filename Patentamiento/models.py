@@ -32,4 +32,4 @@ class Indicadores(models.Model):
 
 
     def __str__(self):
-        return str(self.anio) + " " + str(self.mes) + " "  + str(self.valor) + " " + str(self.variacion_interanual) + "-" + str(self.variacion_intermensual)
+        return str(self.anio) + " " + str(self.mes) + " "  + str(self.valor) + " " + str(self.total_acumulado) + " " +str(self.variacion_interanual) + "-" + str(self.variacion_intermensual)
