@@ -135,7 +135,7 @@ class SupermercadoDataProcessor:
                 anio_id=cls.DEFAULT_YEAR,
                 tipoPrecio_id=tipo_precio,
                 
-            )
+            ).order_by('anio__anio', 'mes__id')
     
     @staticmethod
     def process_chart_data_totales(data_variacion: QuerySet) -> Dict[str, list]:

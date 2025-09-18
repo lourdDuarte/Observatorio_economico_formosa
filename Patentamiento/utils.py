@@ -57,7 +57,7 @@ class VehiculoDataProcessor:
                 movimiento_vehicular_id=tipo_movimiento,
                 tipo_vehiculo_id = tipo_vehiculo,
                 
-            )
+            ).order_by('anio__anio', 'mes__id')
     
     @classmethod
     def procces_request_parameters(cls, request: HttpRequest,) -> Dict[str,any]:
