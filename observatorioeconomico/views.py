@@ -143,7 +143,7 @@ def generar_panel_json(
             valor_id= 1,
             tipo= 1,
             link = 'sector-privado',
-            estacionalidad = 1
+            estacionalidad = 2
         ),
        
     }

@@ -23,17 +23,19 @@ def get_model_cantidades_privado(mes,anio,valor,tipo, estacionalidad):
 
 
 def calcular_y_guardar_variacion(obj):
+    # Preparamos los datos del objeto
     data_indicadores = {
-            'tipo': obj.tipo,
-            'estacionalidad_id': obj.estacionalidad.id,
-            'anio_id': obj.anio.id,
-            'mes_id': obj.mes.id,
-            'valor_id': obj.valor.id,
-            'cantidad': obj.cantidad
-        }
+        'tipo': obj.tipo,
+        'estacionalidad_id': obj.estacionalidad.id,
+        'anio_id': obj.anio.id,
+        'mes_id': obj.mes.id,
+        'valor_id': obj.valor.id,
+        'cantidad': obj.cantidad
+    }
 
     anio_anterior = int(data_indicadores['anio_id']) - 1
 
+    # Determinar mes y año para intermensual
     if data_indicadores['mes_id'] == 1:
         mes_anterior = 12
         anio_anterior_intermensual = anio_anterior
@@ -41,48 +43,54 @@ def calcular_y_guardar_variacion(obj):
         mes_anterior = int(data_indicadores['mes_id']) - 1
         anio_anterior_intermensual = data_indicadores['anio_id']
 
+    # Obtener datos previos
     data_intermensual = get_model_cantidades_privado(
         mes=mes_anterior,
         anio=anio_anterior_intermensual,
         valor=data_indicadores['valor_id'],
-        tipo =data_indicadores['tipo'],
-        estacionalidad = data_indicadores['estacionalidad_id']
+        tipo=data_indicadores['tipo'],
+        estacionalidad=data_indicadores['estacionalidad_id']
     )
 
     data_interanual = get_model_cantidades_privado(
         mes=data_indicadores['mes_id'],
         anio=anio_anterior,
         valor=data_indicadores['valor_id'],
-        tipo =data_indicadores['tipo'],
-        estacionalidad = data_indicadores['estacionalidad_id']
+        tipo=data_indicadores['tipo'],
+        estacionalidad=data_indicadores['estacionalidad_id']
     )
-    
+
+    # Inicializamos variables
     var_intermensual = None
     var_interanual = None
     dif_intermensual = None
     dif_interanual = None
 
+    # Calcular intermensual si hay datos
     if data_intermensual and data_intermensual['cantidad'] != 0:
         var_intermensual = (float(data_indicadores['cantidad']) / float(data_intermensual['cantidad'])) * 100 - 100
-        dif_intermensual = (float(data_indicadores['cantidad']) - float(data_intermensual['cantidad']))
+        dif_intermensual = float(data_indicadores['cantidad']) - float(data_intermensual['cantidad'])
+
+    # Calcular interanual si hay datos
     if data_interanual and data_interanual['cantidad'] != 0:
         var_interanual = (float(data_indicadores['cantidad']) / float(data_interanual['cantidad'])) * 100 - 100
-        dif_interanual = (float(data_indicadores['cantidad']) - float(data_interanual['cantidad'])) 
+        dif_interanual = float(data_indicadores['cantidad']) - float(data_interanual['cantidad'])
 
+    # Guardar en la base de datos, asegurando valores válidos
     IndicadoresPrivado.objects.update_or_create(
-        tipo = obj.tipo,
-        estacionalidad = obj.estacionalidad,
+        tipo=obj.tipo,
+        estacionalidad=obj.estacionalidad,
         anio=obj.anio,
         mes=obj.mes,
         valor=obj.valor,
         defaults={
-            "variacion_interanual": round(var_interanual, 1) if var_interanual is not None else None,
-            "variacion_intermensual": round(var_intermensual, 1) if var_intermensual is not None else None,
-            "diferencia_interanual": round(dif_interanual, 1) if dif_interanual is not None else None,
-            "diferencia_intermensual": round(dif_intermensual, 1) if dif_intermensual is not None else None,
-            
+            "variacion_interanual": round(var_interanual, 1) if var_interanual is not None else 0.0,
+            "variacion_intermensual": round(var_intermensual, 1) if var_intermensual is not None else 0.0,
+            "diferencia_interanual": round(dif_interanual, 1) if dif_interanual is not None else 0.0,
+            "diferencia_intermensual": round(dif_intermensual, 1) if dif_intermensual is not None else 0.0,
         }
     )
+
 
 # Usa signals para recalcular automáticamente
 @receiver(post_save, sender=CantidadesPrivado)

@@ -117,16 +117,16 @@ class PrivadoDataProcessor:
             return cls.get_variacion_data(
                 anio_id__gte=params['anio_inicio'],
                 anio_id__lte=params['anio_fin'],
-                estacionalidad = 1,
+                estacionalidad = 2,
                 
             ).order_by('anio__anio', 'mes__id')
         else:
             return cls.get_variacion_data(
                 anio_id=cls.DEFAULT_YEAR,
                 
-                estacionalidad = 1,
+                estacionalidad = 2,
                 
-            )
+            ).order_by('anio__anio', 'mes__id')
     
     @staticmethod
     def process_chart_data_totales(data_variacion: QuerySet) -> Dict[str, list]:

@@ -49,7 +49,7 @@ class ConstruccionProcessor:
             return cls.get_data_model_sector_construccion(
                 anio_id=cls.DEFAULT_YEAR,
                 
-            )
+            ).order_by('anio__anio', 'mes__id')
         
     @classmethod
     def procces_request_parameters(cls, request: HttpRequest,) -> Dict[str,any]:
@@ -154,7 +154,7 @@ class ConstruccionIndicadoresProcessor:
                 tipo_dato = tipo_dato,
                 anio_id=cls.DEFAULT_YEAR,
                 
-            )
+            ).order_by('anio__anio', 'mes__id')
         
 
 
