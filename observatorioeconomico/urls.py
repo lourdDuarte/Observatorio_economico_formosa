@@ -45,5 +45,6 @@ urlpatterns = [
     path('sector-privado-ramas/', privado.view_sector_privado_ramas, name='sector-privado-ramas'),
     path('recaudacion/', dgr.view_recaudacion, name='recaudacion'),
     path('variables/', utils.process_data_consult, name='variables'),
+    path('prueba/<int:var_id>/<str:descripcion>/', observatorio.prueba, name='prueba'),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

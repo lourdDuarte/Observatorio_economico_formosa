@@ -186,40 +186,46 @@ def generar_panel_json(
     return panel_data
     
 def index(request):
-   
     data_json = generar_panel_json()
     context = {
-        'data_json' : data_json
+        'data_json': data_json
     }
 
-    
-
     URL = "https://api.bcra.gob.ar/estadisticas/v3.0/monetarias"
-    
+
     try:
         response = requests.get(URL, verify=False)
         response.raise_for_status()  # Lanza HTTPError si el código no es 200
-        filter_api = [1,29,31,32,40,144,146]
-        data_api = defaultdict(lambda: {'valor': [], 'fecha': []})
+        filter_api = [1, 29, 31, 32, 40, 144, 146]
+        data_api = defaultdict(lambda: {'idVariable': None, 'valor': [], 'fecha': []})
+
         if response.status_code == 200:
-        
             data = response.json()
             for key in data['results']:
                 if key['idVariable'] in filter_api:
                     descripcion = key['descripcion']
                     valor = key['valor']
                     fecha = key['fecha']
-                    if key['idVariable'] == 29 or key['idVariable'] == 146 or key['idVariable'] == 144 :
+                    id_variable = key['idVariable']
+
+                    # asignar idVariable solo una vez
+                    if data_api[descripcion]['idVariable'] is None:
+                        data_api[descripcion]['idVariable'] = id_variable
+
+                    # valores con % en algunos casos
+                    if id_variable in [29, 144, 146]:
                         data_api[descripcion]['valor'].append(str(valor) + '%')
-                        data_api[descripcion]['fecha'].append(fecha)
                     else:
                         data_api[descripcion]['valor'].append(valor)
-                        data_api[descripcion]['fecha'].append(fecha)
-                        
-                    
-            
+
+                    data_api[descripcion]['fecha'].append(fecha)
+
+            # armar estructura final
             data_combinada = {
-                descripcion: list(zip(info['fecha'], info['valor']))
+                descripcion: {
+                    'idVariable': info['idVariable'],
+                    'data': list(zip(info['fecha'], info['valor']))
+                }
                 for descripcion, info in data_api.items()
             }
 
@@ -228,15 +234,13 @@ def index(request):
             })
 
     except (SSLError, RequestException) as e:
-        context.update ({
-            'error':f"[ERROR BCRA] {e}"
+        context.update({
+            'error': f"[ERROR BCRA] {e}"
         })
 
-    
-        
-    return render (request, 'index.html', context)
+    return render(request, 'index.html', context)
 
 
 
-def prueba(request):
-    return render(request, 'prueba.html')
+def prueba(request, var_id, descripcion):
+     return render(request, "prueba.html", {"var_id": var_id,"descripcion": descripcion})

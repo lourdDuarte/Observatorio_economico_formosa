@@ -42,7 +42,7 @@ class DgrDataProcessor:
                 tipo_id__in=[1,3]
                 
                 
-            )
+            ).order_by('anio__anio', 'mes__id')
         
       
     @classmethod

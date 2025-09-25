@@ -20,17 +20,15 @@
      <section class="seccion-bcra">
         <div class=" py-3 cards-api-container">
   
-          {% for descripcion, pares in data_combinada.items %}
-            <div class="card-api">
-              <h1>{{ descripcion }}</h1>
-              
-                {% for fecha, valor in pares %}
-                  
-                  <h1 class="title-value-api">{{ valor |intcomma  }}</h1> 
-                  <h1 class="date-value-api">act: {{ fecha }}</h1> 
-                {% endfor %}
-            
-            </div>
+          {% for descripcion, info in data_combinada.items %}
+          <div class="card-api" onclick="goToVariable('{{ info.idVariable }}', '{{ descripcion }}')">
+            <h1>{{ descripcion }}</h1>
+
+            {% for fecha, valor in info.data %}
+              <h1 class="title-value-api">{{ valor|intcomma }}</h1>
+              <h1 class="date-value-api">act: {{ fecha }}</h1>
+            {% endfor %}
+          </div>
           {% endfor %}
         </div>
       </section>
@@ -71,6 +69,11 @@
     </div>
     {% endfor %} {# Fin del bucle externo (para categorías) #}
 
+<script>
+  function goToVariable(id, descripcion) {
+    window.location.href = "/prueba/"+id +"/"+descripcion+"/";
+  }
+</script>
       
       
     </section>
