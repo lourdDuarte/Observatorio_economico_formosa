@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.conf import settings
-from observatorioeconomico import utils as utils
+
 from django.conf.urls.static import static
 
 from observatorioeconomico import views as observatorio
@@ -44,7 +44,7 @@ urlpatterns = [
     path('sector-privado/', privado.view_sector_privado, name='sector-privado'),
     path('sector-privado-ramas/', privado.view_sector_privado_ramas, name='sector-privado-ramas'),
     path('recaudacion/', dgr.view_recaudacion, name='recaudacion'),
-    path('variables/', utils.process_data_consult, name='variables'),
-    path('prueba/<int:var_id>/<str:descripcion>/', observatorio.prueba, name='prueba'),
+   
+    path('bcra/<int:var_id>/<str:descripcion>/', observatorio.prueba, name='prueba'),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

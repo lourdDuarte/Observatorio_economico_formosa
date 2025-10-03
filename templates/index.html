@@ -71,7 +71,9 @@
 
 <script>
   function goToVariable(id, descripcion) {
-    window.location.href = "/prueba/"+id +"/"+descripcion+"/";
+     // encodeURIComponent se encarga de acentos, espacios, %, etc.
+  const encoded = encodeURIComponent(descripcion);
+  window.location.href = `/bcra/${id}/${encoded}/`
   }
 </script>
       
