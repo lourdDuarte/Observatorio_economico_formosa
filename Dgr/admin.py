@@ -138,7 +138,7 @@ class RecaudacionAdmin(admin.ModelAdmin):
     search_fields = ['recaudacion']
     ordering = ['-anio', 'mes']
     list_display = ['anio', 'mes', 'valor', 'tipo', 'recaudacion', 'recaudacion_acumulada']
-    list_editable = ['recaudacion']
+    list_editable = ['mes', 'valor', 'tipo', 'recaudacion', 'recaudacion_acumulada']
     list_per_page = 12
     exclude = ['recaudacion_acumulada']
 

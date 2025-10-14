@@ -74,7 +74,7 @@ class TransferenciaAdmin(admin.ModelAdmin):
     list_display = ['anio', 'mes', 'valor',  'total_millones', 'variacion_anual_nominal', 'variacion_anual_real']
     list_editable = ['mes', 'valor',  'total_millones', 'variacion_anual_nominal', 'variacion_anual_real'] 
     list_per_page = 12
-    exclude = ['variacion_anual_nominal']
+    exclude = ['variacion_anual_nominal', 'variacion_anual_real']
     
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)

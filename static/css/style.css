@@ -1,419 +1,519 @@
-.container-var{
-    margin: 0;
-    width: 100%;
-    justify-content: center;
+/* =============================
+ESTILOS BASE (ESCRITORIO)
+============================= */
+
+.container-var {
+margin: 0;
+width: 100%;
+justify-content: center;
 }
 
-.seccion-card{
-    width: 720px;
-    margin-left: 4em;
-    
+.seccion-card {
+width: 720px;
+margin-left: 4em;
 }
 
-.title-card{
-    border-bottom: 2px solid rgb(13, 111, 209);
-    margin-top: 1em;
-    padding-bottom: 10px;
-    color: rgb(0, 0, 0);
+.title-card {
+border-bottom: 2px solid rgb(13, 111, 209);
+margin-top: 1em;
+padding-bottom: 10px;
+color: rgb(0, 0, 0);
 }
 
+.color-typography {
+color: black;
+}
 
-.color-typography{color: black;}
-
-
-.chart-style{
-    width: 1600px; 
-    margin: 0px auto;
-    padding-top: 5em;
+.chart-style {
+width: 100%;
+max-width: 1600px;
+margin: 0 auto;
+padding-top: 5em;
 }
 
 .filtros-contenedor {
-    display: flex;
-    gap: 2.5rem;
-    align-items: flex-end;
-    flex-wrap: wrap;
-    padding: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-    margin-bottom: 2rem;
-    margin-top: 2em;
-  }
+display: flex;
+gap: 2.5rem;
+align-items: flex-end;
+flex-wrap: wrap;
+padding: 1rem;
+border: 1px solid #ccc;
+border-radius: 8px;
+background-color: #f9f9f9;
+margin: 2em 0;
+}
 
-  .filtro-anios,
-  .filtro-categoria {
-    display: flex;
-    flex-direction: column;
-  }
+.filtro-anios,
+.filtro-categoria {
+display: flex;
+flex-direction: column;
+}
 
-  .anio-selectores {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 0.3rem;
-  }
+.anio-selectores {
+display: flex;
+align-items: center;
+gap: 0.5rem;
+margin-top: 0.3rem;
+}
 
-  .filtros-contenedor select {
-    padding: 0.4rem;
-    border: 1px solid #aaa;
-    border-radius: 4px;
-    min-width: 120px;
-  }
+.filtros-contenedor select {
+padding: 0.4rem;
+border: 1px solid #aaa;
+border-radius: 4px;
+min-width: 120px;
+}
 
-  button {
-    padding: 0.5rem 1rem;
-    border: none;
-    background-color: #003763;
-    color: white;
-    border-radius: 4px;
-    cursor: pointer;
-  }
+button {
+padding: 0.5rem 1rem;
+border: none;
+background-color: #003763;
+color: white;
+border-radius: 4px;
+cursor: pointer;
+}
 
-  .toolbar {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 1rem;
+.toolbar {
+display: flex;
+gap: 10px;
+margin-bottom: 1rem;
 }
 
 .toolbar button {
-    padding: 8px 12px;
-    background: #333;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    opacity: 0.7;
+padding: 8px 12px;
+background: #333;
+color: white;
+border: none;
+border-radius: 6px;
+cursor: pointer;
+opacity: 0.7;
 }
 
 .toolbar button.active {
-    background-color: #003763;
-    opacity: 1;
+background-color: #003763;
+opacity: 1;
 }
 
 .view {
-    display: none;
+display: none;
 }
 
 .view.active {
-    display: block;
+display: block;
 }
 
-/* Estilos básicos para la tabla (puedes personalizarlos) */
+/* Estilos básicos para la tabla */
 #tableView table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
+width: 100%;
+border-collapse: collapse;
+margin-top: 1rem;
 }
 
-#tableView th, #tableView td {
-    border: 1px solid #ccc;
-    padding: 8px;
-    text-align: left;
+#tableView th,
+#tableView td {
+border: 1px solid #ccc;
+padding: 8px;
+text-align: left;
 }
 
 #tableView th {
-    background-color: #f2f2f2;
+background-color: #f2f2f2;
 }
+
 .cards-api-container {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); /* Mantenemos 4 columnas */
-    gap: 5px; /* Reducimos drásticamente el espacio entre las tarjetas */
-    row-gap: 2em; /* Opcional: reduce también el espacio entre filas si lo deseas */
-    justify-items: center; /* Mantenemos el centrado de las tarjetas */
-  }
-  
-  .card-api {
-    background-color: #042744;
-    color: #f9f9f9;
-    border-radius: 10px;
-    padding: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    max-width: 450px; /* Mantenemos el ancho máximo */
-  }
-  .titulo-general {
-    width: 100%; /* Asegura que el título ocupe todo el ancho */
-    display: flex; /* Habilitamos Flexbox para centrar el contenido */
-    justify-content: center;
-    background: #003763; /* Centra horizontalmente el contenido */
-    align-items: center; /* Centra verticalmente el contenido */
-    padding: 0.5em 0; /* Opcional: agrega un poco de espacio arriba y abajo */
-    margin-bottom: 20px; /* Opcional: espacio entre el título y las tarjetas */
-    /* Otros estilos que desees aplicar al título (color, fuente, etc.) */
-  }
-  
-  .titulo-general h2 {
-    margin: 0; /* Elimina los márgenes predeterminados del h2 para un centrado más preciso */
-    font-size: 25px;
-  }
-
-  .card-color{
-    background-color: #042744;
-  }
-
-/* 
-  **************index**************** */
-
- body {
-  font-family: 'Segoe UI', sans-serif;
-  margin: 0;
-  padding: 0;
-  background: white;
-  color: #111;
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 10px;
+row-gap: 2em;
+justify-items: center;
 }
+
+.card-api {
+background-color: #042744;
+color: #f9f9f9;
+border-radius: 10px;
+padding: 8px;
+box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+max-width: 450px;
+}
+
+.titulo-general {
+width: 100%;
+display: flex;
+justify-content: center;
+background: #003763;
+align-items: center;
+padding: 0.5em 0;
+margin-bottom: 20px;
+}
+
+.titulo-general h2 {
+margin: 0;
+font-size: 25px;
+}
+
+.card-color {
+background-color: #042744;
+}
+
+/* **************index**************** */
+
+body {
+font-family: "Segoe UI", sans-serif;
+margin: 0;
+padding: 0;
+background: white;
+color: #111;
+}
+
 header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 40px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 20px 40px;
 }
 
 .logo h1 {
-  font-size: 26px;
-  font-weight: bold;
-  line-height: 1.2;
-  color: #003764;
+font-size: 26px;
+font-weight: bold;
+line-height: 1.2;
+color: #003764;
 }
 
 .logo span {
-  display: block;
-  margin-top: 5px;
+display: block;
+margin-top: 5px;
 }
 
 nav {
-  border-bottom: 1px solid #003764;
-  margin-top: -4em;
+border-bottom: 1px solid #003764;
+margin-top: -4em;
 }
 
 nav ul {
-  list-style: none;
-  display: flex;
-  gap: 20px;
-  /* El margen es 0 para asegurar la funcionalidad del hover */
-  margin: 0;
-  padding: 0;
-  justify-content: end;
+list-style: none;
+display: flex;
+gap: 20px;
+margin: 0;
+padding: 0;
+justify-content: end;
 }
 
-/* Base para los ítems del menú con desplegable */
 .menu-item {
-  position: relative;
-  padding-bottom: 5px; /* Ayuda a que el área de hover sea más grande */
+position: relative;
+padding-bottom: 5px;
 }
 
 nav a {
-  text-decoration: none;
-  color: #333;
-  font-weight: 500;
-  display: block; /* Hace que toda el área del enlace sea interactiva */
-  padding: 5px 8px; /* Padding para un área de hover generosa */
+text-decoration: none;
+color: #333;
+font-weight: 500;
+display: block;
+padding: 5px 8px;
 }
 
 nav a:hover {
-  color: #003764;
+color: #003764;
 }
 
-/* Estilos base del submenú */
 .submenu {
-  display: none; /* Oculto por defecto */
-  position: absolute; /* Posicionamiento absoluto */
-  background-color: #fff;
-  border: 1px solid #ccc;
-  list-style: none;
-  padding: 18px 18px;
-  margin: 0; /* Asegurar que no hay margen que cause desplazamiento */
-  box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
-  z-index: 1000; /* Asegurar que esté por encima */
-  border-radius: 5px;
-  top: 100%; /* Posicionar justo debajo del ítem padre */
-  left: 0; /* POR DEFECTO: alinea a la izquierda */
-  min-width: 180px; /* Ancho mínimo para el contenido */
+display: none;
+position: absolute;
+background-color: #fff;
+border: 1px solid #ccc;
+list-style: none;
+padding: 18px 18px;
+margin: 0;
+box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+z-index: 1000;
+border-radius: 5px;
+top: 100%;
+left: 0;
+min-width: 180px;
 }
 
 .submenu li {
-  margin-bottom: 1em;
+margin-bottom: 1em;
 }
 
-/* Muestra el submenú al hacer hover */
 .menu-item:hover > .submenu {
-  display: block;
+display: block;
 }
 
-/* === SOLUCIÓN PARA EL ÚLTIMO ÍTEM === */
-/* Selecciona el último elemento LI con la clase menu-item */
 .menu-item:last-child .submenu {
-  left: auto; /* Desactiva la alineación a la izquierda */
-  right: 0; /* Alinea el submenú a la derecha del ítem padre */
+left: auto;
+right: 0;
 }
 
-/* Opcional: Si necesitas que el submenú se mueva un poco más hacia la izquierda
-   para no pegarse al borde de la pantalla. Ajusta el valor de 'right' */
-/* .menu-item:last-child .submenu {
-  left: auto;
-  right: -10px; /* Ejemplo: mueve 10px hacia la izquierda desde el borde derecho */
-/* } */
-
-/* Si el último ítem es 'IPC' y no quieres que afecte a otros futuros últimos ítems,
-   puedes ser más específico, aunque es menos flexible: */
-/* .menu-item:nth-last-child(1) .submenu {
-    left: auto;
-    right: 0;
-} */
-/* === FIN DE CAMBIOS FUNCIONALES === */
-/* === FIN DE CAMBIOS PARA LA FUNCIONALIDAD === */
-
-/* La siguiente regla fue la que te causaba problemas y fue reemplazada */
-/* nav li:hover .submenu, li:hover .submenu, a:hover .submenu, .submenu:hover{
-    display: block;
-  } */
 /*start section api bcra */
-.title-bcra{
-  font-size: 15px;
-  margin: 1em 7em -2em ;
-  color: #111;
-  font-weight: 600;
+.title-bcra {
+font-size: 15px;
+margin: 1em 7em -2em;
+color: #111;
+font-weight: 600;
 }
-.seccion-bcra{
 
- 
-  background-color: #dfdbdb;
-  border-radius: 10px;
-  justify-content: center;
-  width: 90%;
-  height: 330px;
-  margin: 3em 7em;
-  border-bottom: 1px solid #003764;
-
+.seccion-bcra {
+background-color: #dfdbdb;
+border-radius: 10px;
+justify-content: center;
+width: 90%;
+height: 330px;
+margin: 3em auto;
+border-bottom: 1px solid #003764;
 }
 
 .cards-api-container {
-    display: grid;
-    grid-template-columns: repeat(4, 0.2fr); /* Mantenemos 4 columnas */
-    justify-content: center;
-    margin-top: -3em;
-  }
-  
-  .card-api {
-    background-color: #003764;
-    color: #f9f9f9;
-    border-radius: 10px;
-    padding: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    max-width: 300px; /* Mantenemos el ancho máximo */
-    max-height: 120px;
-  }
+display: grid;
+grid-template-columns: repeat(4, 0.2fr);
+justify-content: center;
+margin-top: -3em;
+}
 
-  .card-api h1{
-    font-size: 12px;
-    
-  }
+.card-api {
+background-color: #003764;
+color: #f9f9f9;
+border-radius: 10px;
+padding: 8px;
+box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+max-width: 300px;
+max-height: 120px;
+}
 
-  .card-api .title-value-api{
-    font-size: 20px;
-    font-weight: bold;
-    margin-top: -1em;
-   
-  }
+.card-api h1 {
+font-size: 12px;
+}
 
-  .card-api .date-value-api{
-    font-size: 10px;
-    margin-top: -1em;
-    
-  }
+.card-api .title-value-api {
+font-size: 20px;
+font-weight: bold;
+margin-top: -1em;
+}
+
+.card-api .date-value-api {
+font-size: 10px;
+margin-top: -1em;
+}
 
 /*end section api bcra */
 
-
 /* start content card data bd */
 .secciones {
-  background-color:transparent;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  padding: 40px;
-  justify-content: center;
+background-color: transparent;
+display: flex;
+flex-wrap: wrap;
+gap: 20px;
+padding: 40px;
+justify-content: center;
 }
 
 .caja {
-  border: 1px solid #003764;
-  border-radius: 12px;
-  padding: 16px;
-  width: 45%;
-  margin: 0 1em;
+border: 1px solid #003764;
+border-radius: 12px;
+padding: 16px;
+width: 45%;
+margin: 0 1em;
 }
 
 .caja h4 {
-  margin: 0 0 10px;
-  font-size: 18px;
-  color: #111;
-  font-weight: 500;
+margin: 0 0 10px;
+font-size: 18px;
+color: #111;
+font-weight: 500;
 }
 
 .container-data {
-  display: flex;
-  justify-content: space-between;
-  gap: 2rem;
-  margin-top: 1rem;
+display: flex;
+justify-content: space-between;
+gap: 2rem;
+margin-top: 1rem;
 }
 
 .data {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
+display: flex;
+flex-direction: column;
+align-items: center;
+width: 100%;
 }
 
 .title-data {
-  background-color: #003b5c;
-  color: white;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 0.5rem;
-  margin-left: 0;
-  margin-bottom: 1rem;
-  
+background-color: #003b5c;
+color: white;
+padding: 0.5rem 1rem;
+border: none;
+border-radius: 0.5rem;
+margin-bottom: 1rem;
 }
 
 .tarjeta {
-  background-color: #f5f5f5;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  border-radius: 0.5rem;
-  width: 100%;
-  text-align: left;
+background-color: #f5f5f5;
+padding: 1rem;
+margin-bottom: 1rem;
+border-radius: 0.5rem;
+width: 100%;
+text-align: left;
 }
-.tarjeta p{
-  color: #111;
+
+.tarjeta p {
+color: #111;
 }
 
 .tarjeta .valor {
-  font-weight: bold;
-  font-size: 1.2rem;
-  margin: 0.5rem 0;
+font-weight: bold;
+font-size: 1.2rem;
+margin: 0.5rem 0;
 }
 
-
 /* end content card data bd */
-  .transition-slide {
-    transition: all 0.5s ease;
-  }
 
-  .slide-hidden {
-    transform: translateX(100%);
-    opacity: 0;
-    pointer-events: none;
-  }
+.transition-slide {
+transition: all 0.5s ease;
+}
 
-  .slide-visible {
-    transform: translateX(0);
-    opacity: 1;
-    pointer-events: auto;
-  }
+.slide-hidden {
+transform: translateX(100%);
+opacity: 0;
+pointer-events: none;
+}
 
-  .invisible {
-    display: none;
-  }
+.slide-visible {
+transform: translateX(0);
+opacity: 1;
+pointer-events: auto;
+}
 
+.invisible {
+display: none;
+}
 
+/* =============================
+RESPONSIVE: TABLET
+============================= */
+@media (max-width: 1023px) {
+.seccion-card {
+width: 90%;
+margin: 0 auto;
+}
 
+.chart-style {
+padding-top: 2em;
+max-width: 100%;
+}
 
-  
+.cards-api-container {
+grid-template-columns: repeat(2, 1fr);
+gap: 1rem;
+}
+
+.filtros-contenedor {
+flex-direction: column;
+align-items: stretch;
+}
+
+.caja {
+width: 90%;
+margin: 1em auto;
+}
+
+header {
+flex-direction: column;
+align-items: flex-start;
+}
+
+nav ul {
+justify-content: center;
+flex-wrap: wrap;
+}
+
+.title-bcra {
+margin: 1em 2em -1em;
+}
+}
+
+/* =============================
+RESPONSIVE: MÓVIL
+============================= */
+@media (max-width: 767px) {
+header {
+flex-direction: column;
+align-items: center;
+padding: 10px 20px;
+}
+
+.logo h1 {
+font-size: 22px;
+}
+
+nav {
+margin-top: 0;
+border-bottom: none;
+}
+
+nav ul {
+flex-direction: column;
+align-items: center;
+gap: 10px;
+}
+
+.submenu {
+position: static;
+box-shadow: none;
+border: none;
+padding: 0;
+}
+
+.chart-style {
+width: 100%;
+padding: 2em 0;
+}
+
+.filtros-contenedor {
+flex-direction: column;
+align-items: center;
+}
+
+.filtros-contenedor select,
+button {
+width: 100%;
+}
+
+.cards-api-container {
+grid-template-columns: 1fr;
+gap: 1em;
+}
+
+.seccion-bcra {
+width: 100%;
+height: auto;
+margin: 2em auto;
+}
+
+.caja {
+width: 100%;
+margin: 0.5em 0;
+}
+
+.titulo-general h2 {
+font-size: 20px;
+text-align: center;
+}
+
+.title-bcra {
+font-size: 14px;
+margin: 1em;
+text-align: center;
+}
+
+.container-data {
+flex-direction: column;
+gap: 1rem;
+}
+
+.title-data {
+width: 100%;
+text-align: center;
+}
+
+.tarjeta {
+text-align: center;
+}
+}
