@@ -36,7 +36,13 @@
                         <form method= "GET" action="{% url 'patentamiento-auto' %} ">
                             {% csrf_token %}
                             <div class ="content-error">
-                               
+                                
+                                 
+                                {% if error_message %}
+                                   <div class="alert alert-dark" role="alert">
+                                     {{error_message}}
+                                    </div>
+                                {%endif%}
                             </div>
                         
                             <div class="filtros-contenedor">

@@ -65,8 +65,8 @@ def calcular_y_guardar_variacion(obj):
     )
 
     # --- Inicialización ---
-    var_intermensual = var_interanual = None
-    dif_intermensual = dif_interanual = None
+    var_intermensual = var_interanual = 0.0
+    dif_intermensual = dif_interanual = 0.0
 
     # --- Calcular variaciones ---
     if data_intermensual and data_intermensual['cantidad'] != 0:

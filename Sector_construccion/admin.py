@@ -59,8 +59,8 @@ def calcular_y_guardar_variacion(obj, tipo_dato, campo_valor):
         tipo_dato=tipo_dato
     )
 
-    var_intermensual = None
-    var_interanual = None
+    var_intermensual = 0.0
+    var_interanual = 0.0
 
     if data_intermensual and float(data_intermensual) != 0:
         var_intermensual = (float(data_indicadores['total']) / float(data_intermensual)) * 100 - 100

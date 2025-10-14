@@ -47,36 +47,58 @@ class DgrDataProcessor:
       
     @classmethod
     def procces_request_parameters(cls, request: HttpRequest,) -> Dict[str,any]:
+        """
+        Procesa y valida los parámetros de la solicitud.
+        
+        Args:
+            request: Objeto HttpRequest de Django
+            
+        Returns:
+            Dict con los parámetros procesados y validados
+        """
         try:
             anio_inicio = request.GET.get('anio_inicio')
             anio_fin = request.GET.get('anio_fin')
-           
-
-   
 
             filtros = {}
+
+            # Si no se aplicaron filtros, devolver estado predeterminado (sin errores)
+            if not anio_inicio and not anio_fin:
+                return {
+                    'anio_inicio': None,
+                    'anio_fin': None,
+                    'is_valid': False,
+                    'error_message': None  # No mostrar error al ingresar por primera vez
+                }
+
+            # Procesar y validar filtros cuando existen
             if anio_inicio:
                 filtros['anio_inicio'] = int(anio_inicio)
             if anio_fin:
                 filtros['anio_fin'] = int(anio_fin)
-           
 
-           
+            # Validar que el año fin no sea menor que el año inicio
+            if 'anio_inicio' in filtros and 'anio_fin' in filtros:
+                if filtros['anio_fin'] < filtros['anio_inicio']:
+                    return {
+                        **filtros,
+                        'is_valid': False,
+                        'error_message': "Los filtros aplicados son incorrectos: el año de fin no puede ser menor que el de inicio."
+                    }
+                else:
+                    return {
+                        **filtros,
+                        'is_valid': True,
+                        'error_message': None
+                    }
 
-               
-                return {
-                    **filtros,
-                    'is_valid': True,
-                    'error_message': None,
-                    
-                }   
-            else:
-                return {
-                    **filtros,
-                    'is_valid': False,
-                    'error_message': None,
-                    
-                }
+            # Si falta alguno de los filtros (solo inicio o solo fin)
+            return {
+                **filtros,
+                'is_valid': False,
+                'error_message': "Debe seleccionar ambos años para aplicar el filtro."
+            }
+
         except ValueError:
             return {
                 'anio_inicio': None,
@@ -84,7 +106,6 @@ class DgrDataProcessor:
                 'is_valid': False,
                 'error_message': "Los filtros ingresados no son válidos."
             }
-        
 
 
 

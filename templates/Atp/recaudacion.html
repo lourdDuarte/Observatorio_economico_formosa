@@ -36,8 +36,11 @@
                             {% csrf_token %}
                             <div class ="content-error">
                                 
+                                 
                                 {% if error_message %}
-                                    {{error_message}}
+                                   <div class="alert alert-dark" role="alert">
+                                     {{error_message}}
+                                    </div>
                                 {%endif%}
                             </div>
                         
