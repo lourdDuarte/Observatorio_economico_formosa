@@ -242,5 +242,5 @@ def index(request):
 
 
 
-def prueba(request, var_id, descripcion):
-     return render(request, "prueba.html", {"var_id": var_id,"descripcion": descripcion})
+def bcra_detail(request, var_id, descripcion):
+     return render(request, "bcra.html", {"var_id": var_id,"descripcion": descripcion})
