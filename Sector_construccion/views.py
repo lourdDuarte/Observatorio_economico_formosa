@@ -2,7 +2,7 @@
 
 from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse
-
+from Descripcion.models import *
 from .utils import process_contruccion_salario_data, process_contruccion_puestos_data
 
 
@@ -52,10 +52,13 @@ def view_construccion_salarios(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: Respuesta renderizada con datos 
     """
+    descripcion = Descripcion.objects.filter(
+          nombre_modelo = 'Construccion - salario').values('descripcion').first()
     return process_contruccion_salario_data(
         request=request,
         value_totales=ConstruccionViewConfig.VALUE_SALARIO,
         context_keys= ConstruccionViewConfig.CONTEXT_KEYS_SALARIO,
+        descripcion_modelo = descripcion,
         template=ConstruccionViewConfig.TEMPLATE_SALARIOS
     )
 
@@ -70,10 +73,13 @@ def view_construccion_puestos(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: Respuesta renderizada con datos 
     """
+    descripcion = Descripcion.objects.filter(
+          nombre_modelo = 'Construccion - Puestos trabajo').values('descripcion').first()
     return process_contruccion_puestos_data(
         request=request,
         tipo_dato = ConstruccionViewConfig.TYPE_PUESTO_TRABAJO,
         value_totales=ConstruccionViewConfig.VALUE_PUESTOS,
         context_keys= ConstruccionViewConfig.CONTEXT_KEYS_PUESTOS,
+        descripcion_modelo = descripcion,
         template=ConstruccionViewConfig.TEMPLATE_PUESTOS
     )

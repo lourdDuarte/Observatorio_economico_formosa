@@ -49,8 +49,9 @@ INSTALLED_APPS = [
     'Valor',
     'sector_privado',
     'Dgr',
-    'Transferencia'
-    
+    'Transferencia',
+    'Descripcion',
+     
 ]
 
 MIDDLEWARE = [

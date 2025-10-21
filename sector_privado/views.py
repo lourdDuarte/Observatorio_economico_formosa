@@ -10,7 +10,7 @@ para las diferentes funcionalidades del supermercado.
 
 from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse
-
+from Descripcion.models import *
 from .utils import process_privado_data, process_privado_ramas_data
 
 
@@ -49,17 +49,23 @@ def view_sector_privado(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: Respuesta renderizada con datos de precios corrientes
     """
+    descripcion = Descripcion.objects.filter(
+          nombre_modelo = 'Sector privado - evolucion empleo').values('descripcion').first()
     return process_privado_data(
         request=request,
         context_keys=PrivadoViewConfig.CONTEXT_KEYS,
+        descripcion_modelo = descripcion,
         template=PrivadoViewConfig.TEMPLATE_PRIVADO
     )
 
 
 def view_sector_privado_ramas(request):
+    descripcion = Descripcion.objects.filter(
+          nombre_modelo = 'Sector privado - trabajadores ramas').values('descripcion').first()
     return process_privado_ramas_data(
         request=request,
         context_keys=PrivadoViewConfig.CONTEXT_KEYS_RAMAS,
+        descripcion_modelo = descripcion,
         template=PrivadoViewConfig.TEMPLATE_RAMAS
     )
 

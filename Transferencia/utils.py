@@ -102,7 +102,7 @@ class TransferenciaDataProcessor:
             return cls.get_variacion_data(
                 anio_id=cls.DEFAULT_YEAR,
                
-            )
+            ).order_by('anio__anio', 'mes__id')
         
     @staticmethod
     def process_chart_data_totales(data_variacion: QuerySet) -> Dict[str, list]:
@@ -163,7 +163,7 @@ def diccionario(queryset):
     }
 
     return datos
-def process_transferencia_data(request: HttpRequest, context_keys: Dict[str, str], template: str) -> HttpResponse:
+def process_transferencia_data(request: HttpRequest, context_keys: Dict[str, str], descripcion_modelo:str, template: str) -> HttpResponse:
     """
     Función principal para procesar datos del transferencia.
     
@@ -197,7 +197,7 @@ def process_transferencia_data(request: HttpRequest, context_keys: Dict[str, str
          context_keys['diccionario_variacion']: diccionario_variacion,
         'data_chart_formosa': json.dumps(context_chart['Formosa']),
         'data_chart_nacional': json.dumps(context_chart['Nacional']),
-       
+        'descripcion_modelo': descripcion_modelo,
         'meses': meses,
     }
     

@@ -214,7 +214,7 @@ def diccionario(queryset):
 
 
 def process_supermercado_data(request: HttpRequest, tipo_precio: int, 
-                            context_keys: Dict[str, str], template: str) -> HttpResponse:
+                            context_keys: Dict[str, str], descripcion_modelo: str, template: str) -> HttpResponse:
     """
     Función principal para procesar datos del supermercado.
     
@@ -250,7 +250,7 @@ def process_supermercado_data(request: HttpRequest, tipo_precio: int,
         context_keys['diccionario_variacion']: diccionario_variacion,
         'data_chart_formosa': json.dumps(context_chart['Formosa']),
         'data_chart_nacional': json.dumps(context_chart['Nacional']),
-       
+        'descripcion_modelo': descripcion_modelo,
         'meses': meses,
     }
     

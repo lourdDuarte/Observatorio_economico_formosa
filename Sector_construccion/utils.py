@@ -264,7 +264,7 @@ def diccionario_indicadores(queryset):
 
 
 
-def process_contruccion_salario_data(request:HttpRequest, value_totales:str, context_keys: Dict[str, str], template: str) -> HttpResponse:
+def process_contruccion_salario_data(request:HttpRequest, value_totales:str, context_keys: Dict[str, str],descripcion_modelo:str, template: str) -> HttpResponse:
 
     processor = ConstruccionProcessor
 
@@ -283,13 +283,14 @@ def process_contruccion_salario_data(request:HttpRequest, value_totales:str, con
         context_keys['salario_promedio_diccionario']: salario_promedio_diccionario,
         'data_chart_formosa': json.dumps(context_chart['Formosa']),
         'data_chart_nacional': json.dumps(context_chart['Nacional']),
+        'descripcion_modelo': descripcion_modelo,
         'meses': meses,
     }
     
     return render(request, template, context)
 
 
-def process_contruccion_puestos_data(request:HttpRequest,tipo_dato:int, value_totales:str, context_keys: Dict[str, str], template: str) -> HttpResponse:
+def process_contruccion_puestos_data(request:HttpRequest,tipo_dato:int, value_totales:str, context_keys: Dict[str, str], descripcion_modelo: str, template: str) -> HttpResponse:
 
     processor = ConstruccionIndicadoresProcessor
     construccion = ConstruccionProcessor
@@ -342,6 +343,7 @@ def process_contruccion_puestos_data(request:HttpRequest,tipo_dato:int, value_to
         context_keys['diccionario_variacion']: diccionario_variacion_puestos,
         'data_chart_formosa': json.dumps(context_chart['Formosa']),
         'data_chart_nacional': json.dumps(context_chart['Nacional']),
+        'descripcion_modelo': descripcion_modelo,
         'meses': meses,
     }
     

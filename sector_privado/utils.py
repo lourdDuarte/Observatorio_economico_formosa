@@ -201,7 +201,7 @@ def diccionario(queryset):
 
 
 def process_privado_data(request: HttpRequest, 
-                            context_keys: Dict[str, str], template: str) -> HttpResponse:
+                            context_keys: Dict[str, str], descripcion_modelo:str, template: str) -> HttpResponse:
    
     processor = PrivadoDataProcessor()
     
@@ -224,6 +224,7 @@ def process_privado_data(request: HttpRequest,
         context_keys['diccionario_variacion']: diccionario_variacion,
         'data_chart_formosa': json.dumps(context_chart['Formosa']),
         'data_chart_nacional': json.dumps(context_chart['Nacional']),
+        'descripcion_modelo': descripcion_modelo,
         'meses': meses,
     }
     
@@ -329,7 +330,7 @@ class PrivadoRamasDataProcessor:
         return dict(context_chart)
 
 def process_privado_ramas_data(request: HttpRequest, 
-                            context_keys: Dict[str, str], template: str) -> HttpResponse:
+                            context_keys: Dict[str, str], descripcion_modelo: str, template: str) -> HttpResponse:
    
     processor = PrivadoRamasDataProcessor()
     
@@ -359,7 +360,7 @@ def process_privado_ramas_data(request: HttpRequest,
         
         context_keys['chart_data_json']: json.dumps(context_chart),
         context_keys['data_variacion']: data_variacion,
-       
+        'descripcion_modelo': descripcion_modelo,
         'meses': meses,
     }
     

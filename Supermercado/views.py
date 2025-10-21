@@ -7,7 +7,7 @@ para las diferentes funcionalidades del supermercado.
 
 from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse
-
+from Descripcion.models import *
 from .utils import process_supermercado_data
 
 
@@ -42,10 +42,13 @@ def view_precio_corriente(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: Respuesta renderizada con datos de precios corrientes
     """
+    descripcion = Descripcion.objects.filter(
+          nombre_modelo = 'Supermercado - precio corriente').values('descripcion').first()
     return process_supermercado_data(
         request=request,
         tipo_precio=PriceViewConfig.PRECIO_CORRIENTE,
         context_keys=PriceViewConfig.CONTEXT_KEYS,
+        descripcion_modelo= descripcion,
         template=PriceViewConfig.TEMPLATE_CORRIENTE
     )
 
@@ -60,9 +63,12 @@ def view_precio_constante(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: Respuesta renderizada con datos de precios constantes
     """
+    descripcion = Descripcion.objects.filter(
+          nombre_modelo = 'Supermercado - precio constante').values('descripcion').first()
     return process_supermercado_data(
         request=request,
         tipo_precio=PriceViewConfig.PRECIO_CONSTANTE,
         context_keys=PriceViewConfig.CONTEXT_KEYS,
+        descripcion_modelo= descripcion,
         template=PriceViewConfig.TEMPLATE_CONSTANTE
     )

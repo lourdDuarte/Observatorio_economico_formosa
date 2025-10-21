@@ -157,7 +157,7 @@ def diccionario(queryset):
 
     return datos
 
-def process_ipc_data(request:HttpRequest, context_keys: Dict[str, str], template: str) -> HttpResponse:
+def process_ipc_data(request:HttpRequest, context_keys: Dict[str, str], descripcion_modelo: str,template: str) -> HttpResponse:
 
     meses = Mes.objects.all()
 
@@ -174,6 +174,7 @@ def process_ipc_data(request:HttpRequest, context_keys: Dict[str, str], template
         'error_message': params['error_message'],
         context_keys['data_variacion']: data_variacion,
         context_keys['diccionario_variacion']: diccionario_variacion,
+        'descripcion_modelo': descripcion_modelo,
         'meses': meses,
     }
         

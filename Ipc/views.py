@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from .utils import process_ipc_data
+from Descripcion.models import Descripcion
 # Create your views here.
 
 
@@ -16,8 +17,10 @@ class IpcViewConfig:
     TEMPLATE = 'Ipc/ipc.html'
 
 def ipc(request):
-
+    descripcion = Descripcion.objects.filter(
+          nombre_modelo = 'IPC').values('descripcion').first()
     return process_ipc_data(request, 
                             context_keys=IpcViewConfig.CONTEXT_KEYS, 
+                            descripcion_modelo = descripcion,
                             template=IpcViewConfig.TEMPLATE)
    

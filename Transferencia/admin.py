@@ -22,7 +22,7 @@ def calcular_valores(obj):
         
 
     # --- Cálculo de la Variación Interanual ---
-    var_interanual = None
+    var_interanual = 0.0
     anio_anterior_interanual = anio_actual - 1
     data_interanual = get_data_transferencia(
         anio=anio_anterior_interanual,
@@ -77,4 +77,8 @@ class TransferenciaAdmin(admin.ModelAdmin):
     exclude = ['variacion_anual_nominal', 'variacion_anual_real']
     
     def save_model(self, request, obj, form, change):
+        if obj.variacion_anual_real in [None, '', 'None']:
+            obj.variacion_anual_real = 0.0
         super().save_model(request, obj, form, change)
+       
+        Transferencia.objects.filter(pk=obj.pk, variacion_anual_real__isnull=True).update(variacion_anual_real=0.0)
