@@ -2,6 +2,7 @@
     <div class="logo">
       <a href="{% url 'index' %}"><h1>OBSERVATORIO<br><span>ECONÓMICO</span></h1></a>
     </div>
+    <button class="menu-toggle" aria-label="Abrir menú">&#9776;</button>
     <nav>
       <ul>
         <li class="menu-item"><a href="#">Supermercado</a>
@@ -57,3 +58,25 @@
       </ul>
     </nav>
 </header>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const toggle = document.querySelector(".menu-toggle");
+  const navList = document.querySelector("nav ul");
+  const menuItems = document.querySelectorAll(".menu-item > a");
+
+  toggle.addEventListener("click", () => {
+    navList.classList.toggle("show");
+  });
+
+  // Abre/cierra submenús en mobile al tocar
+  menuItems.forEach(item => {
+    item.addEventListener("click", e => {
+      const parent = item.parentElement;
+      if (window.innerWidth <= 900 && parent.querySelector(".submenu")) {
+        e.preventDefault();
+        parent.classList.toggle("open");
+      }
+    });
+  });
+});
+</script>
