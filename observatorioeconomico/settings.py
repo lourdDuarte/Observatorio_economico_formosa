@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'Dgr',
     'Transferencia',
     'Descripcion',
+    'Consumo_energetico',
      
 ]
 

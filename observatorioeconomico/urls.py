@@ -21,6 +21,7 @@ from django.conf.urls.static import static
 
 from observatorioeconomico import views as observatorio
 from Supermercado import views as supermercado
+
 from Patentamiento import views as vehiculo
 from Ipc import views as ipc
 from Transferencia import views as transferencia
@@ -46,5 +47,6 @@ urlpatterns = [
     path('recaudacion/', dgr.view_recaudacion, name='recaudacion'),
    
     path('bcra/<int:var_id>/<str:descripcion>/', observatorio.bcra_detail, name='bcra'),
+
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

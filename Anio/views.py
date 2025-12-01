@@ -7,3 +7,7 @@ def all_year():
     anios = Anio.objects.all()
 
     return anios
+
+
+
+
