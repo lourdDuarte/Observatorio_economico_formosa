@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head_content %}
+
+    
+    <!DOCTYPE html>
+    
+      
+
+{% endblock head_content %}
+{% block container %}
+<div class="content">
+    <div class="row">
+        <div class="col-md-12">
+            
+            <div class="card-body">
+                
+                <div class="typography-line">
+                    <h3 class="color-typography"><span>Consumo energetico -</span> tarifa industrial </h3>
+                </div>
+                <div class="typography-line">
+                    
+                    <blockquote>
+                        <p class="blockquote blockquote-primary">
+                            {{descripcion_modelo.descripcion}}
+                        </p>
+                    </blockquote>
+                        <div class="toolbar">
+                            <button onclick="showView('chart')" class="active">📈</button>
+                            <button onclick="showView('stats')">📊</button>
+                            <button onclick="showView('table')">📋</button>
+                           
+                        </div>
+                       
+                        <form method= "GET" action="{% url 'consumo-energia-industrial' %} ">
+                            {% csrf_token %}
+                            <div class ="content-error">
+                                
+                                 
+                                {% if error_message %}
+                                   <div class="alert alert-dark" role="alert">
+                                     {{error_message}}
+                                    </div>
+                                {%endif%}
+                            </div>
+                        
+                            <div class="filtros-contenedor">
+                                <div class="filtro-anios">
+                                    <label>Años:</label>
+                                    <div class="anio_inicio">
+                                        <select name="anio_inicio">
+                                            <option value="">Desde</option>
+                                            <option value="2">2020</option>
+                                            <option value="3">2021</option>
+                                            <option value="4">2022</option>
+                                            <option value="5">2023</option>
+                                            <option value="6">2024</option>
+                                            <option value="7">2025</option>
+                                            
+                                        </select>
+                                        <span>—</span>
+                                        <select name="anio_fin">
+                                            <option value="">Hasta</option>
+                                            <option value="2">2020</option>
+                                            <option value="3">2021</option>
+                                            <option value="4">2022</option>
+                                            <option value="5">2023</option>
+                                            <option value="6">2024</option>
+                                            <option value="7">2025</option>
+                                            
+                                        </select>
+                                    </div>
+                                </div>
+                            
+                               
+                                <button type="submit">Aplicar filtros</button>
+                            </div>
+                        </form>
+                         <div id="chartView" class="view active">
+                            <div class="chart-style" id="chart-industrial"></div>
+                        </div>
+
+                        <div id="tableView" class="view">
+                          <table id="example" class="stripe row-border order-column" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>Mes</th>
+                                        <th>Año</th>
+                                        <th>Valor</th>
+                                        <th>Tarifa</th>
+                                        <th>Demanda</th>
+                                        <th>Intermensual</th>
+                                        <th>Interanual</th>
+                                        
+                                       
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for data in data_variacion %}
+                                    <tr>
+                                        <td>{{ data.mes__mes }}</td>
+                                        <td>{{ data.anio__anio }}</td>
+                                        <td>{{ data.valor__valor }}</td>
+                                        <td>{{ data.tarifa__tipo_tarifa }}</td>
+                                        <td>{{ data.demanda }}</td>
+                                        <td>{{ data.variacion_intermensual }}</td>
+                                        <td>{{ data.variacion_interanual }}</td>
+                                        
+                                    </tr>
+                                    {% empty %}
+                                    <tr><td colspan="5">No hay datos disponibles.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div id="statsView" class="view">
+                          
+                          <div id="contenedor-chart" class="d-flex" style="gap: 10px;">
+                          <div id="container-formosa" class="flex-fill transition-slide slide-visible">
+                            <div id="chart-formosa-industrial" style="height: 350px;"></div>
+                          </div>
+                        
+                          <div id="container-nacional" class="transition-slide slide-hidden invisible" style="width: 50%; height: 350px;">
+                            <div id="chart-nacional" style="height: 100%;"></div>
+                          </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    
+ 
+  const datos = {{ diccionario_variacion|safe }};
+
+  area_chart_variation(
+    'chart-industrial',
+    datos,
+    'Variación intermensual e interanual'
+  );
+
+  const data_chart_formosa = {{ data_chart_formosa|safe }};
+  column_chart_comparative('chart-formosa-industrial', data_chart_formosa, 'Demanda');
+
+
+
+
+</script>
+{% endblock container %}

@@ -21,7 +21,7 @@ from django.conf.urls.static import static
 
 from observatorioeconomico import views as observatorio
 from Supermercado import views as supermercado
-
+from Consumo_energetico import views as energia
 from Patentamiento import views as vehiculo
 from Ipc import views as ipc
 from Transferencia import views as transferencia
@@ -45,6 +45,9 @@ urlpatterns = [
     path('sector-privado/', privado.view_sector_privado, name='sector-privado'),
     path('sector-privado-ramas/', privado.view_sector_privado_ramas, name='sector-privado-ramas'),
     path('recaudacion/', dgr.view_recaudacion, name='recaudacion'),
+    path('consumo-energia-comercial/', energia.view_refsa_comercial, name='consumo-energia-comercial'),
+    path('consumo-energia-industrial/', energia.view_refsa_industrial, name='consumo-energia-industrial'),
+    path('consumo-energia-residencial/', energia.view_refsa_residencial, name='consumo-energia-residencial'),
    
     path('bcra/<int:var_id>/<str:descripcion>/', observatorio.bcra_detail, name='bcra'),
 

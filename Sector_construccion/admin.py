@@ -142,7 +142,7 @@ class SectorConstruccionAdmin(admin.ModelAdmin):
 @admin.register(Indicadores)
 class IndicadoresAdmin(admin.ModelAdmin):
     search_fields = ['anio__anio','mes__mes','valor__valor']
-    list_filter = ['anio__anio','mes__mes','valor__valor']
+    list_filter = ['anio__anio','mes__mes','valor__valor', 'tipo_dato']
     ordering = ['-anio','mes']
     list_display = ['anio','mes','valor','tipo_dato','variacion_interanual','variacion_intermensual']
     list_editable = ['mes','valor','tipo_dato','variacion_interanual','variacion_intermensual']
