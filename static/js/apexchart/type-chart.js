@@ -1,6 +1,11 @@
 
 
-function column_chart_comparative(id,series, titulo){
+function column_chart_comparative(id,series, titulo, categories = 'meses'){
+ 
+  if(categories == 'meses'){
+    categories = ['En','Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct','Nov','Dic']
+  }
+  
   var options = {
     series: Object.keys(series).map(key => ({
       name: key,
@@ -28,7 +33,7 @@ function column_chart_comparative(id,series, titulo){
     colors: ['transparent']
   },
   xaxis: {
-    categories: ['En','Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct','Nov','Dic'],
+    categories: categories,
   },
   yaxis: {
     title: {
@@ -50,6 +55,98 @@ function column_chart_comparative(id,series, titulo){
   var chart = new ApexCharts(document.querySelector('#'+id), options);
   chart.render();
 
+}
+
+
+function bar_chart_tarifas(id, data, titulo) {
+
+    // Convertir el objeto en un array y ordenarlo por valor descendente
+    const entries = Object.entries(data)
+        .sort((a, b) => b[1][0] - a[1][0]); // Ordenar por valor DESC
+
+    // Extraer categorías y valores ya ordenados
+    const categorias = entries.map(e => e[0]);      // nombres
+    const valores = entries.map(e => e[1][0]);      // números
+
+    var options = {
+        series: [{
+            name: titulo,
+            data: valores
+        }],
+        chart: {
+            type: 'bar',
+            height: 350,
+            toolbar: {
+                show: true,
+                tools: { download: true }
+            }
+        },
+        plotOptions: {
+            bar: {
+                borderRadius: 5,
+                horizontal: false,
+                columnWidth: '45%',
+            }
+        },
+        dataLabels: { enabled: false },
+        xaxis: { categories: categorias },
+        
+        tooltip: {
+            y: { formatter: val => val }
+        }
+    };
+
+    var chart = new ApexCharts(document.querySelector('#' + id), options);
+    chart.render();
+}
+
+
+
+function pie_chart(id, series, labels) {
+    var options = {
+        series: series,
+        chart: {
+            width: "100%",
+            type: 'pie',
+
+            // HABILITA EL TOOLBAR
+            toolbar: {
+                show: true,
+                tools: {
+                    download: true,
+                },
+                
+            }
+        },
+
+
+
+        labels: labels,
+
+        responsive: [{
+            breakpoint: 480,
+            options: {
+                chart: { width: 300 },
+                legend: { position: 'bottom' }
+            }
+        }]
+    };
+
+    var chart = new ApexCharts(document.querySelector('#' + id), options);
+
+    chart.render().then(() => {
+        // ================================
+        //    MOVER TOOLBAR A LA IZQUIERDA
+        // ================================
+        const toolbar = document.querySelector(`#${id} .apexcharts-toolbar`);
+        if (toolbar) {
+            toolbar.style.right = "auto";
+            toolbar.style.left = "10px";
+        }
+
+        
+    });
+    
 }
 
 

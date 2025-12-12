@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block container %}
+<div class="content">
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="card-body">
+
+                <!-- Título -->
+                <div class="typography-line">
+                    <h3 class="color-typography">
+                        <span>Consumo energético -</span> Resumen General
+                    </h3>
+                </div>
+
+                <!-- Descripción -->
+                <blockquote>
+                    <p class="blockquote blockquote-primary">
+                        {{ descripcion_modelo.descripcion }}
+                    </p>
+                </blockquote>
+
+                <!-- Filtros -->
+                <form method="GET" action="{% url 'demanda-usuarios' %}">
+                    <div class="content-error">
+                        {% if error_message %}
+                            <div class="alert alert-dark" role="alert">
+                                {{ error_message }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="filtros-contenedor">
+                        <div class="filtro-anios">
+                            <label>Año:</label>
+                            <div class="anio_inicio">
+                                <select name="anio">
+                                    <option value="">Año</option>
+                                    <option value="2">2020</option>
+                                    <option value="3">2021</option>
+                                    <option value="4">2022</option>
+                                    <option value="5">2023</option>
+                                    <option value="6">2024</option>
+                                    <option value="7">2025</option>
+                                </select>
+
+                            </div>
+                        </div>
+                        <button type="submit">Aplicar filtro</button>
+                    </div>
+                </form>
+
+               <div class="row mt-4 justify-content-center">
+                 <!-- TÍTULO DEL GRÁFICO DE TORTA -->
+                <h4 class="text-center mb-3" style="color:#000">Demanda y Cantidad de usuario por categoria </h4>
+                    
+                <div class="col-md-4" style="margin-top: 4em; margin-left: 10em">
+
+                
+
+                    <div id="chart-demanda" style="height: 350px;"></div>
+                </div>
+
+                <div class="col-md-5" style="margin-top: 8em; margin-left: 10em">
+
+                
+
+                    <div id="chart-usuarios" style="height: 350px;"></div>
+                </div>
+
+            </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ================================
+    //   PIE CHART (DEMANDA)
+    // ================================
+    pie_chart(
+        "chart-demanda",
+        {{ demanda_series|safe }},
+        {{ demanda_labels|safe }}
+    );
+
+    // ================================
+    //   BAR CHART (USUARIOS)
+    // ================================
+    bar_chart_tarifas(
+        "chart-usuarios",
+        {{ usuarios_barras|safe }},
+        "Usuarios por categoria"
+    );
+
+</script>
+
+{% endblock container %}

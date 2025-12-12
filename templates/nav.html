@@ -31,14 +31,14 @@
         <li class="menu-item"><a href="#">Transferencias</a>
           <ul class="submenu">
             <li><a href="{% url 'transferencias' %}">Transferencias</a></li>
-           
+
           </ul>
         </li>
         <li class="menu-item"><a href="#">Construccion</a>
           <ul class="submenu">
             <li><a href="{% url 'salario-construccion' %}">Salario</a></li>
             <li><a href="{% url 'puestos-construccion' %}">Puesto de trabajo</a></li>
-           
+
           </ul>
         </li>
         <li class="menu-item"><a href="#">Sector privado</a>
@@ -50,20 +50,21 @@
         <li class="menu-item"><a href="#">ATP</a>
           <ul class="submenu">
             <li><a href="{% url 'recaudacion' %}">Recaudacion</a></li>
-            
+
           </ul>
         </li>
         <li class="menu-item"><a href="#">Energia</a>
           <ul class="submenu">
+            {% comment %} <li><a href="{% url 'demanda-usuarios' %}">Resumen </a></li> {% endcomment %}
             <li><a href="{% url 'consumo-energia-comercial' %}">Tarifa comercial</a></li>
-            {% comment %} <li><a href="{% url 'consumo-energia-industrial' %}">Tarifa industrial</a></li>
+            <li><a href="{% url 'consumo-energia-industrial' %}">Tarifa industrial</a></li>
             <li><a href="{% url 'consumo-energia-residencial' %}">Tarifa residencial</a></li>
-            <li><a href="#">Consumo</a></li> {% endcomment %}
-           
-           
+
+
+
           </ul>
         </li>
-        
+
       </ul>
     </nav>
 </header>

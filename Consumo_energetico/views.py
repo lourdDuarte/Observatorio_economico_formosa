@@ -58,15 +58,16 @@ def view_refsa_residencial(request):
                                   template=RefsaViewConfig.TEMPLATE_REFSA_RESIDENCIAL)
 
 
-def view_demanda_usuarios(request):
-    
+
+def view_resumen_energia(request):
+
     descripcion = Descripcion.objects.filter(
-          nombre_modelo = 'Consumo energetico - Tarifa residencial').values('descripcion').first()
+        nombre_modelo='Consumo energético - Resumen'
+    ).values('descripcion').first()
 
-    return process_energia_data(request, 
-                                  tarifa=RefsaViewConfig.RESIDENCIAL,
-                                  context_keys=RefsaViewConfig.CONTEXT_KEYS, 
-                                  descripcion_modelo = descripcion,
-                                  template=RefsaViewConfig.TEMPLATE_DEMANDA_USUARIOS)
-
+    return process_energia_resumen(
+        request,
+        descripcion_modelo=descripcion,
+        template='Energetico/demanda_usuarios.html'
+    )
 

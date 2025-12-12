@@ -48,6 +48,7 @@ urlpatterns = [
     path('consumo-energia-comercial/', energia.view_refsa_comercial, name='consumo-energia-comercial'),
     path('consumo-energia-industrial/', energia.view_refsa_industrial, name='consumo-energia-industrial'),
     path('consumo-energia-residencial/', energia.view_refsa_residencial, name='consumo-energia-residencial'),
+    path('demanda-usuarios/', energia.view_resumen_energia, name='demanda-usuarios'),
    
     path('bcra/<int:var_id>/<str:descripcion>/', observatorio.bcra_detail, name='bcra'),
 

@@ -178,7 +178,7 @@ class ConstruccionIndicadoresProcessor:
                 
             ).order_by('anio__anio', 'mes__id')
         
-
+    
 
 def diccionario_salario(queryset): 
 

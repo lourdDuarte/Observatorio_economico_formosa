@@ -138,6 +138,114 @@ class EnergiaDataProcessor:
             
         }
     
+    @staticmethod
+    def procesar_filtro_anio(request: HttpRequest) -> dict:
+        """
+        Procesa un único filtro de año.
+        Si no se aplica filtro, usa el DEFAULT_YEAR.
+        Devuelve:
+        - anio (int)
+        - is_valid (bool)
+        - error_message (str o None)
+        """
+
+        anio = request.GET.get('anio')
+
+        # Si no eligió año → usar el año por defecto
+        if not anio:
+            return {
+                'anio': EnergiaDataProcessor.DEFAULT_YEAR,
+                'is_valid': True,   # Se toma como válido porque sí se usará un año
+                'error_message': None
+            }
+
+        try:
+            anio = int(anio)
+            return {
+                'anio': anio,
+                'is_valid': True,
+                'error_message': None
+            }
+
+        except ValueError:
+            return {
+                'anio': EnergiaDataProcessor.DEFAULT_YEAR,
+                'is_valid': True,
+                'error_message': "El año ingresado no es válido, se cargó el año por defecto."
+            }
+
+    @staticmethod
+    def get_last_demanda_by_tarifa_year(params: dict) -> dict:
+        """
+        Devuelve la última demanda por tarifa dentro del año elegido.
+        """
+
+        tarifas = TipoTarifa.objects.all().order_by("id")
+
+        series = []
+        labels = []
+
+        for tarifa in tarifas:
+
+            qs = Cammesa.objects.filter(tarifa=tarifa)
+
+            # Aplicar filtro por año si corresponde
+            if params["is_valid"]:
+                qs = qs.filter(anio_id=params["anio"])
+
+            ultimo = qs.order_by('-mes__id').values('demanda').first()
+
+            valor = float(ultimo['demanda']) if ultimo else 0
+
+            series.append(valor)
+            labels.append(tarifa.tipo_tarifa)
+
+        return {
+            "series": series,
+            "labels": labels
+        }
+
+
+    @staticmethod
+    def get_last_usuarios_by_tarifa_year(params: dict) -> dict:
+        """
+        Devuelve la última cantidad de usuarios por tarifa dentro del año elegido.
+        Si el último es 0, toma el anterior dentro del mismo año.
+        """
+
+        tarifas = TipoTarifa.objects.all().order_by("id")
+        resultados = {}
+
+        for tarifa in tarifas:
+
+            qs = Refsa.objects.filter(tarifa=tarifa)
+
+            # Filtro por año
+            if params["is_valid"]:
+                qs = qs.filter(anio_id=params["anio"])
+
+            registros = qs.order_by('-mes__id').values('cantidad_usuarios')
+
+            valor = 0
+
+            if registros:
+                ultimo = registros[0]
+
+                if ultimo['cantidad_usuarios'] not in ["0", 0, None, ""]:
+                    valor = float(ultimo['cantidad_usuarios'])
+                else:
+                    if len(registros) > 1:
+                        anterior = registros[1]
+                        valor = float(anterior['cantidad_usuarios'])
+                    else:
+                        valor = 0
+
+            resultados[tarifa.tipo_tarifa] = [valor]
+
+        return resultados
+
+
+
 def diccionario(queryset):
     formosa_intermensual = []
     formosa_interanual = []
@@ -194,4 +302,34 @@ def process_energia_data(request:HttpRequest, tarifa: int, context_keys: Dict[st
         'meses': meses,
     }
     
+    return render(request, template, context)
+
+def process_energia_resumen(request: HttpRequest, descripcion_modelo: str, template: str) -> HttpResponse:
+
+    processor = EnergiaDataProcessor
+
+    # Nuevo filtro (1 solo año)
+    params = processor.procesar_filtro_anio(request)
+    print(params)
+    # DEMANDA (torta)
+    demanda = processor.get_last_demanda_by_tarifa_year(params)
+    demanda_series = json.dumps(demanda["series"])
+    demanda_labels = json.dumps(demanda["labels"])
+
+    # USUARIOS (barras)
+    usuarios = processor.get_last_usuarios_by_tarifa_year(params)
+    usuarios_json = json.dumps(usuarios)
+
+    context = {
+        'error_message': params['error_message'],
+        'descripcion_modelo': descripcion_modelo,
+
+        # torta
+        'demanda_series': demanda_series,
+        'demanda_labels': demanda_labels,
+
+        # barras
+        'usuarios_barras': usuarios_json,
+    }
+
     return render(request, template, context)
