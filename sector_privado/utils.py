@@ -236,7 +236,7 @@ def process_privado_data(request: HttpRequest,
 
 class PrivadoRamasDataProcessor:
 
-    DEFAULT_YEAR = 6
+    DEFAULT_YEAR = 7
 
     @staticmethod
     def get_cantidad_asalariados(**filters) -> QuerySet:
