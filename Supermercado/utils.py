@@ -18,6 +18,15 @@ class SupermercadoDataProcessor:
 
     @staticmethod
     def get_variacion_data(**filters) -> QuerySet:
+        """
+        Docstring for get_variacion_data
+        
+        Funcion que genera la consulta (y subconsulta) a la bd para luego trabajar en las otras funciones
+
+        :param filters: filtros aplicados a la consulta
+        :return: modelo Variacion
+        
+        """
         venta_total_subquery = Total.objects.filter(
             anio=OuterRef('anio'),
             mes=OuterRef('mes'),
@@ -36,6 +45,26 @@ class SupermercadoDataProcessor:
 
     @classmethod
     def process_request_parameters(cls, request: HttpRequest) -> Dict[str, Any]:
+
+        
+        """
+            Procesa y valida los parámetros de año enviados a través de una solicitud HTTP GET.
+
+            Extrae los parámetros `anio_inicio` y `anio_fin` desde la query string del request,
+            la funcion busca asegurar:
+            - Ambos años estén presentes.
+            - Los valores sean numéricos válidos.
+            - El año de inicio no sea mayor que el de fin.
+
+            Returns:
+                dict: Un diccionario con las siguientes claves:
+                    - anio_inicio (int or None): Año inicial, si fue proporcionado y válido.
+                    - anio_fin (int or None): Año final, si fue proporcionado y válido.
+                    - is_valid (bool): Indica si los parámetros son válidos para usar en filtros.
+                    - error_message (str or None): Mensaje descriptivo si hubo un error en los filtros,
+                    o `None` si no hay error (incluido el caso de primer acceso sin filtros).
+        """
+
         anio_inicio = request.GET.get('anio_inicio')
         anio_fin = request.GET.get('anio_fin')
         filtros = {}
