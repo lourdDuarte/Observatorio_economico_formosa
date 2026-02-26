@@ -16,10 +16,19 @@
                 </div>
 
                 <!-- Descripción -->
-                <blockquote>
-                    <p class="blockquote blockquote-primary">
-                        {{ descripcion_modelo.descripcion }}
-                    </p>
+                 <blockquote class="position-relative">
+                        <p class="blockquote blockquote-primary">
+                            {{ descripcion_modelo.descripcion|linebreaksbr|safe }}
+
+                            {% if descripcion_modelo.fecha_actualizacion %}
+                            <br>
+                            <span class="text-start text-muted small mt-2">
+                                Actualizado: {{ descripcion_modelo.fecha_actualizacion|date:"d/m/Y " }}
+                            </span>
+                        {% endif %}
+                        </p>
+
+
                 </blockquote>
 
                 <!-- Filtros -->
@@ -36,15 +45,14 @@
                         <div class="filtro-anios">
                             <label>Año:</label>
                             <div class="anio_inicio">
+                             
                                 <select name="anio">
-                                    <option value="">Año</option>
-                                    <option value="2">2020</option>
-                                    <option value="3">2021</option>
-                                    <option value="4">2022</option>
-                                    <option value="5">2023</option>
-                                    <option value="6">2024</option>
-                                    <option value="7">2025</option>
+                                            <option value="">Desde</option>
+                                            {% for a in anios %}
+                                                <option value="{{ a.id }}">{{ a.anio }}</option>
+                                            {% endfor %}
                                 </select>
+
 
                             </div>
                         </div>

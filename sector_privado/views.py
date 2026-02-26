@@ -50,7 +50,7 @@ def view_sector_privado(request: HttpRequest) -> HttpResponse:
         HttpResponse: Respuesta renderizada con datos de precios corrientes
     """
     descripcion = Descripcion.objects.filter(
-          nombre_modelo = 'Sector privado - evolucion empleo').values('descripcion').first()
+          nombre_modelo = 'Sector privado - evolucion empleo').first()
     return process_privado_data(
         request=request,
         context_keys=PrivadoViewConfig.CONTEXT_KEYS,
@@ -61,7 +61,7 @@ def view_sector_privado(request: HttpRequest) -> HttpResponse:
 
 def view_sector_privado_ramas(request):
     descripcion = Descripcion.objects.filter(
-          nombre_modelo = 'Sector privado - trabajadores ramas').values('descripcion').first()
+          nombre_modelo = 'Sector privado - trabajadores ramas').first()
     return process_privado_ramas_data(
         request=request,
         context_keys=PrivadoViewConfig.CONTEXT_KEYS_RAMAS,

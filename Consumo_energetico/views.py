@@ -27,7 +27,7 @@ class RefsaViewConfig:
 def view_refsa_comercial(request):
     
     descripcion = Descripcion.objects.filter(
-          nombre_modelo = 'Consumo energetico - Tarifa comercial').values('descripcion').first()
+          nombre_modelo = 'Consumo energetico - Tarifa comercial').first()
 
     return process_energia_data(request, 
                                   tarifa=RefsaViewConfig.COMERCIAL,
@@ -38,7 +38,7 @@ def view_refsa_comercial(request):
 def view_refsa_industrial(request):
     
     descripcion = Descripcion.objects.filter(
-          nombre_modelo = 'Consumo energetico - Tarifa industrial').values('descripcion').first()
+          nombre_modelo = 'Consumo energetico - Tarifa industrial').first()
 
     return process_energia_data(request, 
                                   tarifa=RefsaViewConfig.INDUSTRIAL,
@@ -49,7 +49,7 @@ def view_refsa_industrial(request):
 def view_refsa_residencial(request):
     
     descripcion = Descripcion.objects.filter(
-          nombre_modelo = 'Consumo energetico - Tarifa residencial').values('descripcion').first()
+          nombre_modelo = 'Consumo energetico - Tarifa residencial').first()
 
     return process_energia_data(request, 
                                   tarifa=RefsaViewConfig.RESIDENCIAL,
@@ -63,7 +63,7 @@ def view_resumen_energia(request):
 
     descripcion = Descripcion.objects.filter(
         nombre_modelo='Consumo energético - Resumen'
-    ).values('descripcion').first()
+    ).first()
 
     return process_energia_resumen(
         request,

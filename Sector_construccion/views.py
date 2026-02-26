@@ -53,7 +53,7 @@ def view_construccion_salarios(request: HttpRequest) -> HttpResponse:
         HttpResponse: Respuesta renderizada con datos 
     """
     descripcion = Descripcion.objects.filter(
-          nombre_modelo = 'Construccion - salario').values('descripcion').first()
+          nombre_modelo = 'Construccion - salario').first()
     return process_contruccion_salario_data(
         request=request,
         value_totales=ConstruccionViewConfig.VALUE_SALARIO,
@@ -74,7 +74,7 @@ def view_construccion_puestos(request: HttpRequest) -> HttpResponse:
         HttpResponse: Respuesta renderizada con datos 
     """
     descripcion = Descripcion.objects.filter(
-          nombre_modelo = 'Construccion - Puestos trabajo').values('descripcion').first()
+          nombre_modelo = 'Construccion - Puestos trabajo').first()
     return process_contruccion_puestos_data(
         request=request,
         tipo_dato = ConstruccionViewConfig.TYPE_PUESTO_TRABAJO,

@@ -43,7 +43,7 @@ def view_precio_corriente(request: HttpRequest) -> HttpResponse:
         HttpResponse: Respuesta renderizada con datos de precios corrientes
     """
     descripcion = Descripcion.objects.filter(
-          nombre_modelo = 'Supermercado - precio corriente').values('descripcion').first()
+          nombre_modelo = 'Supermercado - precio corriente').first()
     return process_supermercado_data(
         request=request,
         tipo_precio=PriceViewConfig.PRECIO_CORRIENTE,
@@ -64,7 +64,7 @@ def view_precio_constante(request: HttpRequest) -> HttpResponse:
         HttpResponse: Respuesta renderizada con datos de precios constantes
     """
     descripcion = Descripcion.objects.filter(
-          nombre_modelo = 'Supermercado - precio constante').values('descripcion').first()
+          nombre_modelo = 'Supermercado - precio constante').first()
     return process_supermercado_data(
         request=request,
         tipo_precio=PriceViewConfig.PRECIO_CONSTANTE,

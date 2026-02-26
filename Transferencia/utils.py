@@ -4,16 +4,17 @@ import json
 from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse
 from django.db.models import OuterRef, Subquery, QuerySet
-
+from Anio.models import Anio
 from Transferencia.models import Transferencia, Mes
+from observatorioeconomico.utils import get_default_anio_id_for_model_with_valores
+
 
 
 class TransferenciaDataProcessor:
-    DEFAULT_YEAR = 7
     DEFAULT_VALUE = 1
 
     @staticmethod
-    def get_variacion_data(**filters)-> QuerySet:
+    def get_variacion_data(**filters) -> QuerySet:
         return Transferencia.objects.select_related(
             'mes', 'anio', 'valor'
         ).values(
@@ -24,6 +25,30 @@ class TransferenciaDataProcessor:
             'variacion_anual_nominal',
             'variacion_anual_real'
         ).filter(**filters)
+
+    @classmethod
+    def get_default_year(cls) -> int:
+        return get_default_anio_id_for_model_with_valores(
+            Transferencia,
+            field_name="valor_id",
+            required_values=[1, 2],  # exige ambas regiones
+        )
+
+    @classmethod
+    def get_filtered_data(cls, params: Dict[str, Any]) -> QuerySet:
+
+        if params['is_valid']:
+            return cls.get_variacion_data(
+                anio_id__gte=params['anio_inicio'],
+                anio_id__lte=params['anio_fin'],
+            ).order_by('anio__anio', 'mes__id')
+
+        else:
+            default_year = cls.get_default_year()
+
+            return cls.get_variacion_data(
+                anio_id=default_year,
+            ).order_by('anio__anio', 'mes__id')
     
     @classmethod
     def process_request_parameters(cls, request: HttpRequest) -> Dict[str, Any]:
@@ -89,20 +114,7 @@ class TransferenciaDataProcessor:
             }
     
 
-    @classmethod
-    def get_filtered_data(cls,params: Dict[str, Any]) -> QuerySet:
-        if params['is_valid']:
-            return cls.get_variacion_data(
-                anio_id__gte=params['anio_inicio'],
-                anio_id__lte=params['anio_fin'],
-               
-            ).order_by('anio__anio', 'mes__id')
-        
-        else:
-            return cls.get_variacion_data(
-                anio_id=cls.DEFAULT_YEAR,
-               
-            ).order_by('anio__anio', 'mes__id')
+   
         
     @staticmethod
     def process_chart_data_totales(data_variacion: QuerySet) -> Dict[str, list]:
@@ -188,7 +200,7 @@ def process_transferencia_data(request: HttpRequest, context_keys: Dict[str, str
     data_variacion = processor.get_filtered_data(params)
     diccionario_variacion = diccionario(data_variacion)
     context_chart = processor.process_chart_data_totales(data_variacion)
-    
+    anios = Anio.objects.all().order_by('anio')
     
     # Construir contexto
     context = {
@@ -199,6 +211,7 @@ def process_transferencia_data(request: HttpRequest, context_keys: Dict[str, str
         'data_chart_nacional': json.dumps(context_chart['Nacional']),
         'descripcion_modelo': descripcion_modelo,
         'meses': meses,
+        'anios': anios,
     }
     
     return render(request, template, context)

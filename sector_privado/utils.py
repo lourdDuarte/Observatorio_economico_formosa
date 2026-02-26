@@ -11,7 +11,7 @@ import json
 from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse
 from django.db.models import OuterRef, Subquery, QuerySet
-
+from Anio.models import Anio
 from sector_privado.models import IndicadoresPrivado,CantidadesPrivado,AsalariadoRama, Mes
 
 
@@ -352,6 +352,7 @@ def process_privado_ramas_data(request: HttpRequest,
         type_graphic = 0
         context_chart = processor.process_chart_ramas_cantidad(data_variacion)
     
+    anios = Anio.objects.all().order_by('anio')
 
     
     # Construir contexto
@@ -362,6 +363,7 @@ def process_privado_ramas_data(request: HttpRequest,
         context_keys['data_variacion']: data_variacion,
         'descripcion_modelo': descripcion_modelo,
         'meses': meses,
+        'anios': anios,
     }
     
     return render(request, template, context)

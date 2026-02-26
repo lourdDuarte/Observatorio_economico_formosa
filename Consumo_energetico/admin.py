@@ -2,7 +2,9 @@ from django.contrib import admin
 from .models import *
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
+from django import forms
+from django.core.exceptions import ValidationError
+import re
 
 # ---------------------------------------------------
 # FUNCIONES REFSA
@@ -306,22 +308,49 @@ def total_post_save_cammesa(sender, instance, created, **kwargs):
 # ---------------------------------------------------
 
 admin.site.register(TipoTarifa)
+class CammesaAdminForm(forms.ModelForm):
+    class Meta:
+        model = Cammesa
+        fields = "__all__"
 
+    def clean_demanda(self):
+        valor = self.cleaned_data.get("demanda")
 
-@admin.register(Refsa)
-class RefsaAdmin(admin.ModelAdmin):
-    list_filter = ['anio__anio', 'mes__mes', 'valor__valor', 'tarifa']
-    search_fields = ['cantidad_usuarios']
-    ordering = ['-anio', 'mes']
-    list_display = ['anio', 'tarifa', 'mes', 'valor', 'cantidad_usuarios',
-                    'variacion_bimestral', 'variacion_interanual']
-    list_editable = ['tarifa', 'mes', 'valor', 'cantidad_usuarios']
-    list_per_page = 12
-    exclude = ['variacion_bimestral', 'variacion_interanual']
+        if valor is None:
+            raise ValidationError("Este campo no puede estar vacío.")
 
+        valor_str = str(valor)
+
+        if not re.fullmatch(r'^\d+(\.\d+)?$', valor_str):
+            raise ValidationError(
+                "Solo se permiten números con punto decimal (ej: 4526.12). No use comas ni símbolos."
+            )
+
+        return valor
+    
+class RefsaAdminForm(forms.ModelForm):
+    class Meta:
+        model = Refsa
+        fields = "__all__"
+
+    def clean_cantidad_usuarios(self):
+        valor = self.cleaned_data.get("cantidad_usuarios")
+
+        if valor is None:
+            raise ValidationError("Este campo no puede estar vacío.")
+
+        valor_str = str(valor)
+
+        if not re.fullmatch(r'^\d+(\.\d+)?$', valor_str):
+            raise ValidationError(
+                "Solo se permiten números con punto decimal (ej: 4526.12). No use comas ni símbolos."
+            )
+
+        return valor
 
 @admin.register(Cammesa)
 class CammesaAdmin(admin.ModelAdmin):
+    form = CammesaAdminForm
     list_filter = ['anio__anio', 'mes__mes', 'valor__valor', 'tarifa']
     search_fields = ['demanda']
     ordering = ['-anio', 'mes']
@@ -330,3 +359,16 @@ class CammesaAdmin(admin.ModelAdmin):
     list_editable = ['tarifa', 'mes', 'valor', 'demanda']
     list_per_page = 12
     exclude = ['variacion_intermensual', 'variacion_interanual']
+
+
+@admin.register(Refsa)
+class RefsaAdmin(admin.ModelAdmin):
+    form = RefsaAdminForm
+    list_filter = ['anio__anio', 'mes__mes', 'valor__valor', 'tarifa']
+    search_fields = ['cantidad_usuarios']
+    ordering = ['-anio', 'mes']
+    list_display = ['anio', 'tarifa', 'mes', 'valor', 'cantidad_usuarios',
+                    'variacion_bimestral', 'variacion_interanual']
+    list_editable = ['tarifa', 'mes', 'valor', 'cantidad_usuarios']
+    list_per_page = 12
+    exclude = ['variacion_bimestral', 'variacion_interanual']

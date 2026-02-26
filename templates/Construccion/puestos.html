@@ -20,10 +20,20 @@
                 </div>
                 <div class="typography-line">
                     
-                    <blockquote>
+                   <blockquote class="position-relative">
                         <p class="blockquote blockquote-primary">
-                        {{descripcion_modelo.descripcion | linebreaksbr | safe}}</p>
-                    </blockquote>
+                            {{ descripcion_modelo.descripcion|linebreaksbr|safe }}
+
+                            {% if descripcion_modelo.fecha_actualizacion %}
+                            <br>
+                            <span class="text-start text-muted small mt-2">
+                                Actualizado: {{ descripcion_modelo.fecha_actualizacion|date:"d/m/Y " }}
+                            </span>
+                        {% endif %}
+                        </p>
+
+
+                </blockquote>
                         <div class="toolbar">
                             <button onclick="showView('chart')" class="active">📈</button>
                             <button onclick="showView('stats')">📊</button>
@@ -48,24 +58,18 @@
                                     <div class="anio_inicio">
                                         <select name="anio_inicio">
                                             <option value="">Desde</option>
-                                            <option value="2">2020</option>
-                                            <option value="3">2021</option>
-                                            <option value="4">2022</option>
-                                            <option value="5">2023</option>
-                                            <option value="6">2024</option>
-                                            <option value="7">2025</option>
-                                            
-                                        </select>
-                                        <span>—</span>
-                                        <select name="anio_fin">
+                                            {% for a in anios %}
+                                                <option value="{{ a.id }}">{{ a.anio }}</option>
+                                            {% endfor %}
+                                            </select>
+
+                                            <span>—</span>
+
+                                            <select name="anio_fin">
                                             <option value="">Hasta</option>
-                                            <option value="2">2020</option>
-                                            <option value="3">2021</option>
-                                            <option value="4">2022</option>
-                                            <option value="5">2023</option>
-                                            <option value="6">2024</option>
-                                            <option value="7">2025</option>
-                                            
+                                            {% for a in anios %}
+                                                <option value="{{ a.id }}">{{ a.anio }}</option>
+                                            {% endfor %}
                                         </select>
                                     </div>
                                 </div>

@@ -43,7 +43,7 @@ class VehiculoViewConfig:
 def view_patentamiento_auto(request):
     
     descripcion = Descripcion.objects.filter(
-          nombre_modelo = 'Patentamiento - auto').values('descripcion').first()
+          nombre_modelo = 'Patentamiento - auto').first()
 
     return process_vehiculo_data(request, 
                                   tipo_vehiculo=VehiculoViewConfig.AUTO,
@@ -55,7 +55,7 @@ def view_patentamiento_auto(request):
 
 def view_patentamiento_moto(request):
      descripcion = Descripcion.objects.filter(
-          nombre_modelo = 'Patentamiento - moto').values('descripcion').first()
+          nombre_modelo = 'Patentamiento - moto').first()
      return  process_vehiculo_data(request, 
                                   tipo_vehiculo=VehiculoViewConfig.MOTO,
                                   tipo_movimiento= VehiculoViewConfig.PATENTAMIENTO, 

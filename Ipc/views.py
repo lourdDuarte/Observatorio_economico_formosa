@@ -18,7 +18,9 @@ class IpcViewConfig:
 
 def ipc(request):
     descripcion = Descripcion.objects.filter(
-          nombre_modelo = 'IPC').values('descripcion').first()
+        nombre_modelo='IPC'
+    ).first()
+
     return process_ipc_data(request, 
                             context_keys=IpcViewConfig.CONTEXT_KEYS, 
                             descripcion_modelo = descripcion,

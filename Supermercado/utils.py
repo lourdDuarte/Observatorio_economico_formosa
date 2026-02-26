@@ -5,12 +5,13 @@ import json
 from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse
 from django.db.models import OuterRef, Subquery, QuerySet
-
+from Anio.models import Anio
 from Supermercado.models import Variacion, Total, Mes
+from observatorioeconomico.utils import get_default_anio_id_for_model_with_valores
+
 
 
 class SupermercadoDataProcessor:
-    DEFAULT_YEAR = 7
     PRICE_TYPE_CORRIENTE = 2
     PRICE_TYPE_CONSTANTE = 1
     REGION_FORMOSA = 'Formosa'
@@ -19,14 +20,9 @@ class SupermercadoDataProcessor:
     @staticmethod
     def get_variacion_data(**filters) -> QuerySet:
         """
-        Docstring for get_variacion_data
-        
-        Funcion que genera la consulta (y subconsulta) a la bd para luego trabajar en las otras funciones
-
-        :param filters: filtros aplicados a la consulta
-        :return: modelo Variacion
-        
+        Función que genera la consulta (y subconsulta) a la bd.
         """
+
         venta_total_subquery = Total.objects.filter(
             anio=OuterRef('anio'),
             mes=OuterRef('mes'),
@@ -39,9 +35,42 @@ class SupermercadoDataProcessor:
         ).annotate(
             venta_total=Subquery(venta_total_subquery)
         ).values(
-            'mes__mes', 'anio__anio', 'valor__valor',
-            'variacion_interanual', 'variacion_intermensual', 'venta_total'
+            'mes__mes',
+            'anio__anio',
+            'valor__valor',
+            'variacion_interanual',
+            'variacion_intermensual',
+            'venta_total'
         ).filter(**filters)
+
+    @classmethod
+    def get_default_year(cls, tipo_precio: int) -> int:
+        return get_default_anio_id_for_model_with_valores(
+            Variacion,
+            field_name="valor_id",
+            required_values=[1, 2],
+            extra_filters={
+                "tipoPrecio_id": tipo_precio
+            }
+    )
+
+    @classmethod
+    def get_filtered_data(cls, tipo_precio: int, params: Dict[str, Any]) -> QuerySet:
+
+        filtros = {
+            'tipoPrecio_id': tipo_precio
+        }
+
+        if params['is_valid']:
+            filtros.update({
+                'anio_id__gte': params['anio_inicio'],
+                'anio_id__lte': params['anio_fin']
+            })
+        else:
+           filtros['anio_id'] = cls.get_default_year(tipo_precio)
+
+        return cls.get_variacion_data(**filtros).order_by('anio__anio', 'mes__id')
+
 
     @classmethod
     def process_request_parameters(cls, request: HttpRequest) -> Dict[str, Any]:
@@ -88,22 +117,7 @@ class SupermercadoDataProcessor:
         except ValueError:
             return {'anio_inicio': None, 'anio_fin': None, 'is_valid': False, 'error_message': "Los filtros ingresados no son válidos."}
 
-    @classmethod
-    def get_filtered_data(cls, tipo_precio: int, params: Dict[str, Any]) -> QuerySet:
-        filtros = {
-            'tipoPrecio_id': tipo_precio
-        }
-
-        if params['is_valid']:
-            filtros.update({
-                'anio_id__gte': params['anio_inicio'],
-                'anio_id__lte': params['anio_fin']
-            })
-        else:
-            filtros['anio_id'] = cls.DEFAULT_YEAR
-
-        return cls.get_variacion_data(**filtros).order_by('anio__anio', 'mes__id')
-
+    
     @staticmethod
     def process_chart_data_totales(data_variacion: QuerySet) -> Dict[str, Dict[int, list]]:
         chart_data = {
@@ -174,7 +188,7 @@ def process_supermercado_data(
     data_variacion = processor.get_filtered_data(tipo_precio, params)
     dicc_variacion = construir_diccionario(data_variacion)
     chart_data = processor.process_chart_data_totales(data_variacion)
-
+    anios = Anio.objects.all().order_by('anio')
     context = {
         'error_message': params['error_message'],
         context_keys['data_variacion']: data_variacion,
@@ -183,6 +197,7 @@ def process_supermercado_data(
         'data_chart_nacional': json.dumps(chart_data[SupermercadoDataProcessor.REGION_NACIONAL]),
         'descripcion_modelo': descripcion_modelo,
         'meses': Mes.objects.all(),
+        'anios': anios,
     }
 
     return render(request, template, context)

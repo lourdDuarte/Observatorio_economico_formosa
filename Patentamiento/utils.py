@@ -7,20 +7,21 @@ from django.http import HttpRequest, HttpResponse
 from typing import Dict, Any
 from collections import defaultdict
 from django.db.models import QuerySet
-
+from Anio.models import Anio
+from observatorioeconomico.utils import  get_default_anio_id_for_model_with_valores
 
 
 class VehiculoDataProcessor:
 
     # Constantes de configuración
-    DEFAULT_YEAR = 7
+    
     DEFAULT_VALUE = 1
-   
 
     @staticmethod
     def get_data_variaciones(**kwargs) -> dict:
-    
-        return Indicadores.objects.select_related('mes', 'anio', 'valor', 'tipoPrecio').values(
+        return Indicadores.objects.select_related(
+            'mes', 'anio', 'valor', 'tipoPrecio'
+        ).values(
             'mes__mes',
             'anio__anio',
             'valor__valor',
@@ -28,35 +29,37 @@ class VehiculoDataProcessor:
             'variacion_intermensual',
             'total'
         ).filter(**kwargs)
-    
+
     @classmethod
-    def get_filtered_data(cls, tipo_vehiculo:int, tipo_movimiento:int, params: Dict[str, Any]) -> QuerySet:
-        """
-        Obtiene datos filtrados según los parámetros.
-        
-        Args:
-            tipo_vehiculo(1: moto, 2: auto)
-            tipo_movimiento (1: patentamiento, 2: transferencia)
-            params: Parámetros de filtrado procesados
-            
-        Returns:
-            QuerySet con los datos filtrados
-        """
+    def get_default_year(cls, tipo_vehiculo: int, tipo_movimiento: int) -> int:
+        return get_default_anio_id_for_model_with_valores(
+            Indicadores,
+            field_name="valor_id",
+            required_values=[1, 2],
+            extra_filters={
+                "tipo_vehiculo_id": tipo_vehiculo,
+                "movimiento_vehicular_id": tipo_movimiento,
+            }
+    )
+
+    @classmethod
+    def get_filtered_data(cls, tipo_vehiculo: int, tipo_movimiento: int, params: Dict[str, Any]) -> QuerySet:
+
         if params['is_valid']:
-            
             return cls.get_data_variaciones(
                 anio_id__gte=params['anio_inicio'],
                 anio_id__lte=params['anio_fin'],
                 movimiento_vehicular_id=tipo_movimiento,
-                tipo_vehiculo_id = tipo_vehiculo,
-               
+                tipo_vehiculo_id=tipo_vehiculo,
             ).order_by('anio__anio', 'mes__id')
+
         else:
+            default_year = cls.get_default_year(tipo_vehiculo, tipo_movimiento)
+
             return cls.get_data_variaciones(
-                anio_id=cls.DEFAULT_YEAR,
+                anio_id=default_year,
                 movimiento_vehicular_id=tipo_movimiento,
-                tipo_vehiculo_id = tipo_vehiculo,
-                
+                tipo_vehiculo_id=tipo_vehiculo,
             ).order_by('anio__anio', 'mes__id')
     
     @classmethod
@@ -195,7 +198,8 @@ def process_vehiculo_data(request:HttpRequest, tipo_vehiculo: int, tipo_movimien
     diccionario_variacion = diccionario(data_variacion)
     
     context_chart = processor.process_chart_data_totales(data_variacion)
-    
+    anios = Anio.objects.all().order_by('anio')
+
 
     # Construir contexto
     context = {
@@ -206,6 +210,7 @@ def process_vehiculo_data(request:HttpRequest, tipo_vehiculo: int, tipo_movimien
         'data_chart_nacional': json.dumps(context_chart['Nacional']),
         'descripcion_modelo': descripcion_modelo,
         'meses': meses,
+        'anios': anios
     }
     
     return render(request, template, context)

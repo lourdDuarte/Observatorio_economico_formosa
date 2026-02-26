@@ -1,84 +1,145 @@
 from django.contrib import admin
-from .models import *
+from django import forms
+from django.core.exceptions import ValidationError
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-# Register your models here.
+from .models import *
+import re
 
 
-def get_data_transferencia(anio,mes,valor):
+# ============================================================
+# --- FORM VALIDACIÓN NUMÉRICA ---
+# ============================================================
+
+class TransferenciaAdminForm(forms.ModelForm):
+    class Meta:
+        model = Transferencia
+        fields = "__all__"
+
+    def clean_total_millones(self):
+        valor = self.cleaned_data.get("total_millones")
+
+        if valor is None:
+            raise ValidationError("Este campo no puede estar vacío.")
+
+        valor_str = str(valor)
+
+        if not re.fullmatch(r'^-?\d+(\.\d+)?$', valor_str):
+            raise ValidationError(
+                "Solo se permiten números con punto decimal (ej: 1500.25). No use comas ni símbolos."
+            )
+
+        return valor
+
+
+# ============================================================
+# --- FUNCIONES AUXILIARES ---
+# ============================================================
+
+def get_data_transferencia(anio, mes, valor):
     return Transferencia.objects.filter(
-        mes_id = mes,
-        anio_id = anio,
-        valor_id = valor
+        mes_id=mes,
+        anio_id=anio,
+        valor_id=valor
     ).first()
 
+
+# ============================================================
+# --- CÁLCULO VARIACIÓN INTERANUAL ---
+# ============================================================
+
 def calcular_valores(obj):
-    # Convertir a int para los cálculos
-    total_millones = int(obj.total_millones) 
+
+    total_millones = float(obj.total_millones)
     mes_actual = obj.mes.id
     anio_actual = obj.anio.id
 
-  
-        
-
-    # --- Cálculo de la Variación Interanual ---
     var_interanual = 0.0
-    anio_anterior_interanual = anio_actual - 1
+
+    anio_anterior = anio_actual - 1
+
     data_interanual = get_data_transferencia(
-        anio=anio_anterior_interanual,
+        anio=anio_anterior,
         mes=mes_actual,
         valor=obj.valor.id,
-        
     )
 
-    if data_interanual and int(data_interanual.total_millones) != 0:
-        var_interanual = (total_millones / int(data_interanual.total_millones)) * 100 - 100
+    if data_interanual and float(data_interanual.total_millones) != 0:
+        var_interanual = (
+            total_millones / float(data_interanual.total_millones)
+        ) * 100 - 100
 
     return {
-        'variacion_anual_nominal': str(round(var_interanual, 1)) if var_interanual is not None else None,
+        'variacion_anual_nominal': str(round(var_interanual, 1)),
     }
 
 
+# ============================================================
+# --- SIGNAL ---
+# ============================================================
 
-# Signal para disparar el recálculo
 @receiver(post_save, sender=Transferencia)
 def indicadores_post_save_handler(sender, instance, **kwargs):
-    # Obtener y actualizar los valores para el registro actual
+
     valores_actuales = calcular_valores(instance)
-    
+
     Transferencia.objects.filter(pk=instance.pk).update(
         variacion_anual_nominal=valores_actuales['variacion_anual_nominal']
     )
 
-
-    
-    # Mismo mes del año siguiente (dependencia interanual)
+    # --- Recalcular mismo mes del año siguiente ---
     next_year_obj = get_data_transferencia(
         mes=instance.mes.id,
         anio=instance.anio.id + 1,
         valor=instance.valor.id,
-       
     )
 
     if next_year_obj:
         valores_siguiente_anio = calcular_valores(next_year_obj)
+
         Transferencia.objects.filter(pk=next_year_obj.pk).update(
             variacion_anual_nominal=valores_siguiente_anio['variacion_anual_nominal']
         )
 
-## Configuración del Admin
+
+# ============================================================
+# --- ADMIN ---
+# ============================================================
+
 @admin.register(Transferencia)
 class TransferenciaAdmin(admin.ModelAdmin):
+
+    form = TransferenciaAdminForm
+
     list_filter = ['anio__anio', 'mes__mes', 'valor__valor']
     ordering = ['-anio', 'mes']
-    list_display = ['anio', 'mes', 'valor',  'total_millones', 'variacion_anual_nominal', 'variacion_anual_real']
-    list_editable = ['mes', 'valor',  'total_millones', 'variacion_anual_nominal', 'variacion_anual_real'] 
+
+    list_display = [
+        'anio', 'mes', 'valor',
+        'total_millones',
+        'variacion_anual_nominal',
+        'variacion_anual_real'
+    ]
+
+    list_editable = [
+        'mes',
+        'valor',
+        'total_millones',
+        'variacion_anual_real'
+    ]
+
     list_per_page = 12
-    exclude = ['variacion_anual_nominal', 'variacion_anual_real']
-    
+
+    exclude = ['variacion_anual_nominal']
+
     def save_model(self, request, obj, form, change):
+
         if obj.variacion_anual_real in [None, '', 'None']:
             obj.variacion_anual_real = 0.0
+
         super().save_model(request, obj, form, change)
-       
-        Transferencia.objects.filter(pk=obj.pk, variacion_anual_real__isnull=True).update(variacion_anual_real=0.0)
+
+        Transferencia.objects.filter(
+            pk=obj.pk,
+            variacion_anual_real__isnull=True
+        ).update(variacion_anual_real=0.0)

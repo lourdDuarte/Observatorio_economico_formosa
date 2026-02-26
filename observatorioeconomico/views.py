@@ -9,7 +9,7 @@ from sector_privado.models import IndicadoresPrivado as privado
 from Ipc.models import Indicadores as ipc
 from Sector_construccion.models import Indicadores as construccion
 from Transferencia.models import Transferencia as transferencia
-
+from observatorioeconomico.utils import get_default_anio_id_for_model
 from typing import List, Dict
 
 
@@ -79,108 +79,175 @@ def generar_panel_json(
     """
     panel_data = {}
 
-    
     panel_data["Supermercado"] = {
-        "icon": "../static/img/icons/marketplace-store_14897272.png",
-        "Precio Corriente": obtener_datos_de_modelo(
-            modelo_django=supermercado,
-            anio_id=7,
-            valor_id=1,
-            link = 'precio-corriente',
-            tipoPrecio__id=2
+    "icon": "../static/img/icons/marketplace-store_14897272.png",
+    "Precio Corriente": obtener_datos_de_modelo(
+        modelo_django=supermercado,
+        anio_id=get_default_anio_id_for_model(
+            supermercado,
+            base_filters={
+                "valor__id": 1,
+                "tipoPrecio__id": 2
+            }
         ),
-        "Precio Constante": obtener_datos_de_modelo(
-            modelo_django=supermercado,
-            anio_id=7,
-            valor_id=1,
-            link = 'precio-constante',
-            tipoPrecio__id=1
-        )
-    }
-    panel_data["Auto"] ={
+        valor_id=1,
+        link='precio-corriente',
+        tipoPrecio__id=2
+    ),
+    "Precio Constante": obtener_datos_de_modelo(
+        modelo_django=supermercado,
+        anio_id=get_default_anio_id_for_model(
+            supermercado,
+            base_filters={
+                "valor__id": 1,
+                "tipoPrecio__id": 1
+            }
+        ),
+        valor_id=1,
+        link='precio-constante',
+        tipoPrecio__id=1
+    )
+}
+
+
+    panel_data["Auto"] = {
         "icon": "../static/img/icons/car-rear_11747026.png",
         "Patentamiento": obtener_datos_de_modelo(
-            modelo_django = vehiculo,
-            anio_id= 7,
-            valor_id= 1,
-            link = 'patentamiento-auto',
-            movimiento_vehicular = 1,
-            tipo_vehiculo = 2
+            modelo_django=vehiculo,
+            anio_id=get_default_anio_id_for_model(
+                vehiculo,
+                base_filters={
+                    "movimiento_vehicular": 1,
+                    "tipo_vehiculo": 2,
+                    "valor__id": 1
+                }
+            ),
+            valor_id=1,
+            link='patentamiento-auto',
+            movimiento_vehicular=1,
+            tipo_vehiculo=2
         ),
-        "Transeferencia":  obtener_datos_de_modelo(
-            modelo_django = vehiculo,
-            anio_id= 7,
-            valor_id= 1,
-            link = 'transferencia-auto',
-            movimiento_vehicular= 2,
-            tipo_vehiculo = 2
+        "Transferencia": obtener_datos_de_modelo(
+            modelo_django=vehiculo,
+            anio_id=get_default_anio_id_for_model(
+                vehiculo,
+                base_filters={
+                    "movimiento_vehicular": 2,
+                    "tipo_vehiculo": 2,
+                    "valor__id": 1
+                }
+            ),
+            valor_id=1,
+            link='transferencia-auto',
+            movimiento_vehicular=2,
+            tipo_vehiculo=2
         ),
     }
-    panel_data["Moto"] ={
+
+
+    panel_data["Moto"] = {
         "icon": "../static/img/icons/moped_11747100.png",
         "Patentamiento": obtener_datos_de_modelo(
-            modelo_django = vehiculo,
-            anio_id= 7,
-            valor_id= 1,
-            link = 'patentamiento-moto',
-            movimiento_vehicular = 1,
-            tipo_vehiculo = 1
+            modelo_django=vehiculo,
+            anio_id=get_default_anio_id_for_model(
+                vehiculo,
+                base_filters={
+                    "movimiento_vehicular": 1,
+                    "tipo_vehiculo": 1,
+                    "valor__id": 1
+                }
+            ),
+            valor_id=1,
+            link='patentamiento-moto',
+            movimiento_vehicular=1,
+            tipo_vehiculo=1
         ),
-        "Transeferencia":  obtener_datos_de_modelo(
-            modelo_django = vehiculo,
-            anio_id= 7,
-            valor_id= 1,
-            link = 'transferencia-moto',
-            movimiento_vehicular= 2,
-            tipo_vehiculo = 1
+        "Transferencia": obtener_datos_de_modelo(
+            modelo_django=vehiculo,
+            anio_id=get_default_anio_id_for_model(
+                vehiculo,
+                base_filters={
+                    "movimiento_vehicular": 2,
+                    "tipo_vehiculo": 1,
+                    "valor__id": 1
+                }
+            ),
+            valor_id=1,
+            link='transferencia-moto',
+            movimiento_vehicular=2,
+            tipo_vehiculo=1
         ),
     }
-    panel_data["Sector privado"] ={
+
+
+    panel_data["Sector privado"] = {
         "icon": "../static/img/icons/briefcase-dollar_19000214.png",
         "Evolucion empleo": obtener_datos_de_modelo(
-            modelo_django = privado,
-            anio_id= 7,
-            valor_id= 1,
-            tipo= 1,
-            link = 'sector-privado',
-            estacionalidad = 2
+            modelo_django=privado,
+            anio_id=get_default_anio_id_for_model(
+                privado,
+                base_filters={
+                    "valor__id": 1,
+                    "tipo": 1,
+                    "estacionalidad": 2
+                }
+            ),
+            valor_id=1,
+            link='sector-privado',
+            tipo=1,
+            estacionalidad=2
         ),
-       
     }
-    panel_data["IPC"] ={
+
+
+    panel_data["IPC"] = {
         "icon": "../static/img/icons/stats_10513377.png",
-         "Indice precio al consumidor (NEA)": obtener_datos_de_modelo(
-            modelo_django = ipc,
-            anio_id= 7,
-            valor_id= 3,
-            link = 'ipc',
-            
+        "Indice precio al consumidor (NEA)": obtener_datos_de_modelo(
+            modelo_django=ipc,
+            anio_id=get_default_anio_id_for_model(
+                ipc,
+                base_filters={
+                    "valor__id": 3
+                }
+            ),
+            valor_id=3,
+            link='ipc'
         ),
-       
     }
-    panel_data["Sector construccion"] ={
+
+
+    panel_data["Sector construccion"] = {
         "icon": "../static/img/icons/wrench-alt_11270131.png",
         "Puestos de trabajo": obtener_datos_de_modelo(
-            modelo_django = construccion,
-            anio_id= 7,
-            valor_id= 1,
-            link = 'puestos-construccion',
-            tipo_dato = 1
-          
+            modelo_django=construccion,
+            anio_id=get_default_anio_id_for_model(
+                construccion,
+                base_filters={
+                    "valor__id": 1,
+                    "tipo_dato": 1
+                }
+            ),
+            valor_id=1,
+            link='puestos-construccion',
+            tipo_dato=1
         ),
-       
     }
-    panel_data["Transferencias automaticas Formosa"] ={
+
+
+    panel_data["Transferencias automaticas Formosa"] = {
         "icon": "../static/img/icons/money-coin-transfer_15355096.png",
         "Transferencias": obtener_datos_de_modelo(
-            modelo_django = transferencia,
-            anio_id= 7,
-            valor_id= 1,
-            link = 'transferencias',
-            data = 1
-          
+            modelo_django=transferencia,
+            anio_id=get_default_anio_id_for_model(
+                transferencia,
+                base_filters={
+                    "valor__id": 1
+                }
+            ),
+            valor_id=1,
+            link='transferencias',
+            data=1
         ),
-       
     }
     
     return panel_data

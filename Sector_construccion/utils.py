@@ -8,47 +8,47 @@ from Anio.views import *
 from collections import defaultdict
 from django.db.models import OuterRef, Subquery, QuerySet
 import json
+from observatorioeconomico.utils import get_default_anio_id_for_model_with_valores
+from Anio.models import Anio
 
 
 class ConstruccionProcessor:
 
-    # Constantes de configuración
-    DEFAULT_YEAR = 7
-
     @staticmethod
     def get_data_model_sector_construccion(**kwargs) -> dict:
-        
-
-        
-        return SectorConstruccion.objects.select_related('mes', 'anio', 'valor').values(
+        return SectorConstruccion.objects.select_related(
+            'mes', 'anio', 'valor'
+        ).values(
             'mes__mes',
             'anio__anio',
             'valor__valor',
             'total_empresas',
             'total_puesto_trabajo',
             'salario_promedio'
-        
         ).filter(**kwargs)
-    
+
     @classmethod
-    def get_filter_data_model_construccion(cls,  params: Dict[str, Any]) -> QuerySet:
-        """
-        Obtiene datos filtrados según los parámetros.
-        
-        Returns:
-            QuerySet con los datos filtrados
-        """
+    def get_default_year(cls) -> int:
+        return get_default_anio_id_for_model_with_valores(
+            SectorConstruccion,
+            field_name="valor_id",
+            required_values=[1, 2],  # 🔥 exige ambos valores
+        )
+
+    @classmethod
+    def get_filter_data_model_construccion(cls, params: Dict[str, Any]) -> QuerySet:
+
         if params['is_valid']:
-           
             return cls.get_data_model_sector_construccion(
-               
                 anio_id__gte=params['anio_inicio'],
-                anio_id__lte=params['anio_fin']).order_by('anio__anio', 'mes__id')
+                anio_id__lte=params['anio_fin']
+            ).order_by('anio__anio', 'mes__id')
+
         else:
-            
+            default_year = cls.get_default_year()
+
             return cls.get_data_model_sector_construccion(
-                anio_id=cls.DEFAULT_YEAR,
-                
+                anio_id=default_year
             ).order_by('anio__anio', 'mes__id')
         
     @classmethod
@@ -136,13 +136,11 @@ class ConstruccionProcessor:
 
 class ConstruccionIndicadoresProcessor:
     # Constantes de configuración
-    DEFAULT_YEAR = 7
-
     @staticmethod
     def get_data_model_indicadores_construccion(**kwargs) -> dict:
-        
-
-        return Indicadores.objects.select_related('mes', 'anio', 'valor').values(
+        return Indicadores.objects.select_related(
+            'mes', 'anio', 'valor'
+        ).values(
             'mes__mes',
             'mes',
             'anio__anio',
@@ -150,32 +148,39 @@ class ConstruccionIndicadoresProcessor:
             'tipo_dato',
             'variacion_interanual',
             'variacion_intermensual'
-            
-        
         ).filter(**kwargs)
-    
-
 
     @classmethod
-    def get_filter_data_model_indicadores_construccion(cls,tipo_dato:int,  params: Dict[str, Any]) -> QuerySet:
-        """
-        Obtiene datos filtrados según los parámetros.
-        
-        Returns:
-            QuerySet con los datos filtrados
-        """
+    def get_default_year(cls, tipo_dato: int) -> int:
+        return get_default_anio_id_for_model_with_valores(
+            Indicadores,
+            field_name="valor_id",
+            required_values=[1, 2],
+            extra_filters={
+                "tipo_dato": tipo_dato
+            }
+    )
+
+    @classmethod
+    def get_filter_data_model_indicadores_construccion(
+        cls,
+        tipo_dato: int,
+        params: Dict[str, Any]
+    ) -> QuerySet:
+
         if params['is_valid']:
-           
             return cls.get_data_model_indicadores_construccion(
-                tipo_dato = tipo_dato,
+                tipo_dato=tipo_dato,
                 anio_id__gte=params['anio_inicio'],
-                anio_id__lte=params['anio_fin']).order_by('anio__anio', 'mes__id')
+                anio_id__lte=params['anio_fin']
+            ).order_by('anio__anio', 'mes__id')
+
         else:
-            
+            default_year = cls.get_default_year(tipo_dato)
+
             return cls.get_data_model_indicadores_construccion(
-                tipo_dato = tipo_dato,
-                anio_id=cls.DEFAULT_YEAR,
-                
+                tipo_dato=tipo_dato,
+                anio_id=default_year,
             ).order_by('anio__anio', 'mes__id')
         
     
@@ -275,7 +280,7 @@ def process_contruccion_salario_data(request:HttpRequest, value_totales:str, con
     data_variacion = processor.get_filter_data_model_construccion(params)
     salario_promedio_diccionario = diccionario_salario(data_variacion)
     context_chart = processor.process_chart_data_totales(value_totales, data_variacion)
-
+    anios = Anio.objects.all().order_by('anio')
      # Construir contexto
     context = {
         'error_message': params['error_message'],
@@ -285,6 +290,7 @@ def process_contruccion_salario_data(request:HttpRequest, value_totales:str, con
         'data_chart_nacional': json.dumps(context_chart['Nacional']),
         'descripcion_modelo': descripcion_modelo,
         'meses': meses,
+        'anios': anios,
     }
     
     return render(request, template, context)
@@ -336,6 +342,7 @@ def process_contruccion_puestos_data(request:HttpRequest,tipo_dato:int, value_to
         }
 
         data_variacion.append(combinado)
+        anios = Anio.objects.all().order_by('anio')
 
     context = {
         'error_message': params['error_message'],
@@ -345,6 +352,7 @@ def process_contruccion_puestos_data(request:HttpRequest,tipo_dato:int, value_to
         'data_chart_nacional': json.dumps(context_chart['Nacional']),
         'descripcion_modelo': descripcion_modelo,
         'meses': meses,
+        'anios': anios,
     }
     
     return render(request, template, context)

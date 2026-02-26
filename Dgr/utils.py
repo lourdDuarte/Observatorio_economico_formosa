@@ -6,27 +6,16 @@ from django.http import HttpRequest, HttpResponse
 from typing import Dict, Any, Optional
 from collections import defaultdict
 from django.db.models import  QuerySet
+from Anio.models import Anio
+from observatorioeconomico.utils import  get_default_anio_id_for_model_with_valores
+
 
 
 class DgrDataProcessor:
-    DEFAULT_YEAR = 7
-
-  
+    
 
     @staticmethod
     def get_data_recaudacion(**kwargs) -> QuerySet:
-        """
-        Obtiene los datos de recaudación desde la base de datos según los filtros proporcionados.
-        Args:
-            **kwargs: Filtros opcionales para la consulta (por ejemplo, anio_id, tipo_id, etc.).
-        Returns:
-            QuerySet: Conjunto de resultados con los campos seleccionados:
-                - mes__mes
-                - anio__anio
-                - valor__valor
-                - tipo__tipo
-                - recaudacion
-        """
         return Recaudacion.objects.select_related('mes', 'anio', 'valor', 'tipo').values(
             'mes__mes',
             'anio__anio',
@@ -36,19 +25,18 @@ class DgrDataProcessor:
         ).filter(**kwargs)
 
     @classmethod
+    def get_default_year(cls) -> int:
+        """
+        Año más alto donde existan datos para tipo_id 1 y 3.
+        """
+        return get_default_anio_id_for_model_with_valores(
+            Recaudacion,
+            field_name="tipo_id",
+            required_values=[1, 3],
+        )
+
+    @classmethod
     def get_filtered_data(cls, params: Dict[str, Any]) -> QuerySet:
-        """
-        Aplica filtros a la consulta de recaudación según los parámetros proporcionados.
-        Args:
-            params (dict): Diccionario con los parámetros de filtrado. 
-                Debe contener al menos:
-                    - is_valid (bool): Indica si los parámetros ingresados son válidos.
-                    - anio_inicio (int): Año inicial del rango (si is_valid es True).
-                    - anio_fin (int): Año final del rango (si is_valid es True).
-        Returns:
-            QuerySet: Conjunto de resultados de la tabla Recaudacion filtrado y ordenado.
-                      Si los parámetros no son válidos, devuelve los datos del año por defecto.
-        """
         if params['is_valid']:
             return cls.get_data_recaudacion(
                 anio_id__gte=params['anio_inicio'],
@@ -56,11 +44,11 @@ class DgrDataProcessor:
                 tipo_id__in=[1, 3]
             ).order_by('anio__anio', 'mes__id')
         else:
+            default_year = cls.get_default_year()
             return cls.get_data_recaudacion(
-                anio_id=cls.DEFAULT_YEAR,
+                anio_id=default_year,
                 tipo_id__in=[1, 3]
             ).order_by('anio__anio', 'mes__id')
-
       
     @classmethod
     def procces_request_parameters(cls, request: HttpRequest,) -> Dict[str,any]:
@@ -228,7 +216,7 @@ def process_dgr_data(request:HttpRequest,
     data_recaudacion = processor.get_filtered_data(params)
 
     diccionario_recaudacion = diccionario(data_recaudacion)
-
+    anios = Anio.objects.all().order_by('anio')
      # Construir contexto
     context = {
         'error_message': params['error_message'],
@@ -236,6 +224,7 @@ def process_dgr_data(request:HttpRequest,
         context_keys['diccionario_recaudacion']: diccionario_recaudacion,
         'descripcion_modelo' : descripcion_modelo,
         'meses': meses,
+        'anios': anios,
     }
     
     return render(request, template, context)

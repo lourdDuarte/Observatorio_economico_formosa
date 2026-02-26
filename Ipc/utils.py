@@ -7,22 +7,16 @@ from django.http import HttpRequest, HttpResponse
 from Anio.views import *
 from collections import defaultdict
 from django.db.models import OuterRef, Subquery, QuerySet
+from observatorioeconomico.utils import get_default_anio_id_for_model_with_valores
+
 
 
 
 class IpcProcessor:
 
     # Constantes de configuración
-    DEFAULT_YEAR = 7
-   
-
-
-
     @staticmethod
     def get_data_variaciones(**kwargs) -> dict:
-        
-
-        
         return Indicadores.objects.select_related('mes', 'anio', 'valor').values(
             'mes__mes',
             'mes',
@@ -30,28 +24,31 @@ class IpcProcessor:
             'valor__valor',
             'variacion_interanual',
             'variacion_intermensual',
-        
         ).filter(**kwargs)
 
-
-    
     @classmethod
-    def get_filtered_data(cls,  params: Dict[str, Any]) -> QuerySet:
-        """
-        Obtiene datos filtrados según los parámetros.
-        
-        Returns:
-            QuerySet con los datos filtrados
-        """
+    def get_default_year(cls) -> int:
+        return get_default_anio_id_for_model_with_valores(
+            Indicadores,
+            field_name="valor_id",
+            required_values=[2, 3],  # 🔥 exige que existan ambos valores
+        )
+
+    @classmethod
+    def get_filtered_data(cls, params: Dict[str, Any]) -> QuerySet:
+
         if params['is_valid']:
             return cls.get_data_variaciones(
                 anio_id__gte=params['anio_inicio'],
-                anio_id__lte=params['anio_fin']).order_by('anio__anio', 'mes__id')
+                anio_id__lte=params['anio_fin']
+            ).order_by('anio__anio', 'mes__id')
+
         else:
+            default_year = cls.get_default_year()
+
             return cls.get_data_variaciones(
-                anio_id=cls.DEFAULT_YEAR,
- 
-            )
+                anio_id=default_year
+            ).order_by('anio__anio', 'mes__id')
 
 
     @classmethod
@@ -168,7 +165,7 @@ def process_ipc_data(request:HttpRequest, context_keys: Dict[str, str], descripc
     data_variacion = processor.get_filtered_data(params)
     diccionario_variacion = diccionario(data_variacion)
    
-
+    anios = Anio.objects.all().order_by('anio')
        
     context = {
         'error_message': params['error_message'],
@@ -176,6 +173,7 @@ def process_ipc_data(request:HttpRequest, context_keys: Dict[str, str], descripc
         context_keys['diccionario_variacion']: diccionario_variacion,
         'descripcion_modelo': descripcion_modelo,
         'meses': meses,
+        'anios': anios,
     }
         
     return render(request, template, context)

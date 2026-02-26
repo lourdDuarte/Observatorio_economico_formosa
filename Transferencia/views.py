@@ -20,7 +20,7 @@ class TransferenciaViewConfig:
 
 def view_transferencia(request: HttpRequest) -> HttpResponse:
     descripcion = Descripcion.objects.filter(
-          nombre_modelo = 'Transferencias').values('descripcion').first()
+          nombre_modelo = 'Transferencias').first()
     return process_transferencia_data(
         request=request,
         context_keys=TransferenciaViewConfig.CONTEXT_KEYS,

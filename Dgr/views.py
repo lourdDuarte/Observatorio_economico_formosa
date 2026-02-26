@@ -34,7 +34,7 @@ def view_recaudacion(request):
     
 
     descripcion = Descripcion.objects.filter(
-        nombre_modelo ='ATP - Recaudacion').values('descripcion').first()
+        nombre_modelo ='ATP - Recaudacion').first()
     return process_dgr_data(request,   
                             context_keys=VehiculoViewConfig.CONTEXT_KEYS, 
                             descripcion_modelo = descripcion,
