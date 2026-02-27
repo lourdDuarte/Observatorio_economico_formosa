@@ -1,6 +1,6 @@
+# admin.py
 from django.contrib import admin
 from django import forms
-from django.core.exceptions import ValidationError
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from .models import *
@@ -8,7 +8,31 @@ import re
 
 
 # ============================================================
-# --- VALIDACIÓN NUMÉRICA ---
+# VALIDACIÓN NUMÉRICA (solo números con punto decimal)
+# ============================================================
+
+NUMERIC_REGEX = re.compile(r"^-?\d+(\.\d+)?$")
+
+
+def validar_numero(valor, nombre_campo):
+    if valor is None or valor == "":
+        return
+
+    valor_str = str(valor).strip()
+
+    if "," in valor_str:
+        raise forms.ValidationError(
+            f"{nombre_campo}: No se permite coma. Use punto decimal (ej: 4526.12)."
+        )
+
+    if not NUMERIC_REGEX.fullmatch(valor_str):
+        raise forms.ValidationError(
+            f"{nombre_campo}: Solo se permiten números (con punto decimal opcional)."
+        )
+
+
+# ============================================================
+# FORM CantidadesPrivado
 # ============================================================
 
 class CantidadesPrivadoAdminForm(forms.ModelForm):
@@ -18,19 +42,13 @@ class CantidadesPrivadoAdminForm(forms.ModelForm):
 
     def clean_cantidad(self):
         valor = self.cleaned_data.get("cantidad")
-
-        if valor is None:
-            raise ValidationError("Este campo no puede estar vacío.")
-
-        valor_str = str(valor)
-
-        if not re.fullmatch(r'^-?\d+(\.\d+)?$', valor_str):
-            raise ValidationError(
-                "Solo se permiten números con punto decimal (ej: 1500.25). No use comas ni símbolos."
-            )
-
+        validar_numero(valor, "Cantidad")
         return valor
 
+
+# ============================================================
+# FORM RemuneracionRama
+# ============================================================
 
 class RemuneracionRamaAdminForm(forms.ModelForm):
     class Meta:
@@ -39,17 +57,7 @@ class RemuneracionRamaAdminForm(forms.ModelForm):
 
     def clean_remuneracion(self):
         valor = self.cleaned_data.get("remuneracion")
-
-        if valor is None:
-            raise ValidationError("Este campo no puede estar vacío.")
-
-        valor_str = str(valor)
-
-        if not re.fullmatch(r'^-?\d+(\.\d+)?$', valor_str):
-            raise ValidationError(
-                "Solo se permiten números con punto decimal (ej: 250000.50). No use comas ni símbolos."
-            )
-
+        validar_numero(valor, "Remuneración")
         return valor
 
 
@@ -73,7 +81,7 @@ def get_model_cantidades_privado(mes, anio, valor, tipo, estacionalidad):
 
 def calcular_y_guardar_variacion(obj):
 
-    data = {
+    data_indicadores = {
         'tipo': obj.tipo,
         'estacionalidad_id': obj.estacionalidad.id,
         'anio_id': obj.anio.id,
@@ -82,44 +90,46 @@ def calcular_y_guardar_variacion(obj):
         'cantidad': float(obj.cantidad)
     }
 
-    anio_actual = data['anio_id']
+    anio_actual = data_indicadores['anio_id']
     anio_anterior = anio_actual - 1
 
-    if data['mes_id'] == 1:
+    if data_indicadores['mes_id'] == 1:
         mes_anterior = 12
         anio_intermensual = anio_anterior
     else:
-        mes_anterior = data['mes_id'] - 1
+        mes_anterior = data_indicadores['mes_id'] - 1
         anio_intermensual = anio_actual
 
     data_intermensual = get_model_cantidades_privado(
         mes=mes_anterior,
         anio=anio_intermensual,
-        valor=data['valor_id'],
-        tipo=data['tipo'],
-        estacionalidad=data['estacionalidad_id']
+        valor=data_indicadores['valor_id'],
+        tipo=data_indicadores['tipo'],
+        estacionalidad=data_indicadores['estacionalidad_id']
     )
 
     data_interanual = get_model_cantidades_privado(
-        mes=data['mes_id'],
+        mes=data_indicadores['mes_id'],
         anio=anio_anterior,
-        valor=data['valor_id'],
-        tipo=data['tipo'],
-        estacionalidad=data['estacionalidad_id']
+        valor=data_indicadores['valor_id'],
+        tipo=data_indicadores['tipo'],
+        estacionalidad=data_indicadores['estacionalidad_id']
     )
 
     var_intermensual = var_interanual = 0.0
     dif_intermensual = dif_interanual = 0.0
 
     if data_intermensual and float(data_intermensual['cantidad']) != 0:
-        prev = float(data_intermensual['cantidad'])
-        var_intermensual = (data['cantidad'] / prev) * 100 - 100
-        dif_intermensual = data['cantidad'] - prev
+        cantidad_prev = float(data_intermensual['cantidad'])
+        cantidad_actual = data_indicadores['cantidad']
+        var_intermensual = (cantidad_actual / cantidad_prev) * 100 - 100
+        dif_intermensual = cantidad_actual - cantidad_prev
 
     if data_interanual and float(data_interanual['cantidad']) != 0:
-        prev = float(data_interanual['cantidad'])
-        var_interanual = (data['cantidad'] / prev) * 100 - 100
-        dif_interanual = data['cantidad'] - prev
+        cantidad_prev = float(data_interanual['cantidad'])
+        cantidad_actual = data_indicadores['cantidad']
+        var_interanual = (cantidad_actual / cantidad_prev) * 100 - 100
+        dif_interanual = cantidad_actual - cantidad_prev
 
     IndicadoresPrivado.objects.update_or_create(
         tipo=obj.tipo,
@@ -195,12 +205,10 @@ def calcular_y_guardar_variacion_remuneracion(obj):
     var_intermensual = var_interanual = 0.0
 
     if data_intermensual and float(data_intermensual['remuneracion']) != 0:
-        prev = float(data_intermensual['remuneracion'])
-        var_intermensual = (data['remuneracion'] / prev) * 100 - 100
+        var_intermensual = (data['remuneracion'] / float(data_intermensual['remuneracion'])) * 100 - 100
 
     if data_interanual and float(data_interanual['remuneracion']) != 0:
-        prev = float(data_interanual['remuneracion'])
-        var_interanual = (data['remuneracion'] / prev) * 100 - 100
+        var_interanual = (data['remuneracion'] / float(data_interanual['remuneracion'])) * 100 - 100
 
     RemuneracionRama.objects.filter(pk=obj.pk).update(
         variacion_intermensual=round(var_intermensual, 1),
@@ -227,12 +235,40 @@ class CantidadesPrivadoAdmin(admin.ModelAdmin):
     list_per_page = 12
 
 
-@admin.register(RemuneracionRama)
-class RemuneracionRamaAdmin(admin.ModelAdmin):
-    form = RemuneracionRamaAdminForm
-    list_filter = ['rama__rama', 'anio__anio', 'mes__mes', 'valor__valor']
+@admin.register(AsalariadoRama)
+class AsalariadoRamaPrivadoAdmin(admin.ModelAdmin):
+    list_filter = ['rama__rama', 'trimestre__trimestre', 'valor__valor', 'anio__anio']
     ordering = ['-anio', 'mes']
-    list_display = ['rama', 'anio', 'mes', 'valor', 'remuneracion',
-                    'variacion_interanual', 'variacion_intermensual']
-    exclude = ['variacion_interanual', 'variacion_intermensual']
+    list_display = ['rama', 'trimestre', 'anio', 'mes', 'valor', 'cantidad']
+    list_editable = ['trimestre', 'anio', 'mes', 'valor', 'cantidad']
     list_per_page = 12
+
+
+@admin.register(IndicadoresPrivado)
+class IndicadoresPrivadoAdmin(admin.ModelAdmin):
+    list_filter = ['tipo__tipo', 'anio__anio', 'mes__mes', 'valor__valor']
+    ordering = ['-anio', 'mes']
+    list_display = [
+        'tipo', 'anio', 'mes', 'valor',
+        'variacion_interanual', 'variacion_intermensual',
+        'diferencia_intermensual', 'diferencia_interanual'
+    ]
+    list_editable = [
+        'mes', 'valor',
+        'variacion_interanual', 'variacion_intermensual',
+        'diferencia_intermensual', 'diferencia_interanual'
+    ]
+    list_per_page = 12
+
+
+# @admin.register(RemuneracionRama)
+# class RemuneracionRamaAdmin(admin.ModelAdmin):
+#     form = RemuneracionRamaAdminForm
+#     list_filter = ['rama__rama', 'anio__anio', 'mes__mes', 'valor__valor']
+#     ordering = ['-anio', 'mes']
+#     list_display = ['rama', 'anio', 'mes', 'valor', 'remuneracion',
+#                     'variacion_interanual', 'variacion_intermensual']
+#     list_editable = ['anio', 'mes', 'valor', 'remuneracion',
+#                      'variacion_interanual', 'variacion_intermensual']
+#     exclude = ['variacion_interanual', 'variacion_intermensual']
+#     list_per_page = 12

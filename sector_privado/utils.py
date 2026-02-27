@@ -216,7 +216,7 @@ def process_privado_data(request: HttpRequest,
     diccionario_variacion = diccionario(data_variacion)
     
     context_chart = processor.process_chart_data_totales(data_variacion)
-    
+    anios = Anio.objects.all().order_by('anio')
     # Construir contexto
     context = {
         'error_message': params['error_message'],
@@ -226,6 +226,7 @@ def process_privado_data(request: HttpRequest,
         'data_chart_nacional': json.dumps(context_chart['Nacional']),
         'descripcion_modelo': descripcion_modelo,
         'meses': meses,
+        'anios': anios,
     }
     
     return render(request, template, context)
