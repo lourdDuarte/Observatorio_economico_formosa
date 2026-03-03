@@ -258,7 +258,7 @@ def index(request):
         'data_json': data_json
     }
 
-    URL = "https://api.bcra.gob.ar/estadisticas/v3.0/monetarias"
+    URL = "https://api.bcra.gob.ar/estadisticas/v4.0/monetarias"
 
     try:
         response = requests.get(URL, verify=False)
@@ -271,8 +271,8 @@ def index(request):
             for key in data['results']:
                 if key['idVariable'] in filter_api:
                     descripcion = key['descripcion']
-                    valor = key['valor']
-                    fecha = key['fecha']
+                    valor = key['ultValorInformado']
+                    fecha = key['ultFechaInformada']
                     id_variable = key['idVariable']
 
                     # asignar idVariable solo una vez
