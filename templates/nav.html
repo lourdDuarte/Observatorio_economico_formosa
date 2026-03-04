@@ -25,7 +25,7 @@
         </li>
         <li class="menu-item"><a href="#">IPC</a>
           <ul class="submenu">
-            <li><a href="{% url 'ipc' %}">Precio consumidor</a></li>
+            <li><a href="{% url 'ipc' %}">Índice de precios al consumidor</a></li>
           </ul>
         </li>
         <li class="menu-item"><a href="#">Transferencias</a>
@@ -34,31 +34,43 @@
 
           </ul>
         </li>
-        <li class="menu-item"><a href="#">Construccion</a>
+        <li class="menu-item"><a href="#">Construcción</a>
           <ul class="submenu">
-            <li><a href="{% url 'salario-construccion' %}">Salario</a></li>
-            <li><a href="{% url 'puestos-construccion' %}">Puesto de trabajo</a></li>
+            <li><a href="{% url 'salario-construccion' %}">Salarios</a></li>
+            <li><a href="{% url 'puestos-construccion' %}">Puestos de trabajo</a></li>
 
           </ul>
         </li>
         <li class="menu-item"><a href="#">Sector privado</a>
           <ul class="submenu">
-            <li><a href="{% url 'sector-privado' %}">Evolucion empleo</a></li>
+            <li><a href="{% url 'sector-privado' %}">Evolución del empleo</a></li>
             <li><a href="{% url 'sector-privado-ramas' %}">Trabajadores por rama</a></li>
           </ul>
         </li>
         <li class="menu-item"><a href="#">ATP</a>
           <ul class="submenu">
-            <li><a href="{% url 'recaudacion' %}">Recaudacion</a></li>
+            <li><a href="{% url 'recaudacion' %}">Recaudación</a></li>
 
           </ul>
         </li>
-        <li class="menu-item"><a href="#">Energia</a>
+        <li class="menu-item"><a href="#">Energía</a>
           <ul class="submenu">
             <li><a href="{% url 'demanda-usuarios' %}">Resumen </a></li> 
             <li><a href="{% url 'consumo-energia-comercial' %}">Tarifa comercial</a></li>
             <li><a href="{% url 'consumo-energia-industrial' %}">Tarifa industrial</a></li>
             <li><a href="{% url 'consumo-energia-residencial' %}">Tarifa residencial</a></li>
+
+
+
+          </ul>
+        </li>
+        <li class="menu-item"><a href="#">Sector productivo</a>
+          <ul class="submenu">
+             <li><a href="{% url 'productivo' 1 %}">Maiz</a></li>
+              <li><a href="{% url 'productivo' 2 %}">Sorgo</a></li>
+            <li><a href="{% url 'productivo' 3 %}">Soja</a></li>
+            <li><a href="{% url 'productivo' 4 %}">Trigo</a></li>
+            
 
 
 

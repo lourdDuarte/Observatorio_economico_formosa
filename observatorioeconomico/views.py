@@ -182,7 +182,7 @@ def generar_panel_json(
 
     panel_data["Sector privado"] = {
         "icon": "../static/img/icons/briefcase-dollar_19000214.png",
-        "Evolucion empleo": obtener_datos_de_modelo(
+        "Evolución del empleo": obtener_datos_de_modelo(
             modelo_django=privado,
             anio_id=get_default_anio_id_for_model(
                 privado,
@@ -202,7 +202,7 @@ def generar_panel_json(
 
     panel_data["IPC"] = {
         "icon": "../static/img/icons/stats_10513377.png",
-        "Indice precio al consumidor (NEA)": obtener_datos_de_modelo(
+        "Índice de precios al consumidor (NEA)": obtener_datos_de_modelo(
             modelo_django=ipc,
             anio_id=get_default_anio_id_for_model(
                 ipc,
@@ -216,7 +216,7 @@ def generar_panel_json(
     }
 
 
-    panel_data["Sector construccion"] = {
+    panel_data["Sector de la construcción"] = {
         "icon": "../static/img/icons/wrench-alt_11270131.png",
         "Puestos de trabajo": obtener_datos_de_modelo(
             modelo_django=construccion,
@@ -234,7 +234,7 @@ def generar_panel_json(
     }
 
 
-    panel_data["Transferencias automaticas Formosa"] = {
+    panel_data["Transferencias automáticas Formosa"] = {
         "icon": "../static/img/icons/money-coin-transfer_15355096.png",
         "Transferencias": obtener_datos_de_modelo(
             modelo_django=transferencia,

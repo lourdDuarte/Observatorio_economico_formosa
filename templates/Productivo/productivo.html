@@ -16,11 +16,11 @@
             <div class="card-body">
                 
                 <div class="typography-line">
-                    <h3 class="color-typography"><span>Sector privado -</span> Trabajadores por rama de actividad </h3>
+                    <h3 class="color-typography"><span>Sector productivo -</span> {{nombre_cultivo.tipo_cultivo}} </h3>
                 </div>
                 <div class="typography-line">
                     
-                   <blockquote class="position-relative">
+                     <blockquote class="position-relative">
                         <p class="blockquote blockquote-primary">
                             {{ descripcion_modelo.descripcion|linebreaksbr|safe }}
 
@@ -36,11 +36,10 @@
                 </blockquote>
                         <div class="toolbar">
                             <button onclick="showView('chart')" class="active">📈</button>
-                            {% comment %} <button onclick="showView('stats')">📊</button> {% endcomment %}
                             <button onclick="showView('table')">📋</button>
                            
                         </div>
-                        <form method= "GET" action="{% url 'sector-privado-ramas' %} ">
+                        <form method= "GET" action="{% url 'productivo' tipo_cultivo %}">
                             {% csrf_token %}
                             <div class ="content-error">
                                 
@@ -55,7 +54,7 @@
                                 <div class="filtro-anios">
                                     <label>Años:</label>
                                     <div class="anio_inicio">
-                                        <select name="anio_inicio">
+                                       <select name="anio_inicio">
                                             <option value="">Desde</option>
                                             {% for a in anios %}
                                                 <option value="{{ a.id }}">{{ a.anio }}</option>
@@ -72,31 +71,10 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="filtro-anios">
-                                    <label>Trimestres:</label>
-                                    <div class="trimestre_inicio">
-                                        <select name="trimestre_inicio">
-                                            <option value="">Desde</option>
-                                            <option value="1">Primer trimestre</option>
-                                            <option value="2">Segundo trimestre</option>
-                                            <option value="3">Tercer trimestre</option>
-                                            <option value="4">Cuarto trimestre</option>
-                                            
-                                            
-                                        </select>
-                                        <span>—</span>
-                                        <select name="trimestre_fin">
-                                            <option value="">Hasta</option>
-                                            <option value="1">Primer trimestre</option>
-                                            <option value="2">Segundo trimestre</option>
-                                            <option value="3">Tercer trimestre</option>
-                                            <option value="4">Cuarto trimestre</option>
-                                            
-                                        </select>
-                                    </div>
-                                </div>
                             
                                 
+                               
+
 
 
                             
@@ -104,35 +82,33 @@
                             </div>     
                         </form>
                         <div id="chartView" class="view active">
-                            <div id="backButton" style="display: none; margin-bottom: 10px;">
-                              <button onclick="volverAGraficoPrincipal()">← Volver al gráfico principal</button>
-                            </div>
-
-                            <div class="chart-style" id="chart-ramas"></div>
+                            <div class="chart-style" id="chart-productivo"></div>
                         </div>
 
                         <div id="tableView" class="view">
                           <table id="example" class="stripe row-border order-column" style="width:100%">
                                 <thead>
                                     <tr>
-                                        
+                                        <th>Mes</th>
                                         <th>Año</th>
-                                        <th>Trimestre</th>
-                                        <th>Rama</th>
-                                        <th>Cantidad</th>
-                                        
+                                        <th>Tipo cultivo</th>
+                                        <th>Precio nacional</th>
+                                        <th>Precio internacional</th>
+                                        <th>Variacion mensual</th>
+                                        <th>Variacion FOB</th>
                                        
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for data in data_variacion %}
                                     <tr>
-                                    
+                                        <td>{{ data.mes__mes }}</td>
                                         <td>{{ data.anio__anio }}</td>
-                                        <td>{{ data.trimestre__trimestre }}</td>
-                                        <td>{{ data.rama__rama }}</td>
-                                        <td>{{ data.cantidad }}</td>
-                                        
+                                        <td>{{ data.tipo_cultivo__tipo_cultivo }}</td>
+                                        <td>${{ data.precio_nacional }}</td>
+                                        <td>{{ data.precio_internacional }} USD</td>
+                                        <td>{{ data.variacion_mensual }}</td>
+                                        <td>{{ data.variacion_fob }}</td>
                                     </tr>
                                     {% empty %}
                                     <tr><td colspan="5">No hay datos disponibles.</td></tr>
@@ -140,33 +116,28 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div id="statsView" class="view">
-                      
-                            <div class="chart-style" id="chart-basic"></div>
-                        </div>
-                    </div>
+
+                        
             </div>
         </div>
     </div>
 </div>
 <script>
-    
-const chartData = JSON.parse('{{ chart_data_json|escapejs }}');
-chart_dynamic_column_chart_comparative(chartData)
-    
-    // Inicializa la vista del gráfico al cargar la página
-    document.addEventListener("DOMContentLoaded", function() {
-        showView('chart');
-    });
+   
 
-function volverAGraficoPrincipal(){
-    window.location.reload();
-}
+  const datos = {{ diccionario_variacion|safe }};
+
+  area_chart_variation(
+    'chart-productivo',
+     datos,
+    'Variación mensual y variacion FOB'
+  );
+
+  
+
+  
+ 
 </script>
-
-
-
-
 
 
 {% endblock container %}

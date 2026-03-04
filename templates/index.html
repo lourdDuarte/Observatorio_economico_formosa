@@ -16,7 +16,7 @@
 <body>
   
   <main>
-     <h1 class="title-bcra">Datos actualizados de BCRA</h1>
+     <h1 class="title-bcra">Datos actualizados del Banco Central de la República Argentina (BCRA)</h1>
      <section class="seccion-bcra">
         <div class=" py-3 cards-api-container">
   
@@ -26,7 +26,7 @@
 
             {% for fecha, valor in info.data %}
               <h1 class="title-value-api">{{ valor|intcomma }}</h1>
-              <h1 class="date-value-api">act: {{ fecha }}</h1>
+              <h1 class="date-value-api">Actualizado al: {{ fecha }}</h1>
             {% endfor %}
           </div>
           {% endfor %}

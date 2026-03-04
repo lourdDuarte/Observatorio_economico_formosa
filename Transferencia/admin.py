@@ -130,7 +130,7 @@ class TransferenciaAdmin(admin.ModelAdmin):
 
     list_per_page = 12
 
-    exclude = ['variacion_anual_nominal']
+    exclude = ['variacion_anual_real','variacion_anual_nominal']
 
     def save_model(self, request, obj, form, change):
 

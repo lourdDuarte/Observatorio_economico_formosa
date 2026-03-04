@@ -14,13 +14,14 @@ from django.db.models import OuterRef, Subquery, QuerySet
 from Anio.models import Anio
 from sector_privado.models import IndicadoresPrivado,CantidadesPrivado,AsalariadoRama, Mes
 
+from observatorioeconomico.utils import  get_default_anio_id_for_model_with_valores
 
 
 class PrivadoDataProcessor:
    
     
     # Constantes de configuración
-    DEFAULT_YEAR = 7
+    
     
     ESTACIONALIDAD = 2
     
@@ -50,6 +51,18 @@ class PrivadoDataProcessor:
             'diferencia_intermensual',
             'cantidad_empresas'
         ).filter(**filters)
+    
+    @classmethod
+    def get_default_year(cls) -> int:
+        return get_default_anio_id_for_model_with_valores(
+            IndicadoresPrivado,
+            field_name="valor_id",
+            required_values=[1, 2],
+            extra_filters={
+                "estacionalidad_id": 2,
+                
+            }
+    )
     
     @classmethod
     def process_request_parameters(cls, request: HttpRequest) -> Dict[str, Any]:
@@ -133,8 +146,10 @@ class PrivadoDataProcessor:
                 
             ).order_by('anio__anio', 'mes__id')
         else:
+            default_year = cls.get_default_year()
+
             return cls.get_variacion_data(
-                anio_id=cls.DEFAULT_YEAR,
+                anio_id=default_year,
                 
                 estacionalidad = 2,
                 
@@ -263,6 +278,14 @@ class PrivadoRamasDataProcessor:
    
 
             filtros = {}
+            if not anio_inicio and not anio_fin and not trimestre_inicio and not trimestre_fin:
+                return {
+                    'anio_inicio': None,
+                    'anio_fin': None,
+                    'is_valid': False,
+                    'error_message': None  # No mostrar error al ingresar por primera vez
+                }
+
             if anio_inicio:
                 filtros['anio_inicio'] = int(anio_inicio)
             if anio_fin:
@@ -272,22 +295,36 @@ class PrivadoRamasDataProcessor:
             if trimestre_fin:
                 filtros['trimestre_fin'] = int(trimestre_fin)
 
+
+            if 'anio_inicio' in filtros and 'anio_fin' in filtros and 'trimestre_inicio' in filtros and 'trimestre_fin' in filtros:
+                if filtros['anio_fin'] < filtros['anio_inicio']:
+                    return {
+                        **filtros,
+                        'is_valid': False,
+                        'error_message': "Los filtros aplicados son incorrectos: el año de fin no puede ser menor que el de inicio."
+                    }
+                if filtros['trimestre_fin'] < filtros['trimestre_inicio']:
+                    return {
+                        **filtros,
+                        'is_valid': False,
+                        'error_message': "Los filtros aplicados son incorrectos: el trimestre de fin no puede ser menor que el de inicio."
+                    }
+                else:
+                    return {
+                        **filtros,
+                        'is_valid': True,
+                        'error_message': None
+                    }
            
 
                
-                return {
-                    **filtros,
-                    'is_valid': True,
-                    'error_message': None,
-                    
-                }   
-            else:
-                return {
+            return {
                     **filtros,
                     'is_valid': False,
-                    'error_message': None,
+                    'error_message': "Debe seleccionar ambos años y trimestre para aplicar el filtro.",
                     
-                }
+            }   
+        
         except ValueError:
             return {
                 'anio_inicio': None,
