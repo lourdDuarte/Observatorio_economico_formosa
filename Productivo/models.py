@@ -41,6 +41,9 @@ class ProduccionCampaniaCultivo(models.Model):
      superficie_cosechada = models.CharField(max_length=200,null=False,blank=False)
      produccion = models.CharField(max_length=200,null=False,blank=False)
      fecha_actualizacion = models.DateTimeField(auto_now=True) 
+    
+     def __str__(self):
+        return (str(self.tipo_cultivo) + " " + str(self.campania) + " " + str(self.valor) + " " + str(self.produccion) )
 
 
 class ParticipacionProdFormosa(models.Model):
@@ -48,3 +51,5 @@ class ParticipacionProdFormosa(models.Model):
      campania = models.ForeignKey(CampaniaCultivo, on_delete=models.CASCADE, related_name='+')
      participacion = models.CharField(max_length=200,null=False,blank=False)
 
+     def __str__(self):
+        return (str(self.tipo_cultivo) + " " + str(self.campania) + " " + str(self.participacion)  )

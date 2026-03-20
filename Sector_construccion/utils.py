@@ -29,11 +29,15 @@ class ConstruccionProcessor:
 
     @classmethod
     def get_default_year(cls) -> int:
-        return get_default_anio_id_for_model_with_valores(
-            SectorConstruccion,
-            field_name="valor_id",
-            required_values=[1, 2],  # 🔥 exige ambos valores
-        )
+        anio_ids = list(Anio.objects.order_by('-anio').values_list('id', flat=True))
+        for anio_id in anio_ids:
+            qs = SectorConstruccion.objects.filter(
+                anio_id=anio_id,
+            ).exclude(salario_promedio=0)
+            values_present = set(qs.values_list('valor_id', flat=True))
+            if all(val in values_present for val in [1, 2]):
+                return anio_id
+        return None
 
     @classmethod
     def get_filter_data_model_construccion(cls, params: Dict[str, Any]) -> QuerySet:
@@ -152,14 +156,16 @@ class ConstruccionIndicadoresProcessor:
 
     @classmethod
     def get_default_year(cls, tipo_dato: int) -> int:
-        return get_default_anio_id_for_model_with_valores(
-            Indicadores,
-            field_name="valor_id",
-            required_values=[1, 2],
-            extra_filters={
-                "tipo_dato": tipo_dato
-            }
-    )
+        anio_ids = list(Anio.objects.order_by('-anio').values_list('id', flat=True))
+        for anio_id in anio_ids:
+            qs = Indicadores.objects.filter(
+                anio_id=anio_id,
+                tipo_dato=tipo_dato,
+            ).exclude(variacion_intermensual=0.0, variacion_interanual=0.0)
+            values_present = set(qs.values_list('valor_id', flat=True))
+            if all(val in values_present for val in [1, 2]):
+                return anio_id
+        return None
 
     @classmethod
     def get_filter_data_model_indicadores_construccion(
@@ -213,14 +219,20 @@ def diccionario_salario(queryset):
             meses_nacional.append(mes)
 
     # Obtener la cantidad mínima común
-    minimo = min(len( formosa_salario_promedio), len(nacional_salario_promedio))
+    minimo = min(len(formosa_salario_promedio), len(nacional_salario_promedio))
+
+    # Eliminar meses finales donde todos los valores son 0
+    while minimo > 0 and (
+        formosa_salario_promedio[minimo - 1] == 0 and
+        nacional_salario_promedio[minimo - 1] == 0
+    ):
+        minimo -= 1
 
     # Recortar todas las listas al mismo tamaño
     datos = {
-        'meses': meses_formosa[:minimo],  # o meses_nacional[:minimo], ambos deberían coincidir en orden
+        'meses': meses_formosa[:minimo],
         'Salario promedio Formosa': formosa_salario_promedio[:minimo],
         'Salario promedio Nacional': nacional_salario_promedio[:minimo],
-        
     }
 
     return datos
@@ -255,9 +267,18 @@ def diccionario_indicadores(queryset):
     # Obtener la cantidad mínima común
     minimo = min(len(formosa_intermensual), len(nacional_intermensual))
 
+    # Eliminar meses finales donde todos los valores son 0.0
+    while minimo > 0 and (
+        formosa_intermensual[minimo - 1] == 0.0 and
+        formosa_interanual[minimo - 1] == 0.0 and
+        nacional_intermensual[minimo - 1] == 0.0 and
+        nacional_interanual[minimo - 1] == 0.0
+    ):
+        minimo -= 1
+
     # Recortar todas las listas al mismo tamaño
     datos = {
-        'meses': meses_formosa[:minimo],  # o meses_nacional[:minimo], ambos deberían coincidir en orden
+        'meses': meses_formosa[:minimo],
         'Valor intermensual Formosa': formosa_intermensual[:minimo],
         'Valor interanual Formosa': formosa_interanual[:minimo],
         'Valor intermensual Nacional': nacional_intermensual[:minimo],

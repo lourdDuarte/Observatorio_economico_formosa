@@ -50,7 +50,8 @@ urlpatterns = [
     path('consumo-energia-industrial/', energia.view_refsa_industrial, name='consumo-energia-industrial'),
     path('consumo-energia-residencial/', energia.view_refsa_residencial, name='consumo-energia-residencial'),
     path('demanda-usuarios/', energia.view_resumen_energia, name='demanda-usuarios'),
-    path('productivo/<int:tipo_cultivo>/', productivo.view_productivo, name='productivo'),
+    path('productivo-comercializacion/', productivo.view_comercializacion, name='productivo-comercializacion'),
+    path('productivo-produccion/', productivo.view_produccion, name='productivo-produccion'),
     path('bcra/<int:var_id>/<str:descripcion>/', observatorio.bcra_detail, name='bcra'),
 
 

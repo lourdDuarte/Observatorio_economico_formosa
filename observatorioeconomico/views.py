@@ -225,7 +225,9 @@ def generar_panel_json(
                 base_filters={
                     "valor__id": 1,
                     "tipo_dato": 1
-                }
+                },
+                nonzero_field='variacion_intermensual',
+                nonzero_value='0.0'
             ),
             valor_id=1,
             link='puestos-construccion',

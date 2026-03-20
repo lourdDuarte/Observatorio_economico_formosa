@@ -16,12 +16,12 @@
             <div class="card-body">
                 
                 <div class="typography-line">
-                    <h3 class="color-typography"><span>Sector agricola -</span> Produccion </h3>
+                    <h3 class="color-typography"><span>Sector Agricola - Comercializacion </h3>
                 </div>
                 <div class="typography-line">
                     
                      <blockquote class="position-relative">
-                     <p class="blockquote blockquote-primary">
+                        <p class="blockquote blockquote-primary">
                             {{ descripcion_modelo.descripcion|linebreaksbr|safe }}
 
                             {% if descripcion_modelo.fecha_actualizacion %}
@@ -30,16 +30,16 @@
                                 Actualizado: {{ descripcion_modelo.fecha_actualizacion|date:"d/m/Y " }}
                             </span>
                         {% endif %}
-                        </p> 
+                        </p>
+
 
                 </blockquote>
                         <div class="toolbar">
                             <button onclick="showView('chart')" class="active">📈</button>
-                            
                             <button onclick="showView('table')">📋</button>
                            
                         </div>
-                        <form method="GET" action="{% url 'productivo-produccion' %}">
+                        <form method= "GET" action="{% url 'productivo-comercializacion' %}">
                             {% csrf_token %}
                             <div class ="content-error">
                                 
@@ -52,21 +52,21 @@
                         
                             <div class="filtros-contenedor">
                                 <div class="filtro-anios">
-                                    <label>Campaña:</label>
-                                    <div class="campania_inicio">
-                                       <select name="campania_inicio">
+                                    <label>Años:</label>
+                                    <div class="anio_inicio">
+                                       <select name="anio_inicio">
                                             <option value="">Desde</option>
-                                            {% for a in campanias %}
-                                                <option value="{{ a.id }}">{{ a.campania }}</option>
+                                            {% for a in anios %}
+                                                <option value="{{ a.id }}">{{ a.anio }}</option>
                                             {% endfor %}
                                             </select>
 
                                             <span>—</span>
 
-                                            <select name="campania_fin">
+                                            <select name="anio_fin">
                                             <option value="">Hasta</option>
-                                            {% for a in campanias %}
-                                                <option value="{{ a.id }}">{{ a.campania }}</option>
+                                            {% for a in anios %}
+                                                <option value="{{ a.id }}">{{ a.anio }}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
@@ -82,32 +82,33 @@
                             </div>     
                         </form>
                         <div id="chartView" class="view active">
-                            <div class="chart-style" id="chart-participacion"></div>
+                            <div class="chart-style" id="chart-productivo"></div>
                         </div>
 
                         <div id="tableView" class="view">
                           <table id="example" class="stripe row-border order-column" style="width:100%">
                                 <thead>
                                     <tr>
-                                        <th>Campaña</th>
+                                        <th>Mes</th>
+                                        <th>Año</th>
                                         <th>Tipo cultivo</th>
-                                        <th>Valor</th>
-                                        <th>Superficie sembrada</th>
-                                        <th>Superficie cosechada</th>
-                                        <th>Produccion</th>
+                                        <th>Precio nacional</th>
+                                        <th>Precio internacional</th>
+                                        <th>Variacion mensual</th>
+                                        <th>Variacion FOB</th>
                                        
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for data in produccion %}
+                                    {% for data in data_variacion %}
                                     <tr>
-                                        <td>{{ data.campania__campania }}</td>
+                                        <td>{{ data.mes__mes }}</td>
+                                        <td>{{ data.anio__anio }}</td>
                                         <td>{{ data.tipo_cultivo__tipo_cultivo }}</td>
-                                        <td>{{ data.valor__valor }}</td>
-                                        <td>{{ data.superficie_sembrada }}</td>
-                                        <td>{{ data.superficie_cosechada }}</td>
-                                        <td>{{ data.produccion }}</td>
-                                        
+                                        <td>${{ data.precio_nacional }}</td>
+                                        <td>{{ data.precio_internacional }} USD</td>
+                                        <td>{{ data.variacion_mensual }}</td>
+                                        <td>{{ data.variacion_fob }}</td>
                                     </tr>
                                     {% empty %}
                                     <tr><td colspan="5">No hay datos disponibles.</td></tr>
@@ -116,6 +117,7 @@
                             </table>
                         </div>
 
+                        
             </div>
         </div>
     </div>
@@ -126,9 +128,9 @@
   const datos = {{ diccionario_variacion|safe }};
 
   area_chart_variation(
-    'chart-participacion',
+    'chart-productivo',
      datos,
-    '% participacion de Formosa'
+    'Variación mensual y variacion FOB'
   );
 
   

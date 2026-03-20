@@ -3,7 +3,6 @@ from .models import *
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-
 admin.site.register(TipoCultivo)
 # Register your models here.
 # ============================================================
@@ -118,3 +117,139 @@ class IndicadoresPrecioCultivoAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
+
+
+
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from .models import ProduccionCampaniaCultivo, ParticipacionProdFormosa
+
+
+def get_produccion(tipo_cultivo, campania, valor_nombre):
+    return ProduccionCampaniaCultivo.objects.filter(
+        tipo_cultivo=tipo_cultivo,
+        campania=campania,
+        valor__valor=valor_nombre  # 👈 asume que Valor tiene campo "valor"
+    ).first()
+
+
+def calcular_participacion(instance):
+    tipo_cultivo = instance.tipo_cultivo
+    campania = instance.campania
+
+    # Buscar ambas producciones
+    formosa = get_produccion(tipo_cultivo, campania, "Formosa")
+    nacional = get_produccion(tipo_cultivo, campania, "Nacional")
+
+    # ❌ Si falta uno → no calcular
+    if not formosa or not nacional:
+        return
+
+    try:
+        prod_formosa = float(formosa.produccion)
+        prod_nacional = float(nacional.produccion)
+
+        if prod_nacional == 0:
+            participacion = 0
+        else:
+            participacion = (prod_formosa / prod_nacional) * 100
+
+    except Exception:
+        return
+
+    # ✅ Guardar o actualizar
+    ParticipacionProdFormosa.objects.update_or_create(
+        tipo_cultivo=tipo_cultivo,
+        campania=campania,
+        defaults={
+            "participacion": round(participacion, 2)
+        }
+    )
+
+
+@receiver(post_save, sender=ProduccionCampaniaCultivo)
+def actualizar_participacion(sender, instance, **kwargs):
+    """
+    Se ejecuta cada vez que se guarda ProduccionCampaniaCultivo
+    """
+    calcular_participacion(instance)
+
+    # 🔥 CLAVE: recalcular también el "par" por si se modificó uno existente
+    otro_valor = "Nacional" if instance.valor.valor == "Formosa" else "Formosa"
+
+    otro = ProduccionCampaniaCultivo.objects.filter(
+        tipo_cultivo=instance.tipo_cultivo,
+        campania=instance.campania,
+        valor__valor=otro_valor
+    ).first()
+
+    if otro:
+        calcular_participacion(otro)
+
+from django.contrib import admin
+from .models import ProduccionCampaniaCultivo, ParticipacionProdFormosa
+
+
+# ============================================================
+# PRODUCCION (manual)
+# ============================================================
+
+@admin.register(ProduccionCampaniaCultivo)
+class ProduccionCampaniaCultivoAdmin(admin.ModelAdmin):
+
+    list_display = [
+        'tipo_cultivo',
+        'campania',
+        'valor',
+        'superficie_sembrada',
+        'superficie_cosechada',
+        'produccion',
+        'fecha_actualizacion'
+    ]
+
+    list_filter = [
+        'tipo_cultivo',
+        'campania',
+        'valor'
+    ]
+
+    ordering = ['-campania', 'tipo_cultivo']
+
+    search_fields = [
+        'tipo_cultivo__tipo_cultivo',
+        'campania__campania',
+        'valor__valor'
+    ]
+
+    list_per_page = 20
+
+
+# ============================================================
+# PARTICIPACION (automática)
+# ============================================================
+
+@admin.register(ParticipacionProdFormosa)
+class ParticipacionProdFormosaAdmin(admin.ModelAdmin):
+
+    list_display = [
+        'tipo_cultivo',
+        'campania',
+        'participacion'
+    ]
+
+    list_filter = [
+        'tipo_cultivo',
+        'campania'
+    ]
+
+    ordering = ['-campania', 'tipo_cultivo']
+
+    search_fields = [
+        'tipo_cultivo__tipo_cultivo',
+        'campania__campania'
+    ]
+
+    list_per_page = 20
+
+   

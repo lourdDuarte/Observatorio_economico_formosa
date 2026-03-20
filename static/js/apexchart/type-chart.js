@@ -157,7 +157,7 @@ function area_chart_variation(id, diccionario_variacion, titulo_chart, signo = '
   const meses = diccionario_variacion['meses'];
 
   let series = [];
-  let colors = ['#003764', '#859222', '#0fa89cff', '#f57404ff'];
+  let colors = ['#003764', '#859222', '#0fa89cff', '#f57404ff','#5cb5ff', '#17d13f', 'rgb(149, 17, 236)', 'rgb(230, 20, 20)'];
   let widths = [];
   let marker_sizes = [];
   let dashArray = [];

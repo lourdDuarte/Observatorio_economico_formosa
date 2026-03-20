@@ -33,5 +33,8 @@ class Indicadores(models.Model):
     variacion_intermensual = models.CharField(max_length=200, null=False, blank=False)
     fecha_actualizacion = models.DateTimeField(auto_now=True) 
     
+    class Meta:
+        unique_together = ('anio', 'mes', 'valor', 'tipo_dato')
+
     def __str__(self):
         return str(self.anio) + " " + str(self.mes) +  " "  + str(self.valor) + " " +  str(self.variacion_interanual) + "-" + str(self.variacion_intermensual)

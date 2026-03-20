@@ -76,6 +76,19 @@ def calcular_y_guardar_variacion(obj, tipo_dato, campo_valor):
         'total': float(getattr(obj, campo_valor) or 0)
     }
 
+    if data_indicadores['total'] == 0:
+        Indicadores.objects.update_or_create(
+            anio=obj.anio,
+            mes=obj.mes,
+            valor=obj.valor,
+            tipo_dato_id=tipo_dato,
+            defaults={
+                "variacion_intermensual": 0.0,
+                "variacion_interanual": 0.0,
+            }
+        )
+        return
+
     anio_anterior = int(data_indicadores['anio_id']) - 1
 
     # ---------------- INTERMENSUAL ----------------
@@ -206,7 +219,7 @@ class IndicadoresAdmin(admin.ModelAdmin):
                     'tipo_dato',
                     'variacion_interanual',
                     'variacion_intermensual']
-    list_editable = ['mes', 'valor', 'tipo_dato',
-                     'variacion_interanual',
+    list_editable = ['variacion_interanual',
                      'variacion_intermensual']
+    readonly_fields = ['anio', 'mes', 'valor', 'tipo_dato']
     list_per_page = 12

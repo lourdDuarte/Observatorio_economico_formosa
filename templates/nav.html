@@ -64,18 +64,26 @@
 
           </ul>
         </li>
-        <li class="menu-item"><a href="#">Sector productivo</a>
-          <ul class="submenu">
-             <li><a href="{% url 'productivo' 1 %}">Maiz</a></li>
-              <li><a href="{% url 'productivo' 2 %}">Sorgo</a></li>
-            <li><a href="{% url 'productivo' 3 %}">Soja</a></li>
-            <li><a href="{% url 'productivo' 4 %}">Trigo</a></li>
-            
+        {% comment %} <li class="menu-item">
+        <a href="#">Sector Agrícola</a>
+
+        <ul class="submenu">
+          
+          <!-- SUBMENÚ PADRE -->
+          <li class="submenu-item">
+            <a href="{% url 'productivo-comercializacion' %}">Comercializacion</a>
+
+           
+
+          </li>
+          <li class="submenu-item">
+            <a href="{% url 'productivo-produccion' %}">Produccion</a>
+
+          </li> {% endcomment %}
 
 
-
-          </ul>
-        </li>
+        </ul>
+      </li>
 
       </ul>
     </nav>

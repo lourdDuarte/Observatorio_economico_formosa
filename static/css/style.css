@@ -1,7 +1,31 @@
 /* =============================
 ESTILOS BASE (ESCRITORIO)
 ============================= */
+.submenu {
+  display: none;
+  position: absolute;
+  background: white;
+  list-style: none;
+  padding: 0;
+}
 
+.menu-item:hover > .submenu {
+  display: block;
+}
+
+.submenu-item {
+  position: relative;
+}
+
+/* SUBMENU ANIDADO */
+.submenu-nested {
+  top: 0;
+  left: 100%;
+}
+
+.submenu-item:hover > .submenu-nested {
+  display: block;
+}
 .container-var {
 margin: 0;
 width: 100%;
