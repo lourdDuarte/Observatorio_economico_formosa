@@ -29,6 +29,7 @@ from Sector_construccion import views as construccion
 from Productivo import views as productivo
 from sector_privado import views as privado
 from Dgr import views as dgr
+from Pecuario import views as pecuario
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -53,6 +54,11 @@ urlpatterns = [
     path('productivo-comercializacion/', productivo.view_comercializacion, name='productivo-comercializacion'),
     path('productivo-produccion/', productivo.view_produccion, name='productivo-produccion'),
     path('bcra/<int:var_id>/<str:descripcion>/', observatorio.bcra_detail, name='bcra'),
+    path('bovinos/', pecuario.view_bovinos, name='bovinos'),
+    path('porcinos/', pecuario.view_porcinos, name='porcinos'),
+    path('faena-pecuaria/', pecuario.view_faena_pecuaria, name='faena-pecuaria'),
+    path('stock-pecuario/', pecuario.view_stock_pecuario, name='stock-pecuario'),
+    path('consumo-pecuario/', pecuario.view_consumo_pecuario, name='consumo-pecuario'),
 
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'Descripcion',
     'Consumo_energetico',
     'Productivo',
+    'Pecuario',
      
 ]
 

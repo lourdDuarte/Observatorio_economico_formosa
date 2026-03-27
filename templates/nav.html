@@ -64,26 +64,46 @@
 
           </ul>
         </li>
-        {% comment %} <li class="menu-item">
-        <a href="#">Sector Agrícola</a>
+        <li class="menu-item">
+          <a href="#">Sector Agrícola</a>
 
-        <ul class="submenu">
+          <ul class="submenu">
           
-          <!-- SUBMENÚ PADRE -->
-          <li class="submenu-item">
-            <a href="{% url 'productivo-comercializacion' %}">Comercializacion</a>
+            <!-- SUBMENÚ PADRE -->
+              <li class="submenu-item">
+                <a href="{% url 'productivo-comercializacion' %}">Comercializacion</a>
 
-           
+            
 
-          </li>
-          <li class="submenu-item">
-            <a href="{% url 'productivo-produccion' %}">Produccion</a>
+              </li>
+              <li class="submenu-item">
+              <a href="{% url 'productivo-produccion' %}">Produccion</a>
 
-          </li> {% endcomment %}
+              </li> 
 
 
-        </ul>
-      </li>
+          </ul>
+        </li>
+        <li class="menu-item">
+          <a href="#">Sector Pecuario</a>
+
+          <ul class="submenu">
+          
+            <!-- SUBMENÚ PADRE -->
+              <li class="submenu-item">
+                <a href="{% url 'bovinos' %}">Bovinos</a>
+
+            
+
+              </li>
+              <li class="submenu-item">
+              <a href="{% url 'porcinos' %}">Porcinos</a>
+
+              </li> 
+
+
+          </ul>
+        </li>
 
       </ul>
     </nav>

@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head_content %}
+<!DOCTYPE html>
+{% endblock head_content %}
+{% block container %}
+<div class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card-body">
+
+                <div class="typography-line">
+                    <h3 class="color-typography"><span>Sector Pecuario -</span> Consumo</h3>
+                </div>
+
+                <div class="typography-line">
+                    <blockquote class="position-relative">
+                        <p class="blockquote blockquote-primary">
+                            {{ descripcion_modelo.descripcion|linebreaksbr|safe }}
+                            {% if descripcion_modelo.fecha_actualizacion %}
+                            <br>
+                            <span class="text-start text-muted small mt-2">
+                                Actualizado: {{ descripcion_modelo.fecha_actualizacion|date:"d/m/Y" }}
+                            </span>
+                            {% endif %}
+                        </p>
+                    </blockquote>
+
+                    <div class="toolbar">
+                        <button onclick="showView('chart')" class="active">📈</button>
+                        <button onclick="showView('table')">📋</button>
+                    </div>
+
+                    <form method="GET" action="{% url 'consumo-pecuario' %}">
+                        {% csrf_token %}
+                        <div class="content-error">
+                            {% if error_message %}
+                            <div class="alert alert-dark" role="alert">{{ error_message }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="filtros-contenedor">
+                            <div class="filtro-anios">
+                                <label>Años:</label>
+                                <div class="anio_inicio">
+                                    <select name="anio_inicio">
+                                        <option value="">Desde</option>
+                                        {% for a in anios %}
+                                        <option value="{{ a.id }}">{{ a.anio }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <span>—</span>
+                                    <select name="anio_fin">
+                                        <option value="">Hasta</option>
+                                        {% for a in anios %}
+                                        <option value="{{ a.id }}">{{ a.anio }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit">Aplicar filtros</button>
+                        </div>
+                    </form>
+
+                    <div id="chartView" class="view active">
+                        <div class="chart-style" id="chart-capita"></div>
+                       
+                    </div>
+
+                    <div id="tableView" class="view">
+                        <h5 style="font-size: 15px; font-weight: 900;color: font-weight: bold; color:black; margin-top: 2rem; margin-bottom: 1rem;">Consumo total de proteína de origen animal (kg)</h5>
+                        <table id="example2" class="stripe row-border order-column" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Mes</th>
+                                    <th>Año</th>
+                                    <th>Región</th>
+                                    <th>Consumo total (kg)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for d in data_total %}
+                                <tr>
+                                    <td>{{ d.mes__mes }}</td>
+                                    <td>{{ d.anio__anio }}</td>
+                                    <td>{{ d.valor__valor }}</td>
+                                    <td>{{ d.consumo_total }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="4">No hay datos disponibles.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <h5 style="font-size: 15px;color: font-weight: 900;font-weight: bold; color:black;  margin-bottom: 1rem;">Consumo per cápita por tipo de ganado (kg/hab/año)</h5>
+                        <table id="example" class="stripe row-border order-column" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Mes</th>
+                                    <th>Año</th>
+                                    <th>Tipo de ganado</th>
+                                    <th>Región</th>
+                                    <th>Consumo (kg/hab/año)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for d in data_capita %}
+                                <tr>
+                                    <td>{{ d.mes__mes }}</td>
+                                    <td>{{ d.anio__anio }}</td>
+                                    <td>{{ d.tipo_ganado__tipo_ganado }}</td>
+                                    <td>{{ d.valor__valor }}</td>
+                                    <td>{{ d.consumo }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="5">No hay datos disponibles.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const datos_capita = {{ chart_capita|safe }};
+    area_chart_variation('chart-capita', datos_capita, 'Consumo per cápita por tipo de ganado (kg/hab/año)', 'kg/hab/año');
+
+    const datos_total = {{ chart_total|safe }};
+    area_chart_variation('chart-total', datos_total, 'Consumo total de proteína de origen animal (kg)', 'kg');
+</script>
+{% endblock container %}

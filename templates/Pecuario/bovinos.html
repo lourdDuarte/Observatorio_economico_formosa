@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head_content %}
+<!DOCTYPE html>
+{% endblock head_content %}
+{% block container %}
+<div class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card-body">
+
+                <div class="typography-line">
+                    <h3 class="color-typography"><span>Sector Pecuario -</span> Bovinos</h3>
+                </div>
+
+                <div class="typography-line">
+                    <blockquote class="position-relative">
+                        <p class="blockquote blockquote-primary">
+                            {{ descripcion_modelo.descripcion|linebreaksbr|safe }}
+                            {% if descripcion_modelo.fecha_actualizacion %}
+                            <br>
+                            <span class="text-start text-muted small mt-2">
+                                Actualizado: {{ descripcion_modelo.fecha_actualizacion|date:"d/m/Y" }}
+                            </span>
+                            {% endif %}
+                        </p>
+                    </blockquote>
+
+                    <div class="toolbar">
+                        <button onclick="showSection('stock')" id="btn-stock" class="active">STOCK</button>
+                        <button onclick="showSection('faena')" id="btn-faena">FAENA</button>
+                    </div>
+
+                    <form method="GET" action="{% url 'bovinos' %}">
+                        {% csrf_token %}
+                        <div class="content-error">
+                            {% if error_message %}
+                            <div class="alert alert-dark" role="alert">{{ error_message }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="filtros-contenedor">
+                            <div class="filtro-anios">
+                                <label>Años:</label>
+                                <div class="anio_inicio">
+                                    <select name="anio_inicio">
+                                        <option value="">Desde</option>
+                                        {% for a in anios %}
+                                        <option value="{{ a.id }}">{{ a.anio }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <span>—</span>
+                                    <select name="anio_fin">
+                                        <option value="">Hasta</option>
+                                        {% for a in anios %}
+                                        <option value="{{ a.id }}">{{ a.anio }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit">Aplicar filtros</button>
+                        </div>
+                    </form>
+
+                    <!-- STOCK -->
+                    <div id="section-stock" class="bovinos-section">
+                        <div class="chart-style" id="chart-stock"></div>
+                        
+                    </div>
+
+                    <!-- FAENA -->
+                    <div id="section-faena" class="bovinos-section" style="display:none;">
+                        <div class="chart-style" id="chart-faena"></div>
+                        
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const datos_stock = {{ chart_stock|safe }};
+    area_chart_variation('chart-stock', datos_stock, 'Stock bovino (cabezas)', '');
+
+    const datos_faena = {{ chart_faena|safe }};
+    let faenaChartRendered = false;
+
+    function showSection(seccion) {
+        document.querySelectorAll('.bovinos-section').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.toolbar button').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('section-' + seccion).style.display = 'block';
+        document.getElementById('btn-' + seccion).classList.add('active');
+
+        if (seccion === 'faena' && !faenaChartRendered) {
+            area_chart_variation('chart-faena', datos_faena, 'Faena bovina (cabezas)', '');
+            faenaChartRendered = true;
+        }
+    }
+</script>
+{% endblock container %}
