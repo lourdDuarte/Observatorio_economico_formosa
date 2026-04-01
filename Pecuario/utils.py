@@ -121,8 +121,24 @@ class PecuarioDataProcessor:
                 anio_id__gte=params['anio_inicio'],
                 anio_id__lte=params['anio_fin'],
             )
-        default = cls.get_default_year(FaenaPecuario)
+        result = FaenaPecuario.objects.filter(tipo_ganado_id=2, valor__valor='Nacional').values('anio_id').order_by('-anio_id').first()
+        default = result['anio_id'] if result else None
         return cls.get_data_faena(tipo_ganado_id=2, valor__valor='Nacional', anio_id=default) if default else cls.get_data_faena(tipo_ganado_id=2, valor__valor='Nacional')
+    
+    @classmethod
+    def get_filtered_aves_faena(cls, params: Dict) -> QuerySet:
+        if params['is_valid']:
+            return cls.get_data_faena(
+                tipo_ganado_id=3,
+                valor__valor='Nacional',
+                anio_id__gte=params['anio_inicio'],
+                anio_id__lte=params['anio_fin'],
+            )
+        result = FaenaPecuario.objects.filter(tipo_ganado_id=3, valor__valor='Nacional').values('anio_id').order_by('-anio_id').first()
+        default = result['anio_id'] if result else None
+        return cls.get_data_faena(tipo_ganado_id=3, valor__valor='Nacional', anio_id=default) if default else cls.get_data_faena(tipo_ganado_id=3, valor__valor='Nacional')
+    
+
 
     @classmethod
     def get_filtered_bovinos_faena(cls, params: Dict) -> QuerySet:
@@ -158,9 +174,10 @@ class PecuarioDataProcessor:
                 anio_id__lte=params['anio_fin'],
             )
         else:
-            default = cls.get_default_year(ConsumoCapita)
-            capita = cls.get_data_consumo_capita(anio_id=default) if default else cls.get_data_consumo_capita()
-            total = cls.get_data_consumo_total(anio_id=default) if default else cls.get_data_consumo_total()
+            default_capita = cls.get_default_year(ConsumoCapita)
+            default_total = cls.get_default_year(ConsumoTotalProteina)
+            capita = cls.get_data_consumo_capita(anio_id=default_capita) if default_capita else cls.get_data_consumo_capita()
+            total = cls.get_data_consumo_total(anio_id=default_total) if default_total else cls.get_data_consumo_total()
         return {'capita': capita, 'total': total}
 
     # ------------------------------------------------------------------ #
@@ -184,19 +201,25 @@ class PecuarioDataProcessor:
                 meses.append(label)
 
         for item in items:
-            clave = f"{item['tipo_ganado__tipo_ganado']} - {item['valor__valor']}"
+            clave = f"{item['tipo_ganado__tipo_ganado']}"
             if clave not in series:
                 series[clave] = {m: None for m in meses}
 
         for item in items:
             label = f"{item['mes__mes']} {item['anio__anio']}"
-            clave = f"{item['tipo_ganado__tipo_ganado']} - {item['valor__valor']}"
+            clave = f"{item['tipo_ganado__tipo_ganado']}"
             val = item[campo_valor]
             series[clave][label] = float(val) if val is not None else None
 
-        resultado: Dict[str, Any] = {'meses': meses}
+        # Solo incluir meses donde TODOS los tipos tienen dato
+        meses_completos = [
+            m for m in meses
+            if all(series[clave].get(m) is not None for clave in series)
+        ]
+
+        resultado: Dict[str, Any] = {'meses': meses_completos}
         for clave, valores in series.items():
-            resultado[clave] = [valores[m] for m in meses]
+            resultado[clave] = [valores[m] for m in meses_completos]
 
         return resultado
 
@@ -219,7 +242,7 @@ class PecuarioDataProcessor:
             'Consumo Total Proteína': valores,
         }
 
-def diccionario_nacional(campo: str, queryset: QuerySet) -> Dict[str, list]:
+def diccionario_nacional(campo: str, queryset: QuerySet, nombre_serie: str = 'Nacional') -> Dict[str, list]:
     meses = []
     valores = []
     for item in queryset:
@@ -228,7 +251,7 @@ def diccionario_nacional(campo: str, queryset: QuerySet) -> Dict[str, list]:
         valores.append(float(val) if val is not None else None)
     return {
         'meses': meses,
-        'Nacional': valores,
+        nombre_serie: valores,
     }
 
 
@@ -268,12 +291,24 @@ def process_porcinos_data(request: HttpRequest, descripcion_modelo, template: st
     params = PecuarioDataProcessor.process_request_parameters(request)
     qs_faena = PecuarioDataProcessor.get_filtered_porcinos_faena(params)
     qs_stock = PecuarioDataProcessor.get_filtered_porcinos_stock(params)
-    chart_faena = diccionario_nacional('cabezas', qs_faena)
+    chart_faena = diccionario_nacional('cabezas', qs_faena, nombre_serie='Porcinos')
     chart_stock = diccionario_bovinos('stock', qs_stock)
     context = {
         'error_message': params['error_message'],
         'chart_faena': json.dumps(chart_faena),
         'chart_stock': json.dumps(chart_stock),
+        'descripcion_modelo': descripcion_modelo,
+        'anios': Anio.objects.all().order_by('anio'),
+    }
+    return render(request, template, context)
+
+def process_aves_data(request: HttpRequest, descripcion_modelo, template: str) -> HttpResponse:
+    params = PecuarioDataProcessor.process_request_parameters(request)
+    qs_faena = PecuarioDataProcessor.get_filtered_aves_faena(params)
+    chart_faena = diccionario_nacional('cabezas', qs_faena, nombre_serie='Aves')
+    context = {
+        'error_message': params['error_message'],
+        'chart_faena': json.dumps(chart_faena),
         'descripcion_modelo': descripcion_modelo,
         'anios': Anio.objects.all().order_by('anio'),
     }

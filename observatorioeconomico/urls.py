@@ -56,8 +56,7 @@ urlpatterns = [
     path('bcra/<int:var_id>/<str:descripcion>/', observatorio.bcra_detail, name='bcra'),
     path('bovinos/', pecuario.view_bovinos, name='bovinos'),
     path('porcinos/', pecuario.view_porcinos, name='porcinos'),
-    path('faena-pecuaria/', pecuario.view_faena_pecuaria, name='faena-pecuaria'),
-    path('stock-pecuario/', pecuario.view_stock_pecuario, name='stock-pecuario'),
+    path('aves/', pecuario.view_aves, name='aves'),
     path('consumo-pecuario/', pecuario.view_consumo_pecuario, name='consumo-pecuario'),
 
 

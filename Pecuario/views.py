@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .utils import process_faena_data, process_stock_data, process_consumo_data, process_bovinos_data, process_porcinos_data
+from .utils import process_faena_data, process_stock_data, process_consumo_data, process_bovinos_data, process_porcinos_data, process_aves_data
 from Descripcion.models import Descripcion
 
 
@@ -9,6 +9,10 @@ class PorcinosViewConfig:
 
 class BovinosViewConfig:
     TEMPLATE = 'Pecuario/bovinos.html'
+
+
+class AvesViewConfig:
+    TEMPLATE = 'Pecuario/aves.html'
 
 
 class FaenaPecuariaViewConfig:
@@ -24,7 +28,7 @@ class ConsumoPecuarioViewConfig:
 
 
 def view_porcinos(request):
-    descripcion = Descripcion.objects.filter(nombre_modelo='Porcinos').first()
+    descripcion = Descripcion.objects.filter(nombre_modelo='Porcinos- Pecuario').first()
     return process_porcinos_data(
         request,
         descripcion_modelo=descripcion,
@@ -33,30 +37,21 @@ def view_porcinos(request):
 
 
 def view_bovinos(request):
-    descripcion = Descripcion.objects.filter(nombre_modelo='Bovinos').first()
+    descripcion = Descripcion.objects.filter(nombre_modelo='Bovinos- Pecuario').first()
     return process_bovinos_data(
         request,
         descripcion_modelo=descripcion,
         template=BovinosViewConfig.TEMPLATE,
     )
 
-
-def view_faena_pecuaria(request):
-    descripcion = Descripcion.objects.filter(nombre_modelo='Faena Pecuaria').first()
-    return process_faena_data(
+def view_aves(request):
+    descripcion = Descripcion.objects.filter(nombre_modelo='Aves- Pecuario').first()
+    return process_aves_data(
         request,
         descripcion_modelo=descripcion,
-        template=FaenaPecuariaViewConfig.TEMPLATE,
+        template=AvesViewConfig.TEMPLATE,
     )
 
-
-def view_stock_pecuario(request):
-    descripcion = Descripcion.objects.filter(nombre_modelo='Stock Pecuario').first()
-    return process_stock_data(
-        request,
-        descripcion_modelo=descripcion,
-        template=StockPecuarioViewConfig.TEMPLATE,
-    )
 
 
 def view_consumo_pecuario(request):

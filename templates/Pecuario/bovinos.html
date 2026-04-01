@@ -27,8 +27,8 @@
                     </blockquote>
 
                     <div class="toolbar">
-                        <button onclick="showSection('stock')" id="btn-stock" class="active">STOCK</button>
-                        <button onclick="showSection('faena')" id="btn-faena">FAENA</button>
+                        <button onclick="showSection('faena')" id="btn-faena" class="active">FAENA</button>
+                        <button onclick="showSection('stock')" id="btn-stock">STOCK</button>
                     </div>
 
                     <form method="GET" action="{% url 'bovinos' %}">
@@ -61,16 +61,16 @@
                         </div>
                     </form>
 
-                    <!-- STOCK -->
-                    <div id="section-stock" class="bovinos-section">
-                        <div class="chart-style" id="chart-stock"></div>
-                        
+                    <!-- FAENA -->
+                    <div id="section-faena" class="bovinos-section">
+                        <div class="chart-style" id="chart-faena"></div>
+
                     </div>
 
-                    <!-- FAENA -->
-                    <div id="section-faena" class="bovinos-section" style="display:none;">
-                        <div class="chart-style" id="chart-faena"></div>
-                        
+                    <!-- STOCK -->
+                    <div id="section-stock" class="bovinos-section" style="display:none;">
+                        <div class="chart-style" id="chart-stock"></div>
+
                     </div>
 
                 </div>
@@ -79,11 +79,11 @@
     </div>
 </div>
 <script>
-    const datos_stock = {{ chart_stock|safe }};
-    area_chart_variation('chart-stock', datos_stock, 'Stock bovino (cabezas)', '');
-
     const datos_faena = {{ chart_faena|safe }};
-    let faenaChartRendered = false;
+    area_chart_variation('chart-faena', datos_faena, 'Faena bovina (cabezas)', '');
+
+    const datos_stock = {{ chart_stock|safe }};
+    let stockChartRendered = false;
 
     function showSection(seccion) {
         document.querySelectorAll('.bovinos-section').forEach(el => el.style.display = 'none');
@@ -91,9 +91,9 @@
         document.getElementById('section-' + seccion).style.display = 'block';
         document.getElementById('btn-' + seccion).classList.add('active');
 
-        if (seccion === 'faena' && !faenaChartRendered) {
-            area_chart_variation('chart-faena', datos_faena, 'Faena bovina (cabezas)', '');
-            faenaChartRendered = true;
+        if (seccion === 'stock' && !stockChartRendered) {
+            area_chart_variation('chart-stock', datos_stock, 'Stock bovino (cabezas)', '');
+            stockChartRendered = true;
         }
     }
 </script>
