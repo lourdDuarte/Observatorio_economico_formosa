@@ -2,7 +2,7 @@ from django.contrib import admin
 from django import forms
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from .models import TipoGanado, FaenaPecuario, StockPecuario, ConsumoCapita, ConsumoTotalProteina
+from .models import TipoGanado, FaenaPecuario, StockPecuario, ConsumoCapita, ConsumoTotalProteina, ProdDestIndustria
 
 
 # ============================================================
@@ -27,6 +27,11 @@ class StockPecuarioForm(forms.ModelForm):
 class ConsumoCapitaForm(forms.ModelForm):
     class Meta:
         model = ConsumoCapita
+        fields = '__all__'
+
+class ProdDestIndustriaForm(forms.ModelForm):
+    class Meta:
+        model = ProdDestIndustria
         fields = '__all__'
 
    
@@ -108,6 +113,14 @@ class StockPecuarioAdmin(admin.ModelAdmin):
 class ConsumoCapitaAdmin(admin.ModelAdmin):
     form = ConsumoCapitaForm
     list_display = ['anio', 'mes', 'valor', 'tipo_ganado', 'consumo', 'fecha_carga']
+    list_filter = ['anio__anio', 'mes__mes', 'valor__valor', 'tipo_ganado__tipo_ganado']
+    ordering = ['-anio', 'mes']
+    list_per_page = 20
+
+@admin.register(ProdDestIndustria)
+class ProdDestIndustriaAdmin(admin.ModelAdmin):
+    form = ProdDestIndustriaForm
+    list_display = ['anio', 'mes', 'valor', 'tipo_ganado', 'produccion', 'fecha_carga']
     list_filter = ['anio__anio', 'mes__mes', 'valor__valor', 'tipo_ganado__tipo_ganado']
     ordering = ['-anio', 'mes']
     list_per_page = 20

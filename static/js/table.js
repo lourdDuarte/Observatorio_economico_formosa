@@ -1,7 +1,11 @@
 
+$.fn.dataTable.ext.errMode = 'none';
 
 new DataTable('#example', {
     info:false,
+    language: {
+        emptyTable: 'No hay datos disponibles para la fecha seleccionada.'
+    },
     layout: {
         topStart: {
             buttons: [

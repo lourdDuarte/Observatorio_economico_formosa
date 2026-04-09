@@ -5,7 +5,7 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from Anio.models import Anio
 
-from .models import FaenaPecuario, StockPecuario, ConsumoCapita, ConsumoTotalProteina
+from .models import FaenaPecuario, StockPecuario, ConsumoCapita, ConsumoTotalProteina, ProdDestIndustria
 
 
 class PecuarioDataProcessor:
@@ -95,11 +95,30 @@ class PecuarioDataProcessor:
             'mes__mes', 'mes__id', 'anio__anio',
             'valor__valor', 'consumo_total',
         ).filter(**kwargs).order_by('anio__anio', 'mes__id')
+    
+    @staticmethod
+    def get_data_prod_industria(**kwargs) -> QuerySet:
+        return ProdDestIndustria.objects.select_related(
+            'mes', 'anio', 'valor'
+        ).values(
+            'mes__mes', 'mes__id', 'anio__anio',
+            'valor__valor', 'produccion',
+        ).filter(**kwargs).order_by('anio__anio', 'mes__id')
 
     # ------------------------------------------------------------------ #
     # FILTROS POR PARAMS                                                   #
     # ------------------------------------------------------------------ #
 
+    @classmethod
+    def get_filtered_prod_industria(cls, params: Dict) -> QuerySet:
+        if params['is_valid']:
+            return cls.get_data_prod_industria(
+                tipo_ganado_id=3,
+                anio_id__gte=params['anio_inicio'],
+                anio_id__lte=params['anio_fin'],
+            )
+        default = cls.get_default_year(ProdDestIndustria)
+        return cls.get_data_prod_industria(tipo_ganado_id=3, anio_id=default) if default else cls.get_data_prod_industria(tipo_ganado_id=3)
    
     @classmethod
     def get_filtered_porcinos_stock(cls, params: Dict) -> QuerySet:
@@ -306,9 +325,11 @@ def process_aves_data(request: HttpRequest, descripcion_modelo, template: str) -
     params = PecuarioDataProcessor.process_request_parameters(request)
     qs_faena = PecuarioDataProcessor.get_filtered_aves_faena(params)
     chart_faena = diccionario_nacional('cabezas', qs_faena, nombre_serie='Aves')
+    prod_industria = PecuarioDataProcessor.get_filtered_prod_industria(params)
     context = {
         'error_message': params['error_message'],
         'chart_faena': json.dumps(chart_faena),
+        'prod_industria': prod_industria,
         'descripcion_modelo': descripcion_modelo,
         'anios': Anio.objects.all().order_by('anio'),
     }

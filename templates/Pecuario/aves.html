@@ -27,8 +27,9 @@
                     </blockquote>
 
                     <div class="toolbar">
-                        <button onclick="showSection('faena')" id="btn-faena" class="active">FAENA</button>
-                        
+                        <button onclick="showView('chart')" class="active">FAENA</button>
+                        <button onclick="showView('table')">PRODUCCION</button>
+                    </div>
                     </div>
 
                     <form method="GET" action="{% url 'aves' %}">
@@ -62,12 +63,38 @@
                     </form>
 
                     <!-- FAENA -->
-                    <div id="section-faena" class="bovinos-section">
+                    <div id="chartView" class="view active">
                         <div class="chart-style" id="chart-faena"></div>
 
                     </div>
 
-                    
+                    <div id="tableView" class="view">
+                        <h5 style="font-size: 15px;color: font-weight: 900;font-weight: bold; color:black;  margin-bottom: 1rem;">Produccion destino industria</h5>
+                        <table id="example" class="stripe row-border order-column" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Mes</th>
+                                    <th>Año</th>
+                                    <th>Tipo de ganado</th>
+                                    <th>Región</th>
+                                    <th>Produccion</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for d in prod_industria %}
+                                <tr>
+                                    <td>{{ d.mes__mes }}</td>
+                                    <td>{{ d.anio__anio }}</td>
+                                    <td>{{ d.tipo_ganado__tipo_ganado }}</td>
+                                    <td>{{ d.valor__valor }}</td>
+                                    <td>{{ d.produccion }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        
+                    </div>
 
                 </div>
             </div>
