@@ -231,7 +231,8 @@ def process_privado_data(request: HttpRequest,
     diccionario_variacion = diccionario(data_variacion)
     
     context_chart = processor.process_chart_data_totales(data_variacion)
-    anios = Anio.objects.all().order_by('anio')
+    anio_ids = IndicadoresPrivado.objects.values_list('anio_id', flat=True).distinct()
+
     # Construir contexto
     context = {
         'error_message': params['error_message'],
@@ -241,7 +242,7 @@ def process_privado_data(request: HttpRequest,
         'data_chart_nacional': json.dumps(context_chart['Nacional']),
         'descripcion_modelo': descripcion_modelo,
         'meses': meses,
-        'anios': anios,
+        'anios': Anio.objects.filter(id__in=anio_ids).order_by('anio'),
     }
     
     return render(request, template, context)
@@ -390,6 +391,8 @@ def process_privado_ramas_data(request: HttpRequest,
         type_graphic = 0
         context_chart = processor.process_chart_ramas_cantidad(data_variacion)
     
+    anio_ids = AsalariadoRama.objects.values_list('anio_id', flat=True).distinct()
+
     anios = Anio.objects.all().order_by('anio')
 
     
@@ -401,7 +404,7 @@ def process_privado_ramas_data(request: HttpRequest,
         context_keys['data_variacion']: data_variacion,
         'descripcion_modelo': descripcion_modelo,
         'meses': meses,
-        'anios': anios,
+        'anios': Anio.objects.filter(id__in=anio_ids).order_by('anio'),
     }
     
     return render(request, template, context)

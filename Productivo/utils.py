@@ -256,14 +256,14 @@ def process_comercializacion_data(
     params = ProductivoDataProcessor.process_request_parameters(request)
     data_variacion = ProductivoDataProcessor.get_filtered_data(params)
     diccionario_variacion = ProductivoDataProcessor.build_chart_data(data_variacion)
-
+    anio_ids = IndicadoresPrecioCultivo.objects.values_list('anio_id', flat=True).distinct()
     context = {
         'error_message': params['error_message'],
         context_keys['data_variacion']: data_variacion,
         context_keys['diccionario_variacion']: diccionario_variacion,
         'descripcion_modelo': descripcion_modelo,
         'meses': Mes.objects.all(),
-        'anios': Anio.objects.all().order_by('anio'),
+        'anios': Anio.objects.filter(id__in=anio_ids).order_by('anio')
     }
     return render(request, template, context)
 

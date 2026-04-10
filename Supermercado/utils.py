@@ -188,7 +188,8 @@ def process_supermercado_data(
     data_variacion = processor.get_filtered_data(tipo_precio, params)
     dicc_variacion = construir_diccionario(data_variacion)
     chart_data = processor.process_chart_data_totales(data_variacion)
-    anios = Anio.objects.all().order_by('anio')
+    anio_ids = Variacion.objects.values_list('anio_id', flat=True).distinct()
+
     context = {
         'error_message': params['error_message'],
         context_keys['data_variacion']: data_variacion,
@@ -197,7 +198,7 @@ def process_supermercado_data(
         'data_chart_nacional': json.dumps(chart_data[SupermercadoDataProcessor.REGION_NACIONAL]),
         'descripcion_modelo': descripcion_modelo,
         'meses': Mes.objects.all(),
-        'anios': anios,
+        'anios': Anio.objects.filter(id__in=anio_ids).order_by('anio'),
     }
 
     return render(request, template, context)

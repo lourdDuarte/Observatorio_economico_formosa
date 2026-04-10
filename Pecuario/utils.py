@@ -99,10 +99,10 @@ class PecuarioDataProcessor:
     @staticmethod
     def get_data_prod_industria(**kwargs) -> QuerySet:
         return ProdDestIndustria.objects.select_related(
-            'mes', 'anio', 'valor'
+            'mes', 'anio', 'valor', 'tipo_ganado'
         ).values(
             'mes__mes', 'mes__id', 'anio__anio',
-            'valor__valor', 'produccion',
+            'valor__valor', 'tipo_ganado__tipo_ganado', 'produccion'
         ).filter(**kwargs).order_by('anio__anio', 'mes__id')
 
     # ------------------------------------------------------------------ #
@@ -312,12 +312,13 @@ def process_porcinos_data(request: HttpRequest, descripcion_modelo, template: st
     qs_stock = PecuarioDataProcessor.get_filtered_porcinos_stock(params)
     chart_faena = diccionario_nacional('cabezas', qs_faena, nombre_serie='Porcinos')
     chart_stock = diccionario_bovinos('stock', qs_stock)
+    anio_ids = FaenaPecuario.objects.filter(tipo_ganado_id=2).values_list('anio_id', flat=True).distinct()
     context = {
         'error_message': params['error_message'],
         'chart_faena': json.dumps(chart_faena),
         'chart_stock': json.dumps(chart_stock),
         'descripcion_modelo': descripcion_modelo,
-        'anios': Anio.objects.all().order_by('anio'),
+        'anios': Anio.objects.filter(id__in=anio_ids).order_by('anio'),
     }
     return render(request, template, context)
 
@@ -326,12 +327,13 @@ def process_aves_data(request: HttpRequest, descripcion_modelo, template: str) -
     qs_faena = PecuarioDataProcessor.get_filtered_aves_faena(params)
     chart_faena = diccionario_nacional('cabezas', qs_faena, nombre_serie='Aves')
     prod_industria = PecuarioDataProcessor.get_filtered_prod_industria(params)
+    anio_ids = FaenaPecuario.objects.filter(tipo_ganado_id=3).values_list('anio_id', flat=True).distinct()
     context = {
         'error_message': params['error_message'],
         'chart_faena': json.dumps(chart_faena),
         'prod_industria': prod_industria,
         'descripcion_modelo': descripcion_modelo,
-        'anios': Anio.objects.all().order_by('anio'),
+        'anios': Anio.objects.filter(id__in=anio_ids).order_by('anio'),
     }
     return render(request, template, context)
 
@@ -342,12 +344,13 @@ def process_bovinos_data(request: HttpRequest, descripcion_modelo, template: str
     qs_stock = PecuarioDataProcessor.get_filtered_bovinos_stock(params)
     chart_faena = diccionario_bovinos('cabezas', qs_faena)
     chart_stock = diccionario_bovinos('stock', qs_stock)
+    anio_ids = FaenaPecuario.objects.filter(tipo_ganado_id=1).values_list('anio_id', flat=True).distinct()
     context = {
         'error_message': params['error_message'],
         'chart_faena': json.dumps(chart_faena),
         'chart_stock': json.dumps(chart_stock),
         'descripcion_modelo': descripcion_modelo,
-        'anios': Anio.objects.all().order_by('anio'),
+        'anios': Anio.objects.filter(id__in=anio_ids).order_by('anio'),
     }
     return render(request, template, context)
 
@@ -356,12 +359,13 @@ def process_faena_data(request: HttpRequest, descripcion_modelo, template: str) 
     params = PecuarioDataProcessor.process_request_parameters(request)
     data = PecuarioDataProcessor.get_filtered_faena(params)
     chart = PecuarioDataProcessor.build_chart_por_tipo(data, 'cabezas')
+    anio_ids = FaenaPecuario.objects.values_list('anio_id', flat=True).distinct()
     context = {
         'error_message': params['error_message'],
         'data': data,
         'chart_data': json.dumps(chart),
         'descripcion_modelo': descripcion_modelo,
-        'anios': Anio.objects.all().order_by('anio'),
+        'anios': Anio.objects.filter(id__in=anio_ids).order_by('anio'),
     }
     return render(request, template, context)
 
@@ -370,12 +374,13 @@ def process_stock_data(request: HttpRequest, descripcion_modelo, template: str) 
     params = PecuarioDataProcessor.process_request_parameters(request)
     data = PecuarioDataProcessor.get_filtered_stock(params)
     chart = PecuarioDataProcessor.build_chart_por_tipo(data, 'stock')
+    anio_ids = StockPecuario.objects.values_list('anio_id', flat=True).distinct()
     context = {
         'error_message': params['error_message'],
         'data': data,
         'chart_data': json.dumps(chart),
         'descripcion_modelo': descripcion_modelo,
-        'anios': Anio.objects.all().order_by('anio'),
+        'anios': Anio.objects.filter(id__in=anio_ids).order_by('anio'),
     }
     return render(request, template, context)
 
@@ -385,6 +390,7 @@ def process_consumo_data(request: HttpRequest, descripcion_modelo, template: str
     data = PecuarioDataProcessor.get_filtered_consumo(params)
     chart_capita = PecuarioDataProcessor.build_chart_por_tipo(data['capita'], 'consumo')
     chart_total = PecuarioDataProcessor.build_chart_consumo_total(data['total'])
+    anio_ids = ConsumoCapita.objects.values_list('anio_id', flat=True).distinct()
     context = {
         'error_message': params['error_message'],
         'data_capita': data['capita'],
@@ -392,6 +398,6 @@ def process_consumo_data(request: HttpRequest, descripcion_modelo, template: str
         'chart_capita': json.dumps(chart_capita),
         'chart_total': json.dumps(chart_total),
         'descripcion_modelo': descripcion_modelo,
-        'anios': Anio.objects.all().order_by('anio'),
+        'anios': Anio.objects.filter(id__in=anio_ids).order_by('anio'),
     }
     return render(request, template, context)

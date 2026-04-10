@@ -301,7 +301,9 @@ def process_contruccion_salario_data(request:HttpRequest, value_totales:str, con
     data_variacion = processor.get_filter_data_model_construccion(params)
     salario_promedio_diccionario = diccionario_salario(data_variacion)
     context_chart = processor.process_chart_data_totales(value_totales, data_variacion)
-    anios = Anio.objects.all().order_by('anio')
+    anio_ids = SectorConstruccion.objects.exclude(
+        salario_promedio='0'
+    ).values_list('anio_id', flat=True).distinct()
      # Construir contexto
     context = {
         'error_message': params['error_message'],
@@ -311,7 +313,7 @@ def process_contruccion_salario_data(request:HttpRequest, value_totales:str, con
         'data_chart_nacional': json.dumps(context_chart['Nacional']),
         'descripcion_modelo': descripcion_modelo,
         'meses': meses,
-        'anios': anios,
+        'anios': Anio.objects.filter(id__in=anio_ids).order_by('anio')
     }
     
     return render(request, template, context)
@@ -363,7 +365,10 @@ def process_contruccion_puestos_data(request:HttpRequest,tipo_dato:int, value_to
         }
 
         data_variacion.append(combinado)
-        anios = Anio.objects.all().order_by('anio')
+    anio_ids = Indicadores.objects.filter(tipo_dato=tipo_dato).exclude(
+        variacion_intermensual='0.0', variacion_interanual='0.0'
+    ).values_list('anio_id', flat=True).distinct()
+
 
     context = {
         'error_message': params['error_message'],
@@ -373,7 +378,7 @@ def process_contruccion_puestos_data(request:HttpRequest,tipo_dato:int, value_to
         'data_chart_nacional': json.dumps(context_chart['Nacional']),
         'descripcion_modelo': descripcion_modelo,
         'meses': meses,
-        'anios': anios,
+        'anios': Anio.objects.filter(id__in=anio_ids).order_by('anio'),
     }
     
     return render(request, template, context)
