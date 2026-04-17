@@ -16,11 +16,11 @@
             <div class="card-body">
                 
                 <div class="typography-line">
-                    <h3 class="color-typography"><span>Sector privado -</span> Trabajadores por rama de actividad </h3>
+                    <h3 class="color-typography"><span>Acceso a internet</span>  </h3>
                 </div>
                 <div class="typography-line">
                     
-                   <blockquote class="position-relative">
+                    <blockquote class="position-relative">
                         <p class="blockquote blockquote-primary">
                             {{ descripcion_modelo.descripcion|linebreaksbr|safe }}
 
@@ -36,13 +36,14 @@
                 </blockquote>
                         <div class="toolbar">
                             <button onclick="showView('chart')" class="active">📈</button>
-                            {% comment %} <button onclick="showView('stats')">📊</button> {% endcomment %}
+                            <button onclick="showView('stats')">📊</button>
                             <button onclick="showView('table')">📋</button>
                            
                         </div>
-                        <form method= "GET" action="{% url 'sector-privado-ramas' %} ">
+                        <form method= "GET" action="{% url 'acceso-internet' %} ">
                             {% csrf_token %}
                             <div class ="content-error">
+                                
                                 
                                 {% if error_message %}
                                    <div class="alert alert-dark" role="alert">
@@ -72,67 +73,37 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="filtro-anios">
-                                    <label>Trimestres:</label>
-                                    <div class="trimestre_inicio">
-                                        <select name="trimestre_inicio">
-                                            <option value="">Desde</option>
-                                            <option value="1">Primer trimestre</option>
-                                            <option value="2">Segundo trimestre</option>
-                                            <option value="3">Tercer trimestre</option>
-                                            <option value="4">Cuarto trimestre</option>
-                                            
-                                            
-                                        </select>
-                                        <span>—</span>
-                                        <select name="trimestre_fin">
-                                            <option value="">Hasta</option>
-                                            <option value="1">Primer trimestre</option>
-                                            <option value="2">Segundo trimestre</option>
-                                            <option value="3">Tercer trimestre</option>
-                                            <option value="4">Cuarto trimestre</option>
-                                            
-                                        </select>
-                                    </div>
-                                </div>
                             
-                                
-
-
-                            
+                               
                                 <button type="submit">Aplicar filtros</button>
                             </div>     
                         </form>
                         <div id="chartView" class="view active">
-                            <div id="backButton" style="display: none; margin-bottom: 10px;">
-                              <button>← Volver al gráfico principal</button>
-                            </div>
-
-                            <div class="chart-style" id="chart-ramas"></div>
+                            <div class="chart-style" id="chart-acceso"></div>
                         </div>
 
                         <div id="tableView" class="view">
                           <table id="example" class="stripe row-border order-column" style="width:100%">
                                 <thead>
                                     <tr>
-                                        
+                                        <th>Mes</th>
                                         <th>Año</th>
-                                        <th>Trimestre</th>
-                                        <th>Rama</th>
+                                        <th>Valor</th>
+                                        <th>Tipo acceso</th>
                                         <th>Cantidad</th>
-                                        
+                                        <th>Variacion interanual</th>
                                        
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for data in data_variacion %}
                                     <tr>
-                                    
+                                        <td>{{ data.mes__mes }}</td>
                                         <td>{{ data.anio__anio }}</td>
-                                        <td>{{ data.trimestre__trimestre }}</td>
-                                        <td>{{ data.rama__rama }}</td>
+                                        <td>{{ data.valor__valor }}</td>
+                                        <td>{{ data.tipo_acceso__tipo }}</td>
                                         <td>{{ data.cantidad }}</td>
-                                        
+                                        <td>{{ data.variacion_interanual }}</td>
                                     </tr>
                                     {% empty %}
                                     <tr><td colspan="5">No hay datos disponibles.</td></tr>
@@ -140,9 +111,28 @@
                                 </tbody>
                             </table>
                         </div>
+
                         <div id="statsView" class="view">
-                      
-                            <div class="chart-style" id="chart-basic"></div>
+                                     <!-- Botón para alternar los gráficos -->
+                          <button id="btn-nacional" onclick="mostrarChartNacional()" style="margin-bottom: 15px; display:block">
+                              Comprar con valor nacional
+                          </button>
+                          <button id="btn-formosa" onclick="mostrarChartFormosa()" style="margin-bottom: 15px; display:none">
+                              Ver gráfico formosa
+                          </button>
+                          <div id="contenedor-chart" class="d-flex" style="gap: 10px;">
+                          <div id="container-formosa" class="flex-fill transition-slide slide-visible">
+                            <div id="back-formosa" style="display:none; margin-bottom: 8px;">
+                              <button>← Volver</button>
+                            </div>
+                            <div id="chart-formosa" style="height: 350px;"></div>
+                          </div>
+                          <div id="container-nacional" class="transition-slide slide-hidden invisible" style="width: 50%; height: 350px;">
+                            <div id="back-nacional" style="display:none; margin-bottom: 8px;">
+                              <button>← Volver</button>
+                            </div>
+                            <div id="chart-nacional" style="height: 100%;"></div>
+                          </div>
                         </div>
                     </div>
             </div>
@@ -150,31 +140,27 @@
     </div>
 </div>
 <script>
-    
-const chartData = {{ chart_data_json|safe }};
-chart_dynamic_column_chart_comparative(chartData, 'chart-ramas', {
-  tituloInicial: 'Cantidad total por rama',
-  ordenSubcategorias: ['Primer trimestre', 'Segundo trimestre', 'Tercer trimestre', 'Cuarto trimestre'],
-  backButtonId: 'backButton'
-});
-    
-    // Inicializa la vista del gráfico al cargar la página
-    document.addEventListener("DOMContentLoaded", function() {
-        showView('chart');
-    });
+  const datos = {{ diccionario_variacion|safe }};
+  area_chart_variation('chart-acceso', datos, 'Variación Interanual');
 
-function volverAGraficoPrincipal(){
-    window.location.reload();
-}
+  const mesesOrden = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+  const chart_data_formosa = {{ chart_data_formosa_json|safe }};
+  chart_dynamic_column_chart_comparative(chart_data_formosa, 'chart-formosa', {
+    tituloInicial: 'Accesos Formosa: Cantidades',
+    ordenSubcategorias: mesesOrden,
+    backButtonId: 'back-formosa'
+  });
+
+  const chart_data_nacional = {{ chart_data_nacional_json|safe }};
+  chart_dynamic_column_chart_comparative(chart_data_nacional, 'chart-nacional', {
+    tituloInicial: 'Accesos Nacional: Cantidades',
+    ordenSubcategorias: mesesOrden,
+    backButtonId: 'back-nacional'
+  });
+
+  document.addEventListener("DOMContentLoaded", function() {
+    showView('chart');
+  });
 </script>
-
-
-
-
-
-
 {% endblock container %}
-
-
-
-

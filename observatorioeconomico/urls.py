@@ -26,6 +26,7 @@ from Patentamiento import views as vehiculo
 from Ipc import views as ipc
 from Transferencia import views as transferencia
 from Sector_construccion import views as construccion
+from AccesoInternet import views as internet
 from Productivo import views as productivo
 from sector_privado import views as privado
 from Dgr import views as dgr
@@ -58,6 +59,7 @@ urlpatterns = [
     path('porcinos/', pecuario.view_porcinos, name='porcinos'),
     path('aves/', pecuario.view_aves, name='aves'),
     path('consumo-pecuario/', pecuario.view_consumo_pecuario, name='consumo-pecuario'),
+    path('acceso-internet/', internet.view_acceso_internet, name='acceso-internet'),
 
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

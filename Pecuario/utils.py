@@ -317,6 +317,8 @@ def process_porcinos_data(request: HttpRequest, descripcion_modelo, template: st
         'error_message': params['error_message'],
         'chart_faena': json.dumps(chart_faena),
         'chart_stock': json.dumps(chart_stock),
+        'data_faena': qs_faena,
+        'data_stock': qs_stock,
         'descripcion_modelo': descripcion_modelo,
         'anios': Anio.objects.filter(id__in=anio_ids).order_by('anio'),
     }
@@ -349,6 +351,8 @@ def process_bovinos_data(request: HttpRequest, descripcion_modelo, template: str
         'error_message': params['error_message'],
         'chart_faena': json.dumps(chart_faena),
         'chart_stock': json.dumps(chart_stock),
+        'data_faena': qs_faena,
+        'data_stock': qs_stock,
         'descripcion_modelo': descripcion_modelo,
         'anios': Anio.objects.filter(id__in=anio_ids).order_by('anio'),
     }

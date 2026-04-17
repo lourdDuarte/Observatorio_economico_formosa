@@ -383,13 +383,8 @@ def process_privado_ramas_data(request: HttpRequest,
     data_variacion = processor.get_filtered_data_cantidades(params)
    
     # Determinar tipo de gráfico y procesar datos del gráfico
-    if params['is_valid']:
-        
-        context_chart = processor.process_chart_ramas_cantidad(data_variacion)
-        
-    else:
-        type_graphic = 0
-        context_chart = processor.process_chart_ramas_cantidad(data_variacion)
+   
+    context_chart = processor.process_chart_ramas_cantidad(data_variacion)
     
     anio_ids = AsalariadoRama.objects.values_list('anio_id', flat=True).distinct()
 

@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'Consumo_energetico',
     'Productivo',
     'Pecuario',
+    'AccesoInternet',
      
 ]
 

@@ -27,8 +27,9 @@
                     </blockquote>
 
                     <div class="toolbar">
-                        <button onclick="showSection('faena')" id="btn-faena" class="active">FAENA</button>
-                        <button onclick="showSection('stock')" id="btn-stock">STOCK</button>
+                        <button onclick="showView('faena')" class="active">FAENA</button>
+                        <button onclick="showView('stock')">STOCK</button>
+                        <button onclick="showView('table')">📋</button>
                     </div>
 
                     <form method="GET" action="{% url 'bovinos' %}">
@@ -62,16 +63,70 @@
                     </form>
 
                     <!-- FAENA -->
-                    <div id="section-faena" class="bovinos-section">
+                    <div id="faenaView" class="view active">
                         <div class="chart-style" id="chart-faena"></div>
-
                     </div>
 
                     <!-- STOCK -->
-                    <div id="section-stock" class="bovinos-section" style="display:none;">
+                    <div id="stockView" class="view">
                         <div class="chart-style" id="chart-stock"></div>
-
                     </div>
+
+                    <div id="tableView" class="view">
+                        <h5 style="font-size: 15px;color: font-weight: 900;font-weight: bold; color:black;  margin-bottom: 1rem;">STOCK (cabezas)</h5>
+                        <table id="example" class="stripe row-border order-column" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Mes</th>
+                                    <th>Año</th>
+                                    <th>Tipo de ganado</th>
+                                    <th>Stock</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for d in data_stock %}
+                                <tr>
+                                    <td>{{ d.mes__mes }}</td>
+                                    <td>{{ d.anio__anio }}</td>
+                                    <td>{{ d.tipo_ganado__tipo_ganado }}</td>
+                                    <td>{{ d.stock }}</td>
+                                    
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="5">No hay datos disponibles.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        
+                        <h5 style="font-size: 15px; font-weight: 900;color: font-weight: bold; color:black; margin-top: 2rem; margin-bottom: 1rem;">FAENA (cabezas)</h5>
+                        <table id="example2" class="stripe row-border order-column" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Mes</th>
+                                    <th>Año</th>
+                                    <th>Tipo de ganado</th>
+                                    <th>Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for d in data_faena %}
+                                <tr>
+                                   <td>{{ d.mes__mes }}</td>
+                                    <td>{{ d.anio__anio }}</td>
+                                    <td>{{ d.tipo_ganado__tipo_ganado }}</td>
+                                    <td>{{ d.cabezas }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="4">No hay datos disponibles.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        
+
+                        
+                    </div>
+
 
                 </div>
             </div>
@@ -83,18 +138,6 @@
     area_chart_variation('chart-faena', datos_faena, 'Faena bovina (cabezas)', '');
 
     const datos_stock = {{ chart_stock|safe }};
-    let stockChartRendered = false;
-
-    function showSection(seccion) {
-        document.querySelectorAll('.bovinos-section').forEach(el => el.style.display = 'none');
-        document.querySelectorAll('.toolbar button').forEach(btn => btn.classList.remove('active'));
-        document.getElementById('section-' + seccion).style.display = 'block';
-        document.getElementById('btn-' + seccion).classList.add('active');
-
-        if (seccion === 'stock' && !stockChartRendered) {
-            area_chart_variation('chart-stock', datos_stock, 'Stock bovino (cabezas)', '');
-            stockChartRendered = true;
-        }
-    }
+    area_chart_variation('chart-stock', datos_stock, 'Stock bovino (cabezas)', '');
 </script>
 {% endblock container %}

@@ -38,6 +38,10 @@ new DataTable('#example2', {
                     autoFilter: true,
                     sheetName: 'Exported data'
                 },
+                {
+                    extend: 'colvis',
+                    text: 'Mostrar/Ocultar columnas'
+                }
             ]
         }
     }
